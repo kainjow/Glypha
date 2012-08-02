@@ -1,0 +1,308 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A54B601315B7CB560072674A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54B601215B7CB560072674A /* Cocoa.framework */; };
+		A54B602615B7CB570072674A /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A54B602515B7CB570072674A /* AppController.mm */; };
+		A54B602915B7CB570072674A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A54B602715B7CB570072674A /* MainMenu.xib */; };
+		A54B603315B7D2460072674A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54B603215B7D2460072674A /* OpenGL.framework */; };
+		A55C2E5B15B907D900F17FEB /* GLGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A55C2E5915B907D900F17FEB /* GLGame.cpp */; };
+		A55C2E5E15B908D300F17FEB /* GLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A55C2E5C15B908D300F17FEB /* GLRenderer.cpp */; };
+		A57D044B15B910A8005CFE23 /* GLRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A57D044915B910A8005CFE23 /* GLRect.cpp */; };
+		A5B35A3415CA285400A91A5E /* GLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5B35A3215CA285400A91A5E /* GLUtils.cpp */; };
+		A5E2F65C15BE55A900DC68DD /* GLImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5E2F65A15BE55A800DC68DD /* GLImage.cpp */; };
+		A5E2F66215BE5D1400DC68DD /* background.c in Sources */ = {isa = PBXBuildFile; fileRef = A5E2F66115BE5D1400DC68DD /* background.c */; };
+		A5E2F66715BE68AA00DC68DD /* torches.c in Sources */ = {isa = PBXBuildFile; fileRef = A5E2F66615BE68AA00DC68DD /* torches.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A54B600E15B7CB560072674A /* Glypha III.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Glypha III.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A54B601215B7CB560072674A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		A54B601A15B7CB570072674A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A54B602415B7CB570072674A /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
+		A54B602515B7CB570072674A /* AppController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppController.mm; sourceTree = "<group>"; };
+		A54B602815B7CB570072674A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		A54B603215B7D2460072674A /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		A55C2E5915B907D900F17FEB /* GLGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLGame.cpp; sourceTree = "<group>"; };
+		A55C2E5A15B907D900F17FEB /* GLGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLGame.h; sourceTree = "<group>"; };
+		A55C2E5C15B908D300F17FEB /* GLRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLRenderer.cpp; sourceTree = "<group>"; };
+		A55C2E5D15B908D300F17FEB /* GLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLRenderer.h; sourceTree = "<group>"; };
+		A57D044915B910A8005CFE23 /* GLRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLRect.cpp; sourceTree = "<group>"; };
+		A57D044A15B910A8005CFE23 /* GLRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLRect.h; sourceTree = "<group>"; };
+		A5B35A3215CA285400A91A5E /* GLUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLUtils.cpp; sourceTree = "<group>"; };
+		A5B35A3315CA285400A91A5E /* GLUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLUtils.h; sourceTree = "<group>"; };
+		A5E2F65A15BE55A800DC68DD /* GLImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLImage.cpp; sourceTree = "<group>"; };
+		A5E2F65B15BE55A800DC68DD /* GLImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLImage.h; sourceTree = "<group>"; };
+		A5E2F66115BE5D1400DC68DD /* background.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = background.c; path = ../themes/glyphaiii/images/background.c; sourceTree = "<group>"; };
+		A5E2F66315BE5DE900DC68DD /* GLResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLResources.h; sourceTree = "<group>"; };
+		A5E2F66615BE68AA00DC68DD /* torches.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = torches.c; path = ../themes/glyphaiii/images/torches.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A54B600B15B7CB560072674A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A54B603315B7D2460072674A /* OpenGL.framework in Frameworks */,
+				A54B601315B7CB560072674A /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A54B600315B7CB560072674A = {
+			isa = PBXGroup;
+			children = (
+				A54B601815B7CB570072674A /* osx */,
+				A55C2E5815B907A200F17FEB /* game */,
+				A5E2F65D15BE5B3A00DC68DD /* themes */,
+				A54B601115B7CB560072674A /* Frameworks */,
+				A54B600F15B7CB560072674A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A54B600F15B7CB560072674A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A54B600E15B7CB560072674A /* Glypha III.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A54B601115B7CB560072674A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A54B601215B7CB560072674A /* Cocoa.framework */,
+				A54B603215B7D2460072674A /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A54B601815B7CB570072674A /* osx */ = {
+			isa = PBXGroup;
+			children = (
+				A54B602415B7CB570072674A /* AppController.h */,
+				A54B602515B7CB570072674A /* AppController.mm */,
+				A54B602715B7CB570072674A /* MainMenu.xib */,
+				A54B601A15B7CB570072674A /* Info.plist */,
+			);
+			name = osx;
+			sourceTree = SOURCE_ROOT;
+		};
+		A55C2E5815B907A200F17FEB /* game */ = {
+			isa = PBXGroup;
+			children = (
+				A55C2E5915B907D900F17FEB /* GLGame.cpp */,
+				A55C2E5A15B907D900F17FEB /* GLGame.h */,
+				A55C2E5C15B908D300F17FEB /* GLRenderer.cpp */,
+				A55C2E5D15B908D300F17FEB /* GLRenderer.h */,
+				A5E2F65A15BE55A800DC68DD /* GLImage.cpp */,
+				A5E2F65B15BE55A800DC68DD /* GLImage.h */,
+				A57D044915B910A8005CFE23 /* GLRect.cpp */,
+				A57D044A15B910A8005CFE23 /* GLRect.h */,
+				A5E2F66315BE5DE900DC68DD /* GLResources.h */,
+				A5B35A3215CA285400A91A5E /* GLUtils.cpp */,
+				A5B35A3315CA285400A91A5E /* GLUtils.h */,
+			);
+			name = game;
+			path = ../game;
+			sourceTree = SOURCE_ROOT;
+		};
+		A5E2F65D15BE5B3A00DC68DD /* themes */ = {
+			isa = PBXGroup;
+			children = (
+				A5E2F65E15BE5B4500DC68DD /* glyphaiii */,
+			);
+			name = themes;
+			sourceTree = "<group>";
+		};
+		A5E2F65E15BE5B4500DC68DD /* glyphaiii */ = {
+			isa = PBXGroup;
+			children = (
+				A5E2F66115BE5D1400DC68DD /* background.c */,
+				A5E2F66615BE68AA00DC68DD /* torches.c */,
+			);
+			name = glyphaiii;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A54B600D15B7CB560072674A /* Glypha III */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A54B602C15B7CB570072674A /* Build configuration list for PBXNativeTarget "Glypha III" */;
+			buildPhases = (
+				A54B600A15B7CB560072674A /* Sources */,
+				A54B600B15B7CB560072674A /* Frameworks */,
+				A54B600C15B7CB560072674A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Glypha III";
+			productName = Glypha;
+			productReference = A54B600E15B7CB560072674A /* Glypha III.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A54B600515B7CB560072674A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "Kevin Wojniak";
+			};
+			buildConfigurationList = A54B600815B7CB560072674A /* Build configuration list for PBXProject "Glypha" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A54B600315B7CB560072674A;
+			productRefGroup = A54B600F15B7CB560072674A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A54B600D15B7CB560072674A /* Glypha III */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A54B600C15B7CB560072674A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A54B602915B7CB570072674A /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A54B600A15B7CB560072674A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A54B602615B7CB570072674A /* AppController.mm in Sources */,
+				A55C2E5B15B907D900F17FEB /* GLGame.cpp in Sources */,
+				A55C2E5E15B908D300F17FEB /* GLRenderer.cpp in Sources */,
+				A57D044B15B910A8005CFE23 /* GLRect.cpp in Sources */,
+				A5E2F65C15BE55A900DC68DD /* GLImage.cpp in Sources */,
+				A5E2F66215BE5D1400DC68DD /* background.c in Sources */,
+				A5E2F66715BE68AA00DC68DD /* torches.c in Sources */,
+				A5B35A3415CA285400A91A5E /* GLUtils.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A54B602715B7CB570072674A /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A54B602815B7CB570072674A /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A54B602A15B7CB570072674A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A54B602B15B7CB570072674A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		A54B602D15B7CB570072674A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = Info.plist;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A54B602E15B7CB570072674A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = Info.plist;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A54B600815B7CB560072674A /* Build configuration list for PBXProject "Glypha" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A54B602A15B7CB570072674A /* Debug */,
+				A54B602B15B7CB570072674A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A54B602C15B7CB570072674A /* Build configuration list for PBXNativeTarget "Glypha III" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A54B602D15B7CB570072674A /* Debug */,
+				A54B602E15B7CB570072674A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A54B600515B7CB560072674A /* Project object */;
+}
