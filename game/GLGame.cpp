@@ -15,7 +15,8 @@
 
 GLGame::GLGame() :
     renderer_(new GLRenderer()),
-    bgImg_(NULL)
+    bgImg_(NULL),
+    lastFlameAni(0), whichFlame1(-1), whichFlame2(-1)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -25,6 +26,7 @@ GLGame::GLGame() :
         flameRects[i].setSize(16, 16);
         flameRects[i].offsetBy(0, i * 16);
     }
+    flameAniFrequency = 1.0/30.0;
 }
 
 GLGame::~GLGame()
@@ -45,6 +47,8 @@ double GLGame::updateFrequency()
 void GLGame::draw()
 {
     GLRenderer *r = renderer_;
+    double now = GLUtils::now();
+    
     r->clear();
     
     GLRect bounds = r->bounds();
@@ -56,6 +60,11 @@ void GLGame::draw()
     
     bgImg_->draw(0, 0);
     
-    torchesImg_->draw(flameDestRects[0], flameRects[GLUtils::randomInt(4)]);
-    torchesImg_->draw(flameDestRects[1], flameRects[GLUtils::randomInt(4)]);
+    if (((now - lastFlameAni) >= flameAniFrequency) || (whichFlame1 == -1)) {
+        whichFlame1 = GLUtils::randomInt(4);
+        whichFlame2 = GLUtils::randomInt(4);
+        lastFlameAni = now;
+    }
+    torchesImg_->draw(flameDestRects[0], flameRects[whichFlame1]);
+    torchesImg_->draw(flameDestRects[1], flameRects[whichFlame2]);
 }

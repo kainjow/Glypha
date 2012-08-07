@@ -30,6 +30,9 @@ private:
     GLImage *torchesImg_;
 
     GLRect flameDestRects[2], flameRects[4];
+    double lastFlameAni;
+    int whichFlame1, whichFlame2;
+    double flameAniFrequency;
 };
 
 #endif

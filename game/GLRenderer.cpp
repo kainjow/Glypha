@@ -10,7 +10,6 @@
 #if __APPLE__
 #include <OpenGL/OpenGL.h>
 #endif
-#include <cstdio>
 
 GLRenderer::GLRenderer()
 {

@@ -12,6 +12,8 @@
 class GLUtils {
 public:
     static int randomInt(int end);
+    
+    static double now();
 };
 
 #endif
