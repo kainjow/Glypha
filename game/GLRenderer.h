@@ -10,23 +10,31 @@
 #define GLRENDERER_H
 
 #include "GLRect.h"
+#include "GLPoint.h"
 
 class GLRenderer {
 public:
     GLRenderer();
     virtual ~GLRenderer();
     
-    virtual void resize(int width, int height);
-    virtual void clear();
+    void resize(int width, int height);
+    void clear();
     
-    virtual void fillRect(const GLRect &rect);
-    virtual void setFillColor(int red, int green, int blue);
+    void fillRect(const GLRect &rect);
+    void setFillColor(int red, int green, int blue);
 
+    void beginLines(float lineWidth);
+    void endLines();
+    void moveTo(int h, int v);
+    void lineTo(int h, int v);
+    void drawLine(int h1, int v1, int h2, int v2);
+    
     GLRect bounds();
     
 private:
     GLRect bounds_;
     bool didPrepare_;
+    GLPoint lineStart_;
 };
 
 #endif

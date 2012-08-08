@@ -83,6 +83,15 @@
 	[[self openGLContext] flushBuffer];
 }
 
+- (void)mouseDown:(NSEvent *)event
+{
+    NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
+    GLPoint point;
+    point.h = mouseLoc.x;
+    point.v = game_->renderer()->bounds().height() - mouseLoc.y;
+    game_->handleMouseDownEvent(point);
+}
+
 @end
 
 int main(int argc, char *argv[])

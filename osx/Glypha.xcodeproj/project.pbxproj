@@ -21,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A50CB6E115D1736600126032 /* GLPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLPoint.h; sourceTree = "<group>"; };
 		A54B600E15B7CB560072674A /* Glypha III.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Glypha III.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A54B601215B7CB560072674A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		A54B601A15B7CB570072674A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -106,6 +107,7 @@
 				A5E2F65B15BE55A800DC68DD /* GLImage.h */,
 				A57D044915B910A8005CFE23 /* GLRect.cpp */,
 				A57D044A15B910A8005CFE23 /* GLRect.h */,
+				A50CB6E115D1736600126032 /* GLPoint.h */,
 				A5E2F66315BE5DE900DC68DD /* GLResources.h */,
 				A5B35A3215CA285400A91A5E /* GLUtils.cpp */,
 				A5B35A3315CA285400A91A5E /* GLUtils.h */,

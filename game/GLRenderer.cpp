@@ -66,3 +66,38 @@ GLRect GLRenderer::bounds()
 {
     return bounds_;
 }
+
+void GLRenderer::beginLines(float lineWidth)
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glLineWidth(lineWidth);
+	glBegin(GL_LINES);
+}
+
+void GLRenderer::endLines()
+{
+	glEnd();
+	glDisable(GL_LINE_SMOOTH);
+	glDisable(GL_BLEND);
+}
+
+void GLRenderer::drawLine(int h1, int v1, int h2, int v2)
+{
+	glVertex2s(h1, v1);
+	glVertex2s(h2, v2);
+}
+
+void GLRenderer::moveTo(int h, int v)
+{
+    lineStart_.h = h;
+    lineStart_.v = v;
+}
+
+void GLRenderer::lineTo(int h, int v)
+{
+	glVertex2s(lineStart_.h, lineStart_.v);
+	glVertex2s(h, v);
+}
