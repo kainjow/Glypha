@@ -9,6 +9,7 @@
 #include "GLImage.h"
 #if __APPLE__
 #include <ApplicationServices/ApplicationServices.h>
+#include <OpenGL/gl.h>
 #endif
 
 GLImage::GLImage(void *buf, size_t bufSize) :

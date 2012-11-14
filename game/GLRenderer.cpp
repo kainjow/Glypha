@@ -8,7 +8,7 @@
 
 #include "GLRenderer.h"
 #if __APPLE__
-#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl.h>
 #endif
 
 GLRenderer::GLRenderer()

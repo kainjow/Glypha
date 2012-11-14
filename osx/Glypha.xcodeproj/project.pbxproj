@@ -159,7 +159,7 @@
 		A54B600515B7CB560072674A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Kevin Wojniak";
 			};
 			buildConfigurationList = A54B600815B7CB560072674A /* Build configuration list for PBXProject "Glypha" */;
@@ -268,6 +268,7 @@
 		A54B602D15B7CB570072674A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -277,6 +278,7 @@
 		A54B602E15B7CB570072674A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
