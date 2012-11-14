@@ -29,6 +29,8 @@ public:
     void offsetBy(int horizontal, int vertical);
     
     void setSize(int width, int height);
+    
+    void zeroCorner();
 
 private:
     int top_, left_, bottom_, right_;

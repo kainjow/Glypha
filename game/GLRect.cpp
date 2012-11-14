@@ -75,3 +75,11 @@ void GLRect::setSize(int width, int height)
     right_ = left_ + width;
     bottom_ = top_ + height;
 }
+
+void GLRect::zeroCorner()		// Offset rect to (0, 0)
+{
+	right_ -= left_;
+	bottom_ -= top_;
+	left_ = 0;
+	top_ = 0;
+}

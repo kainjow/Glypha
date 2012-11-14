@@ -29,11 +29,16 @@
     [self.gameView setGame:game_];
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void)applicationDidFinishLaunching:(__unused NSNotification*)note
 {
     // Center the window, then set the autosave name. If the frame already has been saved, it'll override the centering.
     [self.window center];
     [self.window setFrameAutosaveName:@"MainWindow"];
+}
+
+- (IBAction)newGame:(__unused id)sender
+{
+    game_->newGame();
 }
 
 @end
@@ -76,7 +81,7 @@
 	[[self openGLContext] update];
 }
 
-- (void)drawRect:(NSRect)rect
+- (void)drawRect:(__unused NSRect)rect
 {
 	[[self openGLContext] makeCurrentContext];
 	game_->draw();

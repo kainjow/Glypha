@@ -16,6 +16,18 @@ class GLImage;
 
 #define kNumLightningPts 8
 
+struct playerType {
+	GLRect dest, wasDest, wrap;
+	int h, v;
+	int wasH, wasV;
+	int hVel, vVel;
+	int srcNum, mode;
+	int frame;
+	bool facingRight, flapping;
+	bool walking, wrapping;
+	bool clutched;
+};
+
 class GLGame {
 public:
     GLGame();
@@ -28,6 +40,8 @@ public:
     void draw();
     
     void handleMouseDownEvent(const GLPoint& point);
+    
+    void newGame();
     
 private:
     GLRenderer *renderer_;
@@ -46,6 +60,14 @@ private:
     int numLightningStrikes;
     double lastLightningStrike;
     GLPoint lightningPoint;
+    
+    int numLedges, beginOnLevel, levelOn, livesLeft, lightH, lightV;
+    
+    playerType thePlayer;
+    GLRect playerRects[11];
+    void resetPlayer(bool initialPlace);
+    
+    void mainLoop();
 };
 
 #endif

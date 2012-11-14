@@ -13,6 +13,21 @@
 #include "GLUtils.h"
 #include <cstdio>
 
+#define kIdle						-1	// enemy & player mode
+#define kFlying						0	// enemy & player mode
+#define kWalking					1	// enemy & player mode
+#define kSinking					2	// player mode
+#define kSpawning					3	// enemy mode
+#define kFalling					4	// enemy mode & player mode
+#define kEggTimer					5	// enemy mode
+#define kDeadAndGone				6	// enemy mode
+#define kBones						7	// player mode
+#define kLurking					10	// hand mode
+#define kOutGrabeth					11	// hand mode
+#define kClutching					12	// hand mode
+#define kWaiting					15	// eye mode
+#define kStalking					16	// eye mode
+
 GLGame::GLGame() :
     renderer_(new GLRenderer()),
     bgImg_(NULL),
@@ -27,6 +42,29 @@ GLGame::GLGame() :
         flameRects[i].setSize(16, 16);
         flameRects[i].offsetBy(0, i * 16);
     }
+    
+    playerRects[0].setSize(48, 37);
+	playerRects[0].offsetBy(0, 0);
+	playerRects[1].setSize(48, 37);
+    playerRects[1].offsetBy(0, 37);
+	playerRects[2].setSize(48, 37);
+	playerRects[2].offsetBy(0, 74);
+	playerRects[3].setSize(8, 37);
+	playerRects[3].offsetBy(0, 111);
+	playerRects[4].setSize(48, 48);
+	playerRects[4].offsetBy(0, 148);
+	playerRects[5].setSize(48, 48);
+	playerRects[5].offsetBy(0, 196);
+	playerRects[6].setSize(48, 48);
+	playerRects[6].offsetBy(0, 244);
+	playerRects[7].setSize(48, 48);
+	playerRects[7].offsetBy(0, 292);
+	playerRects[8].setSize(48, 37);		// falling bones rt.
+	playerRects[8].offsetBy(0, 340);
+	playerRects[9].setSize(48, 37);		// falling bones lf.
+	playerRects[9].offsetBy(0, 377);
+	playerRects[10].setSize(48, 22);	// pile of bones
+	playerRects[10].offsetBy(0, 414);
 }
 
 GLGame::~GLGame()
@@ -44,10 +82,16 @@ double GLGame::updateFrequency()
     return 1.0/30.0;
 }
 
+void GLGame::mainLoop()
+{
+}
+
 void GLGame::draw()
 {
     GLRenderer *r = renderer_;
     double now = GLUtils::now();
+    
+    mainLoop();
     
     r->clear();
     
@@ -80,6 +124,10 @@ void GLGame::draw()
     if (numLightningStrikes > 0) {
         drawLightning(r);
     }
+    
+    // Draw player
+    r->setFillColor(255, 0, 0);
+    r->fillRect(thePlayer.dest);
 }
 
 void GLGame::handleMouseDownEvent(const GLPoint& point)
@@ -150,3 +198,65 @@ void GLGame::drawLightning(GLRenderer *r)
     r->endLines();
 }
 
+void GLGame::newGame()
+{
+    resetPlayer(true);
+}
+
+void GLGame::resetPlayer(bool initialPlace)
+{
+	int location;
+	
+	thePlayer.srcNum = 5;
+	thePlayer.frame = 320;
+	
+	if (initialPlace)
+		location = 0;
+	else
+		location = GLUtils::randomInt(numLedges);
+	
+	switch (location) {
+		case 0:
+            thePlayer.h = 296 << 4;		// bottom center
+            thePlayer.v = 377 << 4;
+            break;
+            
+		case 1:
+            thePlayer.h = 102 << 4;
+            thePlayer.v = 237 << 4;
+            break;
+            
+		case 2:
+            thePlayer.h = 489 << 4;
+            thePlayer.v = 237 << 4;
+            break;
+            
+		case 3:
+            thePlayer.h = 102 << 4;
+            thePlayer.v = 58 << 4;
+            break;
+            
+		case 4:
+            thePlayer.h = 489 << 4;
+            thePlayer.v = 58 << 4;
+            break;
+            
+		case 5:
+            thePlayer.h = 296 << 4;
+            thePlayer.v = 143 << 4;
+            break;
+	}
+	
+	thePlayer.dest = playerRects[thePlayer.srcNum];
+	thePlayer.dest.zeroCorner();
+	thePlayer.dest.offsetBy(thePlayer.h >> 4, thePlayer.v >> 4);
+	thePlayer.wasDest = thePlayer.dest;
+	
+	thePlayer.hVel = 0;
+	thePlayer.vVel = 0;
+	thePlayer.facingRight = true;
+	thePlayer.flapping = false;
+	thePlayer.wrapping = false;
+	thePlayer.clutched = false;
+	thePlayer.mode = kIdle;
+}

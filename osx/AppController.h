@@ -19,6 +19,8 @@ class GLGame;
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet GameView *gameView;
 
+- (IBAction)newGame:(id)sender;
+
 @end
 
 @interface GameView : NSOpenGLView
