@@ -11,7 +11,7 @@
 
 #include "GLRect.h"
 #include "GLPoint.h"
-class GLRenderer;
+#include "GLRenderer.h"
 class GLImage;
 
 #define kNumLightningPts 8
@@ -61,6 +61,7 @@ private:
     double lastLightningStrike;
     GLPoint lightningPoint;
     
+    bool isPlaying;
     int numLedges, beginOnLevel, levelOn, livesLeft, lightH, lightV;
     
     playerType thePlayer;

@@ -10,8 +10,12 @@
 #define GLIMAGE_H
 
 #include <stddef.h>
+#if _WIN32
+#include <windows.h>
+#include <gl/gl.h>
+#else
 #include <OpenGL/OpenGL.h>
-#include <ApplicationServices/ApplicationServices.h>
+#endif
 #include "GLRect.h"
 
 class GLImage {

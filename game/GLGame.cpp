@@ -7,7 +7,6 @@
 //
 
 #include "GLGame.h"
-#include "GLRenderer.h"
 #include "GLImage.h"
 #include "GLResources.h"
 #include "GLUtils.h"
@@ -32,7 +31,8 @@ GLGame::GLGame() :
     renderer_(new GLRenderer()),
     bgImg_(NULL),
     lastFlameAni(0), whichFlame1(-1), whichFlame2(-1),
-    numLightningStrikes(0)
+    numLightningStrikes(0),
+    isPlaying(false)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -126,8 +126,10 @@ void GLGame::draw()
     }
     
     // Draw player
-    r->setFillColor(255, 0, 0);
-    r->fillRect(thePlayer.dest);
+    if (isPlaying) {
+        r->setFillColor(255, 0, 0);
+        r->fillRect(thePlayer.dest);
+    }
 }
 
 void GLGame::handleMouseDownEvent(const GLPoint& point)
@@ -200,6 +202,7 @@ void GLGame::drawLightning(GLRenderer *r)
 
 void GLGame::newGame()
 {
+    isPlaying = true;
     resetPlayer(true);
 }
 

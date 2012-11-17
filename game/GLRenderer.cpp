@@ -9,6 +9,9 @@
 #include "GLRenderer.h"
 #if __APPLE__
 #include <OpenGL/gl.h>
+#else
+#include <windows.h>
+#include <gl/gl.h>
 #endif
 
 GLRenderer::GLRenderer()
@@ -50,16 +53,16 @@ void GLRenderer::clear()
 void GLRenderer::fillRect(const GLRect &rect)
 {
 	glBegin(GL_QUADS);
-	glVertex2f(rect.left(), rect.bottom());
-	glVertex2f(rect.left(), rect.top());
-	glVertex2f(rect.right(), rect.top());
-	glVertex2f(rect.right(), rect.bottom());
+	glVertex2i(rect.left(), rect.bottom());
+	glVertex2i(rect.left(), rect.top());
+	glVertex2i(rect.right(), rect.top());
+	glVertex2i(rect.right(), rect.bottom());
 	glEnd();
 }
 
 void GLRenderer::setFillColor(int red, int green, int blue)
 {
-    glColor3f(red, green, blue);
+    glColor3f((GLfloat)red, (GLfloat)green, (GLfloat)blue);
 }
 
 GLRect GLRenderer::bounds()
