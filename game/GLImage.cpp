@@ -93,11 +93,6 @@ GLImage::GLImage(void *buf, size_t bufSize) :
     if (stream != NULL) {
 #if 1
         int ret = loadWin32Texture_(stream);
-#if 0
-        WCHAR buf[100];
-        StringCchPrintf(buf, sizeof(buf)/sizeof(buf[0]), L"bufSize=%u, ret=%d, width=%u, height=%u\n", bufSize, ret, width_, height_);
-        OutputDebugString(buf);
-#endif
 #else
         IWICImagingFactory *pFactory;
         if (CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pFactory) == S_OK) {
@@ -130,29 +125,35 @@ GLImage::GLImage(void *buf, size_t bufSize) :
         stream->Release();
     }
 #elif __APPLE__
-    CFDataRef data = NULL;
-    CGImageSourceRef imageSource = NULL;
-    CGImageRef img = NULL;
     void *texData;
-    CGColorSpaceRef colorSpace;
+    ;
     CGContextRef ctx;
-    
-    data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8*)buf, (CFIndex)bufSize, kCFAllocatorNull);
-    imageSource = CGImageSourceCreateWithData(data, NULL);
-    img = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
-	width_ = (int)CGImageGetWidth(img);
-	height_ = (int)CGImageGetHeight(img);
-	texData = calloc(width_ * 4, height_);
-	colorSpace = CGColorSpaceCreateDeviceRGB();
-	ctx = CGBitmapContextCreate(texData, width_, height_, 8, width_*4, colorSpace, kCGBitmapByteOrder32Host| kCGImageAlphaPremultipliedFirst);
-	CGContextDrawImage(ctx, CGRectMake(0.0, 0.0, width_, height_), img);
-	
-	loadTextureData_(texData);
-
-	CGContextRelease(ctx);
-    CGColorSpaceRelease(colorSpace);
-    free(texData);
-	CGImageRelease(img);
+    CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8*)buf, (CFIndex)bufSize, kCFAllocatorNull);
+    if (data != NULL) {
+        CGImageSourceRef imageSource = CGImageSourceCreateWithData(data, NULL);
+        if (imageSource != NULL) {
+            CGImageRef img = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
+            if (img != NULL) {
+                width_ = (int)CGImageGetWidth(img);
+                height_ = (int)CGImageGetHeight(img);
+                texData = malloc(width_ * 4 * height_);
+                CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+                if (colorSpace != NULL) {
+                    ctx = CGBitmapContextCreate(texData, width_, height_, 8, width_*4, colorSpace, kCGBitmapByteOrder32Host| kCGImageAlphaPremultipliedFirst);
+                    if (ctx != NULL) {
+                        CGContextDrawImage(ctx, CGRectMake(0.0, 0.0, width_, height_), img);
+                        loadTextureData_(texData);
+                        CGContextRelease(ctx);
+                    }
+                    CGColorSpaceRelease(colorSpace);
+                }
+                free(texData);
+                CGImageRelease(img);
+            }
+            CFRelease(imageSource);
+        }
+        CFRelease(data);
+    }
 #endif
 }
 
@@ -172,12 +173,7 @@ void GLImage::loadTextureData_(void *texData)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
 	// set texture data
-#if _WIN32
-    GLenum type = GL_UNSIGNED_BYTE;
-#else
-    GLenum type = GL_UNSIGNED_INT_8_8_8_8_REV;
-#endif
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_BGRA_EXT, type, texData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, texData);
 }
 
 void GLImage::draw(GLRect destRect, GLRect srcRect)
