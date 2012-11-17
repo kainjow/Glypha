@@ -129,6 +129,7 @@ void GLGame::draw()
     if (isPlaying) {
         r->setFillColor(255, 0, 0);
         r->fillRect(thePlayer.dest);
+        r->setFillColor(255, 255, 255);
     }
 }
 

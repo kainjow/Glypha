@@ -13,10 +13,6 @@ GLRect::GLRect()
 {
 }
 
-GLRect::~GLRect()
-{
-}
-
 GLRect::GLRect(int width, int height)
     : top_(0), left_(0), bottom_(width), right_(height)
 {

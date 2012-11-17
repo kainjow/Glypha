@@ -15,8 +15,6 @@ public:
     GLRect(int width, int height);
     GLRect(int left, int top, int width, int height);
     
-    ~GLRect();
-    
     int top() const;
     int left() const;
     int bottom() const;

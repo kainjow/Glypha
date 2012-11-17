@@ -9,11 +9,19 @@
 #ifndef GLUTILS_H
 #define GLUTILS_H
 
+#if _WIN32
+#include <windows.h>
+#endif
+
 class GLUtils {
 public:
     static int randomInt(int end);
     
     static double now();
+
+#if _WIN32
+    static void win32_log(LPCWSTR format, ...);
+#endif
 };
 
 #endif

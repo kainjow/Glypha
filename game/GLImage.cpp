@@ -8,7 +8,6 @@
 
 #include "GLImage.h"
 #if _WIN32
-#include <gl/glu.h>
 #include <gdiplus.h>
 #include <wincodec.h>
 #include <shlwapi.h>
@@ -19,15 +18,43 @@
 #endif
 
 #if _WIN32
-static bool LoadTexture(IStream *stream, GLuint *g_texture, int *g_textureWidth, int *g_textureHeight)
+// loadWin32Texture_() is based on code from the "OpenGL GDI+ Demo" at
+// http://www.dhpoware.com/demos/glGdiplus.html
+//-----------------------------------------------------------------------------
+// Copyright (c) 2009 dhpoware. All rights reserved.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+//-----------------------------------------------------------------------------
+bool GLImage::loadWin32Texture_(IStream *stream)
 {
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    ULONG_PTR gdiplusToken;
-    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+    static bool didLoadGdi = false;
+    if (didLoadGdi == false) {
+        Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+        ULONG_PTR gdiplusToken;
+        if (Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL) == Gdiplus::Ok) {
+            didLoadGdi = true;
+        } else {
+            return false;
+        }
+    }
 
-    Gdiplus::Bitmap *pBitmap;
-
-    pBitmap = Gdiplus::Bitmap::FromStream(stream, TRUE);
+    Gdiplus::Bitmap *pBitmap = Gdiplus::Bitmap::FromStream(stream, TRUE);
     if (pBitmap == NULL) {
         return false;
     }
@@ -35,35 +62,26 @@ static bool LoadTexture(IStream *stream, GLuint *g_texture, int *g_textureWidth,
     // GDI+ pads each scanline of the loaded bitmap image to 4-byte memory
     // boundaries. Fortunately OpenGL also aligns bitmap images to 4-byte
     // memory boundaries by default.
-    int width = pBitmap->GetWidth();
-    int height = pBitmap->GetHeight();
-    int pitch = ((width * 32 + 31) & ~31) >> 3;
+    width_ = pBitmap->GetWidth();
+    height_ = pBitmap->GetHeight();
+    int pitch = ((width_ * 32 + 31) & ~31) >> 3;
 
-    unsigned char *pixels = (unsigned char*)malloc(pitch * height);
-    //std::vector<unsigned char> pixels(pitch * height);
     Gdiplus::BitmapData data;
-    Gdiplus::Rect rect(0, 0, width, height);
-
+    Gdiplus::Rect rect(0, 0, width_, height_);
     // Convert to 32-bit BGRA pixel format and fetch the pixel data.
-    if (pBitmap->LockBits(NULL/*&rect*/, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &data) != Gdiplus::Ok) {
+    if (pBitmap->LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &data) != Gdiplus::Ok) {
         return false;
     }
+    unsigned char *pixels = (unsigned char*)malloc(pitch * height_);
     unsigned char *pSrcPixels = static_cast<unsigned char *>(data.Scan0);
-    for (int i = 0; i < height; ++i) {
+    for (int i = 0; i < height_; ++i) {
         memcpy(&pixels[i * pitch], &pSrcPixels[i * data.Stride], pitch);
     }
-    pBitmap->UnlockBits(&data);
+    (void)pBitmap->UnlockBits(&data);
+    loadTextureData_(pixels);
+    free(pixels);
 
-    // Create an OpenGL texture object to store the loaded bitmap image.
-    glGenTextures(1, g_texture);
-    glBindTexture(GL_TEXTURE_2D, *g_texture);
-
-    gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height, GL_BGRA_EXT, GL_UNSIGNED_BYTE, &pixels[0]);
-
-    *g_textureWidth = width;
-    *g_textureHeight = height;
-
-    return 0;
+    return true;
 }
 #endif
 
@@ -74,10 +92,12 @@ GLImage::GLImage(void *buf, size_t bufSize) :
     IStream *stream = SHCreateMemStream((const BYTE*)buf, (UINT)bufSize);
     if (stream != NULL) {
 #if 1
-        int ret = LoadTexture(stream, &texture_, &width_, &height_);
+        int ret = loadWin32Texture_(stream);
+#if 0
         WCHAR buf[100];
         StringCchPrintf(buf, sizeof(buf)/sizeof(buf[0]), L"bufSize=%u, ret=%d, width=%u, height=%u\n", bufSize, ret, width_, height_);
         OutputDebugString(buf);
+#endif
 #else
         IWICImagingFactory *pFactory;
         if (CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pFactory) == S_OK) {

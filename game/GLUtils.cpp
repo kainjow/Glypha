@@ -11,11 +11,12 @@
 #include <cstdlib>
 #include <time.h>
 #if _WIN32
-#include <windows.h>
+#include <strsafe.h>
 #else
 #include <sys/time.h>
 #endif
 
+// Returns a random number from 0 - end
 int GLUtils::randomInt(int end)
 {
 	static int seeded = 0;
@@ -34,6 +35,7 @@ int GLUtils::randomInt(int end)
 #endif
 }
 
+// Returns the time in seconds with millisecond precision
 double GLUtils::now()
 {
 #if _WIN32
@@ -47,3 +49,17 @@ double GLUtils::now()
     return (double)val.tv_sec + ((double)val.tv_usec / 1000000.0);
 #endif
 }
+
+#if _WIN32
+// Handy function for logging. Works like printf() but outputs
+// to the debugger window since we have no console in a Win32 GUI.
+void GLUtils::win32_log(LPCWSTR format, ...)
+{
+    WCHAR buf[200];
+    va_list ap;
+    va_start(ap, format);
+    (void)StringCbVPrintf(buf, sizeof(buf)/sizeof(buf[0]), format, ap);
+    va_end(ap);
+    OutputDebugString(buf);
+}
+#endif

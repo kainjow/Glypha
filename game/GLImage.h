@@ -31,6 +31,9 @@ public:
 
 private:
 	void loadTextureData_(void *texData);
+#if _WIN32
+    bool loadWin32Texture_(IStream *stream);
+#endif
     
     GLuint texture_;
     int width_, height_;

@@ -1,10 +1,13 @@
 #include <windows.h>
 #include <gl/gL.h>
 #include "../../game/GLGame.h"
+#include "../../game/GLUtils.h"
 
 enum {
     kMenuNewGame = 9001,
-    kMenuExit =    9002
+    kMenuPauseGame = 9002,
+    kMenuEndGame = 9003,
+    kMenuExit = 9004
 };
 
 class AppController {
@@ -22,11 +25,9 @@ private:
     HDC hDC;  
 
     static LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-    bool createRenderingObjects();
-    void discardRenderingResources();
     void onRender();
     void onResize(UINT width, UINT height);
-    void onCommand(WORD cmd);
+    void onMenu(WORD cmd);
 };
 
 AppController::AppController()
@@ -37,20 +38,9 @@ AppController::~AppController()
 {
 }
 
-void ClientResize(HWND hWnd, int nWidth, int nHeight)
-{
-    RECT rcClient, rcWindow;
-    POINT ptDiff;
-    GetClientRect(hWnd, &rcClient);
-    GetWindowRect(hWnd, &rcWindow);
-    ptDiff.x = (rcWindow.right - rcWindow.left) - rcClient.right;
-    ptDiff.y = (rcWindow.bottom - rcWindow.top) - rcClient.bottom;
-    MoveWindow(hWnd,rcWindow.left, rcWindow.top, nWidth + ptDiff.x, nHeight + ptDiff.y, TRUE);
-}
-
 bool AppController::init(HINSTANCE hInstance)
 {
-    // Register the window class.
+    // Register the window class
     WNDCLASSEX winClass;
     ZeroMemory(&winClass, sizeof(WNDCLASSEX));
     winClass.cbSize = sizeof(winClass);
@@ -60,7 +50,6 @@ bool AppController::init(HINSTANCE hInstance)
     winClass.hInstance = hInstance;
     winClass.hCursor = LoadCursor(NULL, IDI_APPLICATION);
     winClass.lpszClassName = L"MainWindow";
-
     if (RegisterClassEx(&winClass) == 0) {
         return false;
     }
@@ -69,68 +58,65 @@ bool AppController::init(HINSTANCE hInstance)
     int w = 640, h = 460;
     int x = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
     int y = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
-    win = CreateWindow(L"MainWindow", L"Glypha III", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, w, h, NULL, NULL, hInstance, this);
+    win = CreateWindow(winClass.lpszClassName, L"Glypha III", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, w, h, NULL, NULL, hInstance, this);
     if (win == NULL) {
         return false;
     }
-    ClientResize(win, w, h + GetSystemMetrics(SM_CYMENU));
     
-    // Create the menus
-    HMENU mainMenu = CreateMenu();
-    HMENU subMenu = CreatePopupMenu();
-    AppendMenu(subMenu, MF_STRING, kMenuNewGame, L"&New Game");
-    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
-    AppendMenu(subMenu, MF_STRING, kMenuExit, L"E&xit");
-    AppendMenu(mainMenu, MF_STRING | MF_POPUP, (UINT_PTR)subMenu, L"&File");
-    SetMenu(win, mainMenu);
-
+    // Setup OpenGL
     hDC = GetDC(win);
     if (hDC == NULL) {
         return false;
     }
-
-    static  PIXELFORMATDESCRIPTOR pfd = {
-        sizeof(PIXELFORMATDESCRIPTOR),
-        1,
-        PFD_DRAW_TO_WINDOW |
-        PFD_SUPPORT_OPENGL |
-        PFD_DOUBLEBUFFER,
-        PFD_TYPE_RGBA,
-        32,
-        0, 0, 0, 0, 0, 0,
-        0,
-        0,
-        0,
-        0, 0, 0, 0,
-        16,
-        0,
-        0,
-        PFD_MAIN_PLANE,
-        0,
-        0, 0, 0
+    static PIXELFORMATDESCRIPTOR pfd = {
+        sizeof(PIXELFORMATDESCRIPTOR), 1, PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+        PFD_TYPE_RGBA, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0
     };
-    int PixelFormat = ChoosePixelFormat(hDC, &pfd);
-    if (PixelFormat == 0) {
+    int pixelFormat = ChoosePixelFormat(hDC, &pfd);
+    if (pixelFormat == 0 || SetPixelFormat(hDC, pixelFormat, &pfd) == FALSE) {
         return false;
     }
-
-    if (SetPixelFormat(hDC,PixelFormat,&pfd) == FALSE) {
-        return false;
-    }
-
     hRC = wglCreateContext(hDC);
-    if (hRC == NULL) {
+    if (hRC == NULL || wglMakeCurrent(hDC, hRC) == FALSE) {
         return false;
     }
 
-    if (wglMakeCurrent(hDC, hRC) == FALSE) {
-        return false;
-    }
+    // Create menubar
+    HMENU mainMenu = CreateMenu();
+    HMENU subMenu = CreatePopupMenu();
+    AppendMenu(subMenu, MF_STRING, kMenuNewGame, L"&New Game");
+    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuPauseGame, L"&Pause Game");
+    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuEndGame, L"&End Game");
+    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(subMenu, MF_STRING, kMenuExit, L"E&xit");
+    AppendMenu(mainMenu, MF_STRING | MF_POPUP, (UINT_PTR)subMenu, L"&Game");
+    subMenu = CreatePopupMenu();
+    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuNewGame, L"&Help");
+    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuNewGame, L"High &Scores");
+    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuPauseGame, L"&Reset Scores\u2026");
+    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuExit, L"N&o Sound");
+    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuExit, L"&About Glypha III\u2026");
+    AppendMenu(mainMenu, MF_STRING | MF_POPUP, (UINT_PTR)subMenu, L"&Options");
+    SetMenu(win, mainMenu);
 
+    // Readjust the window so the client size matches our desired size
+    RECT rcClient, rcWindow;
+    POINT ptDiff;
+    (void)GetClientRect(win, &rcClient);
+    (void)GetWindowRect(win, &rcWindow);
+    ptDiff.x = (rcWindow.right - rcWindow.left) - rcClient.right;
+    ptDiff.y = (rcWindow.bottom - rcWindow.top) - rcClient.bottom;
+    (void)MoveWindow(win, rcWindow.left, rcWindow.top, w + ptDiff.x, h + ptDiff.y, TRUE);
+
+    // Start the timer
     if (SetTimer(win, 1, 1000/30, NULL) == 0) {
         return false;
     }
 
+    // Show the window
     (void)ShowWindow(win, SW_SHOWNORMAL);
     (void)UpdateWindow(win);
 
@@ -140,9 +126,9 @@ bool AppController::init(HINSTANCE hInstance)
 void AppController::run()
 {
     MSG msg;
-    while (GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    while (GetMessageW(&msg, NULL, 0, 0)) {
+        (void)TranslateMessage(&msg);
+        (void)DispatchMessageW(&msg);
     }
 }
 
@@ -152,31 +138,31 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
     if (message == WM_CREATE) {
         LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
-        AppController *pDemoApp = (AppController *)pcs->lpCreateParams;
-        SetWindowLongPtrW(hwnd, GWLP_USERDATA, PtrToUlong(pDemoApp));
+        AppController *appController = (AppController *)pcs->lpCreateParams;
+        (void)SetWindowLongPtrW(hwnd, GWLP_USERDATA, PtrToUlong(appController));
         result = 1;
     } else {
-        AppController *pDemoApp = reinterpret_cast<AppController *>(static_cast<LONG_PTR>(GetWindowLongPtrW(hwnd, GWLP_USERDATA)));
+        AppController *appController = reinterpret_cast<AppController *>(static_cast<LONG_PTR>(GetWindowLongPtrW(hwnd, GWLP_USERDATA)));
         bool wasHandled = false;
 
-        if (pDemoApp != NULL) {
+        if (appController != NULL) {
             switch (message) {
             case WM_SIZE:
-                pDemoApp->onResize(LOWORD(lParam), HIWORD(lParam));
+                appController->onResize(LOWORD(lParam), HIWORD(lParam));
                 result = 0;
                 wasHandled = true;
                 break;
 
             case WM_DISPLAYCHANGE:
             case WM_TIMER:
-                InvalidateRect(hwnd, NULL, TRUE);
+                (void)InvalidateRect(hwnd, NULL, TRUE);
                 result = 0;
                 wasHandled = true;
                 break;
 
             case WM_PAINT:
-                pDemoApp->onRender();
-                ValidateRect(hwnd, NULL);
+                appController->onRender();
+                (void)ValidateRect(hwnd, NULL);
                 result = 0;
                 wasHandled = true;
                 break;
@@ -188,7 +174,9 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
                 break;
 
             case WM_COMMAND:
-                pDemoApp->onCommand(LOWORD(wParam));
+                appController->onMenu(LOWORD(wParam));
+                result = 1;
+                wasHandled = true;
                 break;
             }
         }
@@ -212,7 +200,7 @@ void AppController::onResize(UINT width, UINT height)
     game.renderer()->resize(width, height);
 }
 
-void AppController::onCommand(WORD cmd)
+void AppController::onMenu(WORD cmd)
 {
     switch(cmd) {
     case kMenuNewGame:
@@ -228,6 +216,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
     AppController appController;
     if (appController.init(hInstance) == false) {
+        (void)MessageBoxW(NULL, L"Failed to initialize.", NULL, MB_OK | MB_ICONERROR);
         return 0;
     }
     appController.run();
