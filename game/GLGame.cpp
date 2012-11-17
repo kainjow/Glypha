@@ -95,8 +95,6 @@ void GLGame::draw()
     
     r->clear();
     
-    GLRect bounds = r->bounds();
-    
     // Create images the first time
     if (bgImg_ == NULL) {
         bgImg_ = new GLImage(background_png, background_png_len);
