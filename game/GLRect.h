@@ -18,6 +18,7 @@ public:
     int top() const;
     int left() const;
     int bottom() const;
+    void setBottom(int bottom);
     int right() const;
     
     int width() const;

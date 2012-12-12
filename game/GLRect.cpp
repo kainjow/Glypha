@@ -38,6 +38,11 @@ int GLRect::bottom() const
     return bottom_;
 }
 
+void GLRect::setBottom(int bottom)
+{
+    bottom_ = bottom;
+}
+
 int GLRect::right() const
 {
     return right_;

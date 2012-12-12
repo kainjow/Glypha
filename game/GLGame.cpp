@@ -29,10 +29,11 @@
 
 GLGame::GLGame() :
     renderer_(new GLRenderer()),
-    bgImg_(NULL),
+    bgImg_(NULL), torchesImg_(NULL),
     lastFlameAni(0), whichFlame1(-1), whichFlame2(-1),
     numLightningStrikes(0),
-    isPlaying(false)
+    isPlaying(false),
+    playerImg(NULL), playerIdleImg(NULL)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -65,6 +66,8 @@ GLGame::GLGame() :
 	playerRects[9].offsetBy(0, 377);
 	playerRects[10].setSize(48, 22);	// pile of bones
 	playerRects[10].offsetBy(0, 414);
+    
+    evenFrame = true;
 }
 
 GLGame::~GLGame()
@@ -82,16 +85,10 @@ double GLGame::updateFrequency()
     return 1.0/30.0;
 }
 
-void GLGame::mainLoop()
-{
-}
-
 void GLGame::draw()
 {
     GLRenderer *r = renderer_;
     double now = GLUtils::now();
-    
-    mainLoop();
     
     r->clear();
     
@@ -123,12 +120,11 @@ void GLGame::draw()
         drawLightning(r);
     }
     
-    // Draw player
     if (isPlaying) {
-        r->setFillColor(255, 0, 0);
-        r->fillRect(thePlayer.dest);
-        r->setFillColor(255, 255, 255);
+        drawPlayer();
     }
+    
+    evenFrame = !evenFrame;
 }
 
 void GLGame::handleMouseDownEvent(const GLPoint& point)
@@ -146,13 +142,12 @@ void GLGame::doLightning(const GLPoint& point)
 
 void GLGame::generateLightning(short h, short v)
 {
-#define kLeftObeliskH		172
-#define kLeftObeliskV		250
-#define kRightObeliskH		468
-#define kRightObeliskV		250
-#define kWander				16
-	
-	short		i, leftDeltaH, rightDeltaH, leftDeltaV, rightDeltaV, range;
+    const short kLeftObeliskH = 172;
+    const short kLeftObeliskV = 250;
+    const short kRightObeliskH = 468;
+    const short kRightObeliskV = 250;
+    const short kWander = 16;
+	short i, leftDeltaH, rightDeltaH, leftDeltaV, rightDeltaV, range;
 	
 	leftDeltaH = h - kLeftObeliskH;				// determine the h and v distances between…
 	
@@ -261,4 +256,31 @@ void GLGame::resetPlayer(bool initialPlace)
 	thePlayer.wrapping = false;
 	thePlayer.clutched = false;
 	thePlayer.mode = kIdle;
+}
+
+void GLGame::drawPlayer()
+{
+	GLRect src;
+	
+    if (playerImg == NULL) {
+        playerImg = new GLImage(player_png, player_png_len);
+    }
+    if (playerIdleImg == NULL) {
+        playerIdleImg = new GLImage(playerIdle_png, playerIdle_png_len);
+    }
+    
+	if ((evenFrame) && (thePlayer.mode == kIdle)) {
+        playerIdleImg->draw(thePlayer.dest);
+	} else if (thePlayer.mode == kBones) {
+		src = playerRects[thePlayer.srcNum];
+		src.setBottom(src.top() + thePlayer.frame);
+        playerImg->draw(thePlayer.dest, src);
+	} else {
+        src = playerRects[thePlayer.srcNum];
+        playerImg->draw(thePlayer.dest, src);
+	}
+    
+	thePlayer.wasH = thePlayer.h;
+	thePlayer.wasV = thePlayer.v;
+	thePlayer.wasDest = thePlayer.dest;
 }

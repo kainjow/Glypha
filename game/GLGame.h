@@ -46,6 +46,7 @@ public:
 private:
     GLRenderer *renderer_;
     GLImage *bgImg_;
+    bool evenFrame;
     
     GLImage *torchesImg_;
     GLRect flameDestRects[2], flameRects[4];
@@ -67,8 +68,9 @@ private:
     playerType thePlayer;
     GLRect playerRects[11];
     void resetPlayer(bool initialPlace);
-    
-    void mainLoop();
+    GLImage *playerImg;
+    GLImage *playerIdleImg;
+    void drawPlayer();
 };
 
 #endif

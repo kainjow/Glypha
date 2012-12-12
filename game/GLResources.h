@@ -17,6 +17,10 @@ extern unsigned char background_png[];
 extern unsigned int background_png_len;
 extern unsigned char torches_png[];
 extern unsigned int torches_png_len;
+extern unsigned char player_png[];
+extern unsigned int player_png_len;
+extern unsigned char playerIdle_png[];
+extern unsigned int playerIdle_png_len;
 
 #ifdef __cplusplus
 }

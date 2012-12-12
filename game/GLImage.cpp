@@ -125,8 +125,6 @@ GLImage::GLImage(void *buf, size_t bufSize) :
         stream->Release();
     }
 #elif __APPLE__
-    void *texData;
-    ;
     CGContextRef ctx;
     CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8*)buf, (CFIndex)bufSize, kCFAllocatorNull);
     if (data != NULL) {
@@ -136,7 +134,7 @@ GLImage::GLImage(void *buf, size_t bufSize) :
             if (img != NULL) {
                 width_ = (int)CGImageGetWidth(img);
                 height_ = (int)CGImageGetHeight(img);
-                texData = malloc(width_ * 4 * height_);
+                char *texData = (char*)calloc(width_ * 4 * height_, sizeof(char));
                 CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
                 if (colorSpace != NULL) {
                     ctx = CGBitmapContextCreate(texData, width_, height_, 8, width_*4, colorSpace, kCGBitmapByteOrder32Host| kCGImageAlphaPremultipliedFirst);
