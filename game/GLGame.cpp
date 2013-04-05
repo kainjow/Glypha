@@ -66,7 +66,7 @@ GLGame::GLGame() :
     playerRects[1].offsetBy(0, 37);
 	playerRects[2].setSize(48, 37);
 	playerRects[2].offsetBy(0, 74);
-	playerRects[3].setSize(8, 37);
+	playerRects[3].setSize(48, 37);
 	playerRects[3].offsetBy(0, 111);
 	playerRects[4].setSize(48, 48);
 	playerRects[4].offsetBy(0, 148);
