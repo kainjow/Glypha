@@ -23,14 +23,32 @@ GLRect::GLRect(int left, int top, int width, int height)
 {
 }
 
+void GLRect::set(int left, int top, int right, int bottom)
+{
+    left_ = left;
+    top_ = top;
+    right_ = right;
+    bottom_ = bottom;
+}
+
 int GLRect::top() const
 {
     return top_;
 }
 
+void GLRect::setTop(int top)
+{
+    top_ = top;
+}
+
 int GLRect::left() const
 {
     return left_;
+}
+
+void GLRect::setLeft(int left)
+{
+    left_ = left;
 }
 
 int GLRect::bottom() const
@@ -46,6 +64,11 @@ void GLRect::setBottom(int bottom)
 int GLRect::right() const
 {
     return right_;
+}
+
+void GLRect::setRight(int right)
+{
+    right_ = right;
 }
 
 int GLRect::width() const
@@ -83,4 +106,10 @@ void GLRect::zeroCorner()		// Offset rect to (0, 0)
 	bottom_ -= top_;
 	left_ = 0;
 	top_ = 0;
+}
+
+bool GLRect::sect(const GLRect *r2)
+{
+    const GLRect *r1 = this;
+    return (r1->left() < r2->right() && r1->right() > r2->left() && r1->top() < r2->bottom() && r1->bottom() > r2->top());
 }

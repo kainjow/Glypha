@@ -28,6 +28,19 @@ struct playerType {
 	bool clutched;
 };
 
+enum GLGameKey {
+    kGLGameKeyNone = 0,
+    
+    kGLGameKeySpacebar = 1,
+    kGLGameKeyDownArrow = 2,
+    kGLGameKeyLeftArrow = 4,
+    kGLGameKeyRightArrow = 8,
+    kGLGameKeyA = 16,
+    kGLGameKeyS = 32,
+    kGLGameKeyColon = 64,
+    kGLGameKeyQuote = 128,
+};
+
 class GLGame {
 public:
     GLGame();
@@ -40,14 +53,17 @@ public:
     void draw();
     
     void handleMouseDownEvent(const GLPoint& point);
+    void handleKeyDownEvent(GLGameKey key);
+    void handleKeyUpEvent(GLGameKey key);
     
     void newGame();
     
 private:
     GLRenderer *renderer_;
-    GLImage *bgImg_;
-    bool evenFrame;
+    bool isPlaying, evenFrame, flapKeyDown;
     
+    GLImage *bgImg_;
+
     GLImage *torchesImg_;
     GLRect flameDestRects[2], flameRects[4];
     double lastFlameAni;
@@ -62,8 +78,7 @@ private:
     double lastLightningStrike;
     GLPoint lightningPoint;
     
-    bool isPlaying;
-    int numLedges, beginOnLevel, levelOn, livesLeft, lightH, lightV;
+    int numLedges, levelOn;//, livesLeft, lightH, lightV;
     
     playerType thePlayer;
     GLRect playerRects[11];
@@ -71,6 +86,18 @@ private:
     GLImage *playerImg;
     GLImage *playerIdleImg;
     void drawPlayer();
+    void movePlayer();
+    void handlePlayerIdle();
+    void handlePlayerWalking();
+    void handlePlayerFlying();
+    void setAndCheckPlayerDest();
+    void checkTouchDownCollision();
+    void checkPlatformCollision();
+    void setUpLevel();
+    
+    void getPlayerInput();
+    int theKeys;
+    GLRect platformRects[6], touchDownRects[6], enemyRects[24];
 };
 
 #endif

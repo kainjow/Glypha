@@ -83,6 +83,9 @@
 
 - (void)drawRect:(__unused NSRect)rect
 {
+    if (!game_) {
+        return;
+    }
 	[[self openGLContext] makeCurrentContext];
 	game_->draw();
 	[[self openGLContext] flushBuffer];
@@ -95,6 +98,69 @@
     point.h = mouseLoc.x;
     point.v = game_->renderer()->bounds().height() - mouseLoc.y;
     game_->handleMouseDownEvent(point);
+}
+
+- (void)doKey:(NSEvent *)event up:(BOOL)up
+{
+    NSString *chars = [event characters];
+    for (NSUInteger i = 0; i < [chars length]; ++i) {
+        unichar ch = [chars characterAtIndex:i];
+        GLGameKey key;
+        switch (ch) {
+            case ' ':
+                key = kGLGameKeySpacebar;
+                break;
+            case NSDownArrowFunctionKey:
+                key = kGLGameKeyDownArrow;
+                break;
+            case NSLeftArrowFunctionKey:
+                key = kGLGameKeyLeftArrow;
+                break;
+            case NSRightArrowFunctionKey:
+                key = kGLGameKeyRightArrow;
+                break;
+            case 'a':
+                key = kGLGameKeyA;
+                break;
+            case 's':
+                key = kGLGameKeyS;
+                break;
+            case ';':
+                key = kGLGameKeyColon;
+                break;
+            case '"':
+                key = kGLGameKeyQuote;
+                break;
+            default:
+                key = kGLGameKeyNone;
+                break;
+        }
+        if (up) {
+            game_->handleKeyUpEvent(key);
+        } else {
+            game_->handleKeyDownEvent(key);
+        }
+    }
+}
+
+- (void)keyDown:(NSEvent *)event
+{
+    [self doKey:event up:NO];
+}
+
+- (void)keyUp:(NSEvent *)event
+{
+    [self doKey:event up:YES];
+}
+
+- (BOOL)canBecomeKeyView
+{
+    return YES;
+}
+
+- (BOOL)acceptsFirstResponder
+{
+    return YES;
 }
 
 @end

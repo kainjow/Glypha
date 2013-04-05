@@ -14,6 +14,8 @@ class GLGame;
 @interface AppController : NSObject <NSApplicationDelegate>
 {
     GLGame *game_;
+    NSWindow *_window;
+    GameView *_gameView;
 }
 
 @property (assign) IBOutlet NSWindow *window;
