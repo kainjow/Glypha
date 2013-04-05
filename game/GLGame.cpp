@@ -546,7 +546,7 @@ void GLGame::handlePlayerFlying()
 	
 	setAndCheckPlayerDest();
 	
-	//CheckLavaRoofCollision();
+	checkLavaRoofCollision();
 	//CheckPlayerEnemyCollision();
 	checkPlatformCollision();
 	checkTouchDownCollision();
@@ -591,6 +591,30 @@ void GLGame::checkTouchDownCollision()
 			thePlayer.dest.setBottom(thePlayer.dest.bottom() - 11);
 			thePlayer.wasDest.setBottom(thePlayer.wasDest.bottom() - 11);
 		}
+	}
+}
+
+void GLGame::checkLavaRoofCollision()
+{
+	short offset;
+	
+	if (thePlayer.dest.bottom( )> kLavaHeight)
+	{
+		if (thePlayer.mode == kFalling) {
+			//PlayExternalSound(kSplashSound, kSplashPriority);
+		} else {
+			//PlayExternalSound(kBirdSound, kBirdPriority);
+        }
+		thePlayer.mode = kSinking;
+	}
+	else if (thePlayer.dest.top() < kRoofHeight)
+	{
+		offset = kRoofHeight - thePlayer.dest.top();
+		thePlayer.dest.setTop(thePlayer.dest.top() + offset);
+		thePlayer.dest.setBottom(thePlayer.dest.bottom() + offset);
+		thePlayer.v = thePlayer.dest.top() * 16;
+		//PlayExternalSound(kGrateSound, kGratePriority);
+		thePlayer.vVel = thePlayer.vVel / -2;
 	}
 }
 

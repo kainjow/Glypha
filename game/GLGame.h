@@ -94,6 +94,7 @@ private:
     void checkTouchDownCollision();
     void checkPlatformCollision();
     void setUpLevel();
+    void checkLavaRoofCollision();
     
     void getPlayerInput();
     int theKeys;
