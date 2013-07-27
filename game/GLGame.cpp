@@ -49,7 +49,8 @@ GLGame::GLGame() :
     lastFlameAni(0), whichFlame1(-1), whichFlame2(-1),
     numLightningStrikes(0),
     playerImg(NULL), playerIdleImg(NULL),
-    theKeys(kGLGameKeyNone)
+    theKeys(kGLGameKeyNone),
+    platformImg_(NULL)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -83,6 +84,14 @@ GLGame::GLGame() :
 	playerRects[10].setSize(48, 22);	// pile of bones
 	playerRects[10].offsetBy(0, 414);
 
+	for (int i = 0; i < 6; i++) {
+        platformCopyRects[i].setSize(191, 32);
+        platformCopyRects[i].offsetBy(0, 32 * i);
+	}
+    platformCopyRects[6].set(233, 190, 424, 222);
+	platformCopyRects[7].set(0, 105, 191, 137);
+	platformCopyRects[8].set(449, 105, 640, 137);
+ 
     platformRects[0].set(206, 424, 433, 438);   //_______________
 	platformRects[1].set(-256, 284, 149, 298);	//
 	platformRects[2].set(490, 284, 896, 298);   //--3--     --4--
@@ -126,6 +135,7 @@ void GLGame::draw()
     if (bgImg_ == NULL) {
         bgImg_ = new GLImage(background_png, background_png_len);
         torchesImg_ = new GLImage(torches_png, torches_png_len);
+        platformImg_ = new GLImage(platforms_png, platforms_png_len);
     }
     
     // Draw the background
@@ -151,6 +161,7 @@ void GLGame::draw()
     }
     
     if (isPlaying) {
+        drawPlatforms();
         movePlayer();
         drawPlayer();
         getPlayerInput();
@@ -238,15 +249,13 @@ void GLGame::newGame()
 
 void GLGame::setUpLevel()
 {
-	short wasLedges, waveMultiple;
+	short waveMultiple;
 	
 	//KillOffEye();
 	
-	wasLedges = numLedges;
 	waveMultiple = levelOn % 5;
 	
-	switch (waveMultiple)
-	{
+	switch (waveMultiple) {
 		case 0:
             numLedges = 5;
             break;
@@ -267,11 +276,7 @@ void GLGame::setUpLevel()
             numLedges = 6;
             break;
 	}
-	
-	if (wasLedges != numLedges) {
-		//DrawPlatforms(numLedges);
-    }
-	
+		
 	//UpdateLevelNumbers();
 }
 
@@ -358,6 +363,23 @@ void GLGame::drawPlayer()
 	thePlayer.wasH = thePlayer.h;
 	thePlayer.wasV = thePlayer.v;
 	thePlayer.wasDest = thePlayer.dest;
+}
+
+void GLGame::drawPlatforms()
+{
+	if (numLedges > 3) {
+        platformImg_->draw(platformCopyRects[7], platformCopyRects[2]);
+        platformImg_->draw(platformCopyRects[8], platformCopyRects[4]);
+	} else {
+        platformImg_->draw(platformCopyRects[7], platformCopyRects[3]);
+        platformImg_->draw(platformCopyRects[8], platformCopyRects[5]);
+	}
+	
+	if (numLedges > 5) {
+        platformImg_->draw(platformCopyRects[6], platformCopyRects[0]);
+	} else {
+        platformImg_->draw(platformCopyRects[6], platformCopyRects[1]);
+	}
 }
 
 void GLGame::movePlayer()

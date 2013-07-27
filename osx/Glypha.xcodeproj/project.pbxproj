@@ -20,6 +20,7 @@
 		A5E2F65C15BE55A900DC68DD /* GLImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5E2F65A15BE55A800DC68DD /* GLImage.cpp */; };
 		A5E2F66215BE5D1400DC68DD /* background.c in Sources */ = {isa = PBXBuildFile; fileRef = A5E2F66115BE5D1400DC68DD /* background.c */; };
 		A5E2F66715BE68AA00DC68DD /* torches.c in Sources */ = {isa = PBXBuildFile; fileRef = A5E2F66615BE68AA00DC68DD /* torches.c */; };
+		A5E62C2B170FEF2200BFEEE3 /* platforms.c in Sources */ = {isa = PBXBuildFile; fileRef = A5E62C2A170FEF2200BFEEE3 /* platforms.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		A5E2F66115BE5D1400DC68DD /* background.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = background.c; path = ../themes/glyphaiii/images/background.c; sourceTree = "<group>"; };
 		A5E2F66315BE5DE900DC68DD /* GLResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLResources.h; sourceTree = "<group>"; };
 		A5E2F66615BE68AA00DC68DD /* torches.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = torches.c; path = ../themes/glyphaiii/images/torches.c; sourceTree = "<group>"; };
+		A5E62C2A170FEF2200BFEEE3 /* platforms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = platforms.c; path = ../themes/glyphaiii/images/platforms.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +137,7 @@
 				A5E2F66615BE68AA00DC68DD /* torches.c */,
 				A5834CE9167840F30018CE0C /* player.c */,
 				A5834CEB1678450F0018CE0C /* playerIdle.c */,
+				A5E62C2A170FEF2200BFEEE3 /* platforms.c */,
 			);
 			name = glyphaiii;
 			sourceTree = "<group>";
@@ -211,6 +214,7 @@
 				A5B35A3415CA285400A91A5E /* GLUtils.cpp in Sources */,
 				A5834CEA167840F30018CE0C /* player.c in Sources */,
 				A5834CEC1678450F0018CE0C /* playerIdle.c in Sources */,
+				A5E62C2B170FEF2200BFEEE3 /* platforms.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -99,6 +99,10 @@ private:
     void getPlayerInput();
     int theKeys;
     GLRect platformRects[6], touchDownRects[6], enemyRects[24];
+    
+    GLRect platformCopyRects[9];
+    void drawPlatforms();
+    GLImage *platformImg_;
 };
 
 #endif

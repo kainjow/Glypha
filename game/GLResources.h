@@ -21,6 +21,8 @@ extern unsigned char player_png[];
 extern unsigned int player_png_len;
 extern unsigned char playerIdle_png[];
 extern unsigned int playerIdle_png_len;
+extern unsigned char platforms_png[];
+extern unsigned int platforms_png_len;
 
 #ifdef __cplusplus
 }
