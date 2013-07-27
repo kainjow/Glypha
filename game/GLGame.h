@@ -79,7 +79,7 @@ private:
     double lastLightningStrike;
     GLPoint lightningPoint;
     
-    int numLedges, levelOn;//, livesLeft, lightH, lightV;
+    int numLedges, levelOn;
     
     playerType thePlayer;
     GLRect playerRects[11];
