@@ -20,16 +20,17 @@
 
 class GLImage {
 public:
-    GLImage(void *buf, size_t bufSize);
+    GLImage(const void *buf, size_t bufSize);
     
     void draw(GLRect destRect, GLRect srcRect);
     void draw(GLRect destRect);
     void draw(int x, int y);
     
-    int width();
-    int height();
+    int width() const;
+    int height() const;
 
 private:
+    void load_(const void *buf, size_t bufSize);
 	void loadTextureData_(void *texData);
 #if _WIN32
     bool loadWin32Texture_(IStream *stream);

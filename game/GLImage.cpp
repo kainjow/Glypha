@@ -85,8 +85,13 @@ bool GLImage::loadWin32Texture_(IStream *stream)
 }
 #endif
 
-GLImage::GLImage(void *buf, size_t bufSize) :
+GLImage::GLImage(const void *buf, size_t bufSize) :
     texture_(0), width_(0), height_(0)
+{
+    load_(buf, bufSize);
+}
+
+void GLImage::load_(const void *buf, size_t bufSize)
 {
 #if _WIN32
     IStream *stream = SHCreateMemStream((const BYTE*)buf, (UINT)bufSize);
@@ -216,12 +221,12 @@ void GLImage::draw(int x, int y)
     draw(GLRect(x, y, width_, height_), GLRect(0, 0, width_, height_));
 }
 
-int GLImage::width()
+int GLImage::width() const
 {
     return width_;
 }
 
-int GLImage::height()
+int GLImage::height() const
 {
     return height_;
 }
