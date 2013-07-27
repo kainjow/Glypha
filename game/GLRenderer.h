@@ -20,7 +20,7 @@ public:
     void resize(int width, int height);
     void clear();
     
-    void fillRect(const GLRect &rect);
+    void fillRect(const GLRect& rect);
     void setFillColor(int red, int green, int blue);
 
     void beginLines(float lineWidth);

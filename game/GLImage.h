@@ -25,8 +25,8 @@ public:
     void load(const void *buf, size_t bufSize);
     bool isLoaded() const;
     
-    void draw(GLRect destRect, GLRect srcRect);
-    void draw(GLRect destRect);
+    void draw(const GLRect& destRect, const GLRect& srcRect);
+    void draw(const GLRect& destRect);
     void draw(int x, int y);
     
     int width() const;

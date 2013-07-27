@@ -50,7 +50,7 @@ void GLRenderer::clear()
 	glLoadIdentity();
 }
 
-void GLRenderer::fillRect(const GLRect &rect)
+void GLRenderer::fillRect(const GLRect& rect)
 {
 	glBegin(GL_QUADS);
 	glVertex2i(rect.left(), rect.bottom());

@@ -183,7 +183,7 @@ void GLImage::loadTextureData_(void *texData)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, texData);
 }
 
-void GLImage::draw(GLRect destRect, GLRect srcRect)
+void GLImage::draw(const GLRect& destRect, const GLRect& srcRect)
 {
 	// set this texture as current
 	glEnable(GL_TEXTURE_2D);
@@ -215,7 +215,7 @@ void GLImage::draw(GLRect destRect, GLRect srcRect)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void GLImage::draw(GLRect destRect)
+void GLImage::draw(const GLRect& destRect)
 {
     draw(destRect, GLRect(0, 0, width_, height_));
 }
