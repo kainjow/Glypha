@@ -45,12 +45,9 @@
 GLGame::GLGame() :
     renderer_(new GLRenderer()),
     isPlaying(false), evenFrame(true),
-    bgImg_(NULL), torchesImg_(NULL),
     lastFlameAni(0), whichFlame1(-1), whichFlame2(-1),
     numLightningStrikes(0),
-    playerImg(NULL), playerIdleImg(NULL),
-    theKeys(kGLGameKeyNone),
-    platformImg_(NULL)
+    theKeys(kGLGameKeyNone)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -124,6 +121,15 @@ double GLGame::updateFrequency()
     return 1.0/30.0;
 }
 
+void GLGame::loadImages()
+{
+    bgImg.load(background_png, background_png_len);
+    torchesImg.load(torches_png, torches_png_len);
+    platformImg.load(platforms_png, platforms_png_len);
+    playerImg.load(player_png, player_png_len);
+    playerIdleImg.load(playerIdle_png, playerIdle_png_len);
+}
+
 void GLGame::draw()
 {
     GLRenderer *r = renderer_;
@@ -132,14 +138,12 @@ void GLGame::draw()
     r->clear();
     
     // Create images the first time
-    if (bgImg_ == NULL) {
-        bgImg_ = new GLImage(background_png, background_png_len);
-        torchesImg_ = new GLImage(torches_png, torches_png_len);
-        platformImg_ = new GLImage(platforms_png, platforms_png_len);
+    if (!bgImg.isLoaded()) {
+        loadImages();
     }
     
     // Draw the background
-    bgImg_->draw(0, 0);
+    bgImg.draw(0, 0);
     
     // Draw the torches
     if (((now - lastFlameAni) >= (1.0f/25.0f)) || (whichFlame1 == -1)) {
@@ -147,8 +151,8 @@ void GLGame::draw()
         whichFlame2 = GLUtils::randomInt(4);
         lastFlameAni = now;
     }
-    torchesImg_->draw(flameDestRects[0], flameRects[whichFlame1]);
-    torchesImg_->draw(flameDestRects[1], flameRects[whichFlame2]);
+    torchesImg.draw(flameDestRects[0], flameRects[whichFlame1]);
+    torchesImg.draw(flameDestRects[1], flameRects[whichFlame2]);
     
     // Draw lightning
     if ((numLightningStrikes > 0) && ((now - lastLightningStrike) >= (1.0f/15.0f))) {
@@ -342,22 +346,15 @@ void GLGame::drawPlayer()
 {
 	GLRect src;
 	
-    if (playerImg == NULL) {
-        playerImg = new GLImage(player_png, player_png_len);
-    }
-    if (playerIdleImg == NULL) {
-        playerIdleImg = new GLImage(playerIdle_png, playerIdle_png_len);
-    }
-    
 	if ((evenFrame) && (thePlayer.mode == kIdle)) {
-        playerIdleImg->draw(thePlayer.dest);
+        playerIdleImg.draw(thePlayer.dest);
 	} else if (thePlayer.mode == kBones) {
 		src = playerRects[thePlayer.srcNum];
 		src.setBottom(src.top() + thePlayer.frame);
-        playerImg->draw(thePlayer.dest, src);
+        playerImg.draw(thePlayer.dest, src);
 	} else {
         src = playerRects[thePlayer.srcNum];
-        playerImg->draw(thePlayer.dest, src);
+        playerImg.draw(thePlayer.dest, src);
 	}
     
 	thePlayer.wasH = thePlayer.h;
@@ -368,17 +365,17 @@ void GLGame::drawPlayer()
 void GLGame::drawPlatforms()
 {
 	if (numLedges > 3) {
-        platformImg_->draw(platformCopyRects[7], platformCopyRects[2]);
-        platformImg_->draw(platformCopyRects[8], platformCopyRects[4]);
+        platformImg.draw(platformCopyRects[7], platformCopyRects[2]);
+        platformImg.draw(platformCopyRects[8], platformCopyRects[4]);
 	} else {
-        platformImg_->draw(platformCopyRects[7], platformCopyRects[3]);
-        platformImg_->draw(platformCopyRects[8], platformCopyRects[5]);
+        platformImg.draw(platformCopyRects[7], platformCopyRects[3]);
+        platformImg.draw(platformCopyRects[8], platformCopyRects[5]);
 	}
 	
 	if (numLedges > 5) {
-        platformImg_->draw(platformCopyRects[6], platformCopyRects[0]);
+        platformImg.draw(platformCopyRects[6], platformCopyRects[0]);
 	} else {
-        platformImg_->draw(platformCopyRects[6], platformCopyRects[1]);
+        platformImg.draw(platformCopyRects[6], platformCopyRects[1]);
 	}
 }
 

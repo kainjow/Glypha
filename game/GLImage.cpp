@@ -85,13 +85,12 @@ bool GLImage::loadWin32Texture_(IStream *stream)
 }
 #endif
 
-GLImage::GLImage(const void *buf, size_t bufSize) :
+GLImage::GLImage() :
     texture_(0), width_(0), height_(0)
 {
-    load_(buf, bufSize);
 }
 
-void GLImage::load_(const void *buf, size_t bufSize)
+void GLImage::load(const void *buf, size_t bufSize)
 {
 #if _WIN32
     IStream *stream = SHCreateMemStream((const BYTE*)buf, (UINT)bufSize);
@@ -158,6 +157,11 @@ void GLImage::load_(const void *buf, size_t bufSize)
         CFRelease(data);
     }
 #endif
+}
+
+bool GLImage::isLoaded() const
+{
+    return texture_ != 0;
 }
 
 void GLImage::loadTextureData_(void *texData)

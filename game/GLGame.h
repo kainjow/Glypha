@@ -12,7 +12,7 @@
 #include "GLRect.h"
 #include "GLPoint.h"
 #include "GLRenderer.h"
-class GLImage;
+#include "GLImage.h"
 
 #define kNumLightningPts 8
 
@@ -60,11 +60,12 @@ public:
     
 private:
     GLRenderer *renderer_;
+    void loadImages();
     bool isPlaying, evenFrame, flapKeyDown;
     
-    GLImage *bgImg_;
+    GLImage bgImg;
 
-    GLImage *torchesImg_;
+    GLImage torchesImg;
     GLRect flameDestRects[2], flameRects[4];
     double lastFlameAni;
     int whichFlame1, whichFlame2;
@@ -83,8 +84,8 @@ private:
     playerType thePlayer;
     GLRect playerRects[11];
     void resetPlayer(bool initialPlace);
-    GLImage *playerImg;
-    GLImage *playerIdleImg;
+    GLImage playerImg;
+    GLImage playerIdleImg;
     void drawPlayer();
     void movePlayer();
     void handlePlayerIdle();
@@ -102,7 +103,7 @@ private:
     
     GLRect platformCopyRects[9];
     void drawPlatforms();
-    GLImage *platformImg_;
+    GLImage platformImg;
 };
 
 #endif
