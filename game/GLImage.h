@@ -1,7 +1,4 @@
 //
-//  GLImage.h
-//  Glypha
-//
 //  Created by Kevin Wojniak on 7/23/12.
 //  Copyright (c) 2012 Kevin Wojniak. All rights reserved.
 //

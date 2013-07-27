@@ -1,7 +1,4 @@
 //
-//  GLUtils.cpp
-//  Glypha
-//
 //  Created by Kevin Wojniak on 8/1/12.
 //  Copyright (c) 2012 Kevin Wojniak. All rights reserved.
 //
