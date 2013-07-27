@@ -11,6 +11,7 @@
 class GLSounds::Imp {
 public:
     Imp() {
+        loadSound(kBirdSound, bird_aif, bird_aif_len);
         loadSound(kFlapSound, flap_aif, flap_aif_len);
         loadSound(kGrateSound, grate_aif, grate_aif_len);
         loadSound(kWalkSound, walk_aif, walk_aif_len);

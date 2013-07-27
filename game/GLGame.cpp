@@ -619,7 +619,7 @@ void GLGame::checkLavaRoofCollision()
 		if (thePlayer.mode == kFalling) {
 			//PlayExternalSound(kSplashSound, kSplashPriority);
 		} else {
-			//PlayExternalSound(kBirdSound, kBirdPriority);
+            sounds.play(kBirdSound);
         }
 		thePlayer.mode = kSinking;
 	}

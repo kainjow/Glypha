@@ -29,6 +29,8 @@ extern unsigned char walk_aif[];
 extern unsigned int walk_aif_len;
 extern unsigned char screech_aif[];
 extern unsigned int screech_aif_len;
+extern unsigned char bird_aif[];
+extern unsigned int bird_aif_len;
 
 #ifdef __cplusplus
 }
