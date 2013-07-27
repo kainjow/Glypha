@@ -13,6 +13,7 @@
 #include "GLPoint.h"
 #include "GLRenderer.h"
 #include "GLImage.h"
+#include "GLSounds.h"
 
 #define kNumLightningPts 8
 
@@ -104,6 +105,8 @@ private:
     GLRect platformCopyRects[9];
     void drawPlatforms();
     GLImage platformImg;
+    
+    GLSounds sounds;
 };
 
 #endif

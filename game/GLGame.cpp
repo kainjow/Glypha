@@ -442,17 +442,17 @@ void GLGame::handlePlayerWalking()
 				thePlayer.hVel += 80;
 				if (thePlayer.hVel > desiredHVel) {
 					thePlayer.hVel = desiredHVel;
-					//PlayExternalSound(kWalkSound, kWalkPriority);
+                    sounds.play(kWalkSound);
 				} else {
-					//PlayExternalSound(kScreechSound, kScreechPriority);
+                    sounds.play(kScreechSound);
                 }
 			} else {
 				thePlayer.hVel -= 80;
 				if (thePlayer.hVel < desiredHVel) {
 					thePlayer.hVel = desiredHVel;
-					//PlayExternalSound(kWalkSound, kWalkPriority);
+                    sounds.play(kWalkSound);
 				} else {
-					//PlayExternalSound(kScreechSound, kScreechPriority);
+                    sounds.play(kScreechSound);
                 }
 			}
 		}
@@ -461,7 +461,7 @@ void GLGame::handlePlayerWalking()
 		if ((thePlayer.hVel < 4) && (thePlayer.hVel > -4)) {
 			thePlayer.hVel = 0;
 		} else {
-			//PlayExternalSound(kScreechSound, kScreechPriority);
+            sounds.play(kScreechSound);
         }
 	}
 	
@@ -598,7 +598,7 @@ void GLGame::checkTouchDownCollision()
 				thePlayer.dest.setBottom(thePlayer.dest.bottom() - offset);
 				thePlayer.dest.setTop(thePlayer.dest.top() - offset);
 				thePlayer.v = thePlayer.dest.top() << 4;
-				//PlayExternalSound(kGrateSound, kGratePriority);
+                sounds.play(kGrateSound);
 			}
 			sected = true;
 		}
@@ -632,7 +632,7 @@ void GLGame::checkLavaRoofCollision()
 		thePlayer.dest.setTop(thePlayer.dest.top() + offset);
 		thePlayer.dest.setBottom(thePlayer.dest.bottom() + offset);
 		thePlayer.v = thePlayer.dest.top() * 16;
-		//PlayExternalSound(kGrateSound, kGratePriority);
+        sounds.play(kGrateSound);
 		thePlayer.vVel = thePlayer.vVel / -2;
 	}
 }
@@ -701,7 +701,7 @@ void GLGame::checkPlatformCollision()
 					else
 						thePlayer.hVel = thePlayer.hVel >> 1;
 				}
-				//PlayExternalSound(kGrateSound, kGratePriority);
+                sounds.play(kGrateSound);
 			}
 			else
 			{
@@ -719,7 +719,7 @@ void GLGame::checkPlatformCollision()
 						thePlayer.dest.setBottom(thePlayer.dest.bottom() - offset);
 						thePlayer.v = thePlayer.dest.top() << 4;
 						if (thePlayer.vVel > kDontFlapVel) {
-							//PlayExternalSound(kGrateSound, kGratePriority);
+                            sounds.play(kGrateSound);
                         }
 						if (thePlayer.mode == kFalling)
 						{
@@ -763,7 +763,7 @@ void GLGame::checkPlatformCollision()
 						thePlayer.dest.setTop(thePlayer.dest.top() + offset);
 						thePlayer.dest.setBottom(thePlayer.dest.bottom() + offset);
 						thePlayer.v = thePlayer.dest.top() << 4;
-						//PlayExternalSound(kGrateSound, kGratePriority);
+                        sounds.play(kGrateSound);
 						if (thePlayer.vVel < 0)
 							thePlayer.vVel = -(thePlayer.vVel >> 1);
 						else
@@ -788,7 +788,7 @@ void GLGame::getPlayerInput()
             if (!flapKeyDown) {
                 thePlayer.vVel -= kFlapImpulse;
                 flapKeyDown = true;
-                //PlayExternalSound(kFlapSound, kFlapPriority);
+                sounds.play(kFlapSound);
                 thePlayer.flapping = true;
             }
         }
