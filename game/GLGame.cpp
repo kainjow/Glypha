@@ -130,7 +130,7 @@ void GLGame::loadImages()
 void GLGame::draw()
 {
     GLRenderer *r = renderer_;
-    double now = GLUtils::now();
+    double now = utils.now();
     
     r->clear();
     
@@ -144,8 +144,8 @@ void GLGame::draw()
     
     // Draw the torches
     if (((now - lastFlameAni) >= (1.0f/25.0f)) || (whichFlame1 == -1)) {
-        whichFlame1 = GLUtils::randomInt(4);
-        whichFlame2 = GLUtils::randomInt(4);
+        whichFlame1 = utils.randomInt(4);
+        whichFlame2 = utils.randomInt(4);
         lastFlameAni = now;
     }
     torchesImg.draw(flameDestRects[0], flameRects[whichFlame1]);
@@ -181,7 +181,7 @@ void GLGame::doLightning(const GLPoint& point)
     numLightningStrikes = 4;
     lightningPoint = point;
     generateLightning(lightningPoint.h, lightningPoint.v);
-    lastLightningStrike = GLUtils::now();
+    lastLightningStrike = utils.now();
 }
 
 void GLGame::generateLightning(short h, short v)
@@ -210,8 +210,8 @@ void GLGame::generateLightning(short h, short v)
 	range = kWander * 2 + 1;					// randomly scatter the points vertically…
 	for (i = 1; i < kNumLightningPts - 1; i++)	// but NOT the 1st or last points
 	{
-		leftLightningPts[i].v += GLUtils::randomInt(range) - kWander;
-		rightLightningPts[i].v += GLUtils::randomInt(range) - kWander;
+		leftLightningPts[i].v += utils.randomInt(range) - kWander;
+		rightLightningPts[i].v += utils.randomInt(range) - kWander;
 	}
 }
 
@@ -291,7 +291,7 @@ void GLGame::resetPlayer(bool initialPlace)
 	if (initialPlace)
 		location = 0;
 	else
-		location = GLUtils::randomInt(numLedges);
+		location = utils.randomInt(numLedges);
 	
 	switch (location) {
 		case 0:

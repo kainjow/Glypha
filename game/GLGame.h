@@ -11,6 +11,7 @@
 #include "GLRenderer.h"
 #include "GLImage.h"
 #include "GLSounds.h"
+#include "GLUtils.h"
 
 #define kNumLightningPts 8
 
@@ -58,6 +59,7 @@ public:
     
 private:
     GLRenderer *renderer_;
+    GLUtils utils;
     void loadImages();
     bool isPlaying, evenFrame, flapKeyDown;
     

@@ -1,6 +1,6 @@
 //
 //  Created by Kevin Wojniak on 8/1/12.
-//  Copyright (c) 2012 Kevin Wojniak. All rights reserved.
+//  Copyright (c) 2012-2013 Kevin Wojniak. All rights reserved.
 //
 
 #include "GLUtils.h"
@@ -9,22 +9,28 @@
 #include <time.h>
 #if _WIN32
 #include <strsafe.h>
-#else
-#include <sys/time.h>
 #endif
+
+GLUtils::GLUtils()
+{
+#if __APPLE__
+    mach_timebase_info_data_t timebaseInfo;
+    (void)mach_timebase_info(&timebaseInfo);
+    mach_convert = ((double)timebaseInfo.numer / (double)timebaseInfo.denom) / NSEC_PER_SEC;
+#elif _WIN32
+    (void)QueryPerformanceFrequency(&freq);
+#endif
+    
+#if _WIN32
+    srand(unsigned(time(NULL)));
+#else
+    srandom((unsigned)time(NULL));
+#endif
+}
 
 // Returns a random number from 0 - end
 int GLUtils::randomInt(int end)
 {
-	static int seeded = 0;
-	if (!seeded) {
-#if _WIN32
-        srand(unsigned(time(NULL)));
-#else
-		srandom((unsigned)time(NULL));
-#endif
-		seeded = 1;
-	}
 #if _WIN32
     return ((int)rand() % end);
 #else
@@ -36,14 +42,11 @@ int GLUtils::randomInt(int end)
 double GLUtils::now()
 {
 #if _WIN32
-    LARGE_INTEGER freq, t;
-    (void)QueryPerformanceFrequency(&freq);
+    LARGE_INTEGER t;
     (void)QueryPerformanceCounter(&t);
     return (t.QuadPart * 1000.0) / freq.QuadPart;
 #else
-    struct timeval val;
-    (void)gettimeofday(&val, NULL);
-    return (double)val.tv_sec + ((double)val.tv_usec / 1000000.0);
+    return mach_absolute_time() * mach_convert;
 #endif
 }
 
