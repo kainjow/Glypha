@@ -30,6 +30,7 @@
 {
     // Center the window, then set the autosave name. If the frame already has been saved, it'll override the centering.
     [self.window center];
+    [self.window makeKeyAndOrderFront:nil];
     [self.window setFrameAutosaveName:@"MainWindow"];
 }
 
