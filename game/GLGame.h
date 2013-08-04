@@ -79,7 +79,7 @@ private:
     double lastLightningStrike;
     GLPoint lightningPoint;
     
-    int numLedges, levelOn;
+    int numLedges, levelOn, livesLeft;
     
     playerType thePlayer;
     GLRect playerRects[11];
@@ -106,6 +106,13 @@ private:
     GLImage platformImg;
     
     GLSounds sounds;
+    
+    long theScore, wasTensOfThousands;
+    GLImage numbersImg;
+    GLRect numbersSrc[11], numbersDest[11];
+    void updateLivesNumbers();
+    void updateScoreNumbers();
+    void updateLevelNumbers();
 };
 
 #endif

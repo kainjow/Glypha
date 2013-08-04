@@ -101,6 +101,22 @@ GLGame::GLGame() :
 		touchDownRects[i].setTop(touchDownRects[i].bottom() - 11);
 	}
 	
+    for (int i = 0; i < 11; i++) {
+		numbersSrc[i].setSize(8, 11);
+		numbersSrc[i].offsetBy(0, 11 * i);
+        numbersDest[i].setSize(8, 11);
+	}
+    numbersDest[0].offsetBy(229, 443);	// # of lives digit 1
+	numbersDest[1].offsetBy(237, 443);	// # of lives digit 2
+	numbersDest[2].offsetBy(293, 443);	// score digit 1
+	numbersDest[3].offsetBy(301, 443);	// score digit 2
+	numbersDest[4].offsetBy(309, 443);	// score digit 3
+	numbersDest[5].offsetBy(317, 443);	// score digit 4
+	numbersDest[6].offsetBy(325, 443);	// score digit 5
+	numbersDest[7].offsetBy(333, 443);	// score digit 6
+	numbersDest[8].offsetBy(381, 443);	// # of level digit 1
+	numbersDest[9].offsetBy(389, 443);	// # of level digit 2
+	numbersDest[10].offsetBy(397, 443);	// # of level digit 3
 }
 
 GLGame::~GLGame()
@@ -125,6 +141,7 @@ void GLGame::loadImages()
     platformImg.load(platforms_png, platforms_png_len);
     playerImg.load(player_png, player_png_len);
     playerIdleImg.load(playerIdle_png, playerIdle_png_len);
+    numbersImg.load(numbers_png, numbers_png_len);
 }
 
 void GLGame::draw()
@@ -165,6 +182,9 @@ void GLGame::draw()
         drawPlatforms();
         movePlayer();
         drawPlayer();
+        updateLivesNumbers();
+        updateScoreNumbers();
+        updateLevelNumbers();
         getPlayerInput();
     }
     
@@ -242,6 +262,8 @@ void GLGame::newGame()
 {
 	numLedges = 3;
 	levelOn = 0;
+    livesLeft = kInitNumLives;
+    theScore = 0L;
     isPlaying = true;
     
     setUpLevel();
@@ -869,4 +891,90 @@ void GLGame::handleKeyDownEvent(GLGameKey key)
 void GLGame::handleKeyUpEvent(GLGameKey key)
 {
     theKeys &= ~key;
+}
+
+void GLGame::updateLivesNumbers()
+{
+	short digit;
+	
+	digit = (livesLeft - 1) / 10;
+	digit = digit % 10L;
+	if ((digit == 0) && ((livesLeft - 1) < 100)) {
+		digit = 10;
+    }
+    numbersImg.draw(numbersDest[0], numbersSrc[digit]);
+	
+	digit = (livesLeft - 1) % 10;
+    numbersImg.draw(numbersDest[1], numbersSrc[digit]);
+}
+
+void GLGame::updateScoreNumbers()
+{
+	long digit;
+	
+	digit = theScore / 100000L;
+	digit = digit % 10L;
+	if ((digit == 0) && (theScore < 1000000L)) {
+		digit = 10;
+    }
+    numbersImg.draw(numbersDest[2], numbersSrc[digit]);
+	
+	digit = theScore / 10000L;
+	if (digit > wasTensOfThousands) {
+		livesLeft++;
+		updateLivesNumbers();
+		wasTensOfThousands = digit;
+	}
+	
+	digit = digit % 10L;
+	if ((digit == 0) && (theScore < 100000L)) {
+		digit = 10;
+    }
+    numbersImg.draw(numbersDest[3], numbersSrc[digit]);
+	
+	digit = theScore / 1000L;
+	digit = digit % 10L;
+	if ((digit == 0) && (theScore < 10000L)) {
+		digit = 10;
+    }
+    numbersImg.draw(numbersDest[4], numbersSrc[digit]);
+	
+	digit = theScore / 100L;
+	digit = digit % 10L;
+	if ((digit == 0) && (theScore < 1000L)) {
+		digit = 10;
+    }
+    numbersImg.draw(numbersDest[5], numbersSrc[digit]);
+	
+	digit = theScore / 10L;
+	digit = digit % 10L;
+	if ((digit == 0) && (theScore < 100L)) {
+		digit = 10;
+    }
+    numbersImg.draw(numbersDest[6], numbersSrc[digit]);
+	
+	digit = theScore % 10L;
+    numbersImg.draw(numbersDest[7], numbersSrc[digit]);
+}
+
+void GLGame::updateLevelNumbers()
+{
+	short digit;
+	
+	digit = (levelOn + 1) / 100;
+	digit = digit % 10L;
+	if ((digit == 0) && ((levelOn + 1) < 1000)) {
+		digit = 10;
+    }
+    numbersImg.draw(numbersDest[8], numbersSrc[digit]);
+	
+	digit = (levelOn + 1) / 10;
+	digit = digit % 10L;
+	if ((digit == 0) && ((levelOn + 1) < 100)) {
+		digit = 10;
+    }
+    numbersImg.draw(numbersDest[9], numbersSrc[digit]);
+	
+	digit = (levelOn + 1) % 10;
+    numbersImg.draw(numbersDest[10], numbersSrc[digit]);
 }

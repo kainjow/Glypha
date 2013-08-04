@@ -20,6 +20,8 @@ extern unsigned char playerIdle_png[];
 extern unsigned int playerIdle_png_len;
 extern unsigned char platforms_png[];
 extern unsigned int platforms_png_len;
+extern unsigned char numbers_png[];
+extern unsigned int numbers_png_len;
     
 extern unsigned char flap_aif[];
 extern unsigned int flap_aif_len;

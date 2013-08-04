@@ -11,6 +11,7 @@
 		A507316017A459A7009D9D07 /* walk.c in Sources */ = {isa = PBXBuildFile; fileRef = A507315F17A459A7009D9D07 /* walk.c */; };
 		A507316217A45CA1009D9D07 /* screech.c in Sources */ = {isa = PBXBuildFile; fileRef = A507316117A45CA1009D9D07 /* screech.c */; };
 		A507316617A47F01009D9D07 /* bird.c in Sources */ = {isa = PBXBuildFile; fileRef = A507316517A47F01009D9D07 /* bird.c */; };
+		A544F11417AEEF7600DBD389 /* numbers.c in Sources */ = {isa = PBXBuildFile; fileRef = A544F11317AEEF7600DBD389 /* numbers.c */; };
 		A54B601315B7CB560072674A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54B601215B7CB560072674A /* Cocoa.framework */; };
 		A54B602615B7CB570072674A /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A54B602515B7CB570072674A /* AppController.mm */; };
 		A54B602915B7CB570072674A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A54B602715B7CB570072674A /* MainMenu.xib */; };
@@ -36,6 +37,7 @@
 		A507316117A45CA1009D9D07 /* screech.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = screech.c; path = ../themes/glyphaiii/sounds/screech.c; sourceTree = "<group>"; };
 		A507316517A47F01009D9D07 /* bird.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bird.c; path = ../themes/glyphaiii/sounds/bird.c; sourceTree = "<group>"; };
 		A50CB6E115D1736600126032 /* GLPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLPoint.h; sourceTree = "<group>"; };
+		A544F11317AEEF7600DBD389 /* numbers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = numbers.c; path = ../themes/glyphaiii/images/numbers.c; sourceTree = "<group>"; };
 		A54B600E15B7CB560072674A /* Glypha III.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Glypha III.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A54B601215B7CB560072674A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		A54B601A15B7CB570072674A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 				A5834CE9167840F30018CE0C /* player.c */,
 				A5834CEB1678450F0018CE0C /* playerIdle.c */,
 				A5E62C2A170FEF2200BFEEE3 /* platforms.c */,
+				A544F11317AEEF7600DBD389 /* numbers.c */,
 				A5DE5FB717A454540063FE8E /* flap.c */,
 				A507315D17A45933009D9D07 /* grate.c */,
 				A507315F17A459A7009D9D07 /* walk.c */,
@@ -228,6 +231,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A544F11417AEEF7600DBD389 /* numbers.c in Sources */,
 				A507316017A459A7009D9D07 /* walk.c in Sources */,
 				A5DE5FB817A454540063FE8E /* flap.c in Sources */,
 				A5DE5FB617A451E00063FE8E /* GLSounds.mm in Sources */,
