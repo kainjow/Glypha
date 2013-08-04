@@ -86,9 +86,10 @@
     if (!game_) {
         return;
     }
-	[[self openGLContext] makeCurrentContext];
+    NSOpenGLContext *ctx = [self openGLContext];
+	[ctx makeCurrentContext];
 	game_->draw();
-	[[self openGLContext] flushBuffer];
+	[ctx flushBuffer];
 }
 
 - (void)mouseDown:(NSEvent *)event
