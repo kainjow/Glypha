@@ -45,8 +45,14 @@ double GLUtils::now()
     LARGE_INTEGER t;
     (void)QueryPerformanceCounter(&t);
     return (t.QuadPart * 1000.0) / freq.QuadPart;
-#else
+#elif __APPLE__
     return mach_absolute_time() * mach_convert;
+#elif __HAIKU__
+	struct timespec t;
+	(void)clock_gettime(CLOCK_MONOTONIC, &t);
+	return (double)t.tv_sec + (t.tv_nsec * 1000000000.0);
+#else
+	#error unknown platform
 #endif
 }
 

@@ -10,8 +10,10 @@
 #if _WIN32
 #include <windows.h>
 #include <gl/gl.h>
-#else
+#elif __APPLE__
 #include <OpenGL/OpenGL.h>
+#elif __HAIKU__
+#include <GL/gl.h>
 #endif
 #include "GLRect.h"
 
