@@ -28,6 +28,7 @@ private:
     void onRender();
     void onResize(UINT width, UINT height);
     void onMenu(WORD cmd);
+    void onKey(DWORD key, bool down);
 };
 
 AppController::AppController()
@@ -132,6 +133,28 @@ void AppController::run()
     }
 }
 
+void AppController::onKey(DWORD key, bool down)
+{
+    GLGameKey gameKey;
+    switch (key) {
+    case VK_SPACE: gameKey = kGLGameKeySpacebar; break;
+    case VK_DOWN: gameKey = kGLGameKeyDownArrow; break;
+    case VK_LEFT: gameKey = kGLGameKeyLeftArrow; break;
+    case VK_RIGHT: gameKey = kGLGameKeyRightArrow; break;
+    case 'A': gameKey = kGLGameKeyA; break;
+    case 'S': gameKey = kGLGameKeyS; break;
+    case VK_OEM_1: gameKey = kGLGameKeyColon; break;
+    case VK_OEM_7: gameKey = kGLGameKeyQuote; break;
+    default:
+	    return;
+    }
+    if (down) {
+	    game.handleKeyDownEvent(gameKey);
+    } else {
+	    game.handleKeyUpEvent(gameKey);
+    }
+}
+
 LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     LRESULT result = 0;
@@ -178,6 +201,13 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
                 result = 1;
                 wasHandled = true;
                 break;
+
+            case WM_KEYDOWN:
+            case WM_KEYUP:
+	            appController->onKey(wParam, message == WM_KEYDOWN);
+	            result = 0;
+	            wasHandled = true;
+	            break;
             }
         }
 
