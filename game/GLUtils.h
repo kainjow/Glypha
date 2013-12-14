@@ -21,7 +21,7 @@ public:
     double now();
 
 #if _WIN32
-    void win32_log(LPCWSTR format, ...);
+    static void win32_log(LPCWSTR format, ...);
 #endif
     
 private:
