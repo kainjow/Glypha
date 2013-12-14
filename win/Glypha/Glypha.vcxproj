@@ -80,8 +80,13 @@
     <ClCompile Include="..\..\game\GLImage.cpp" />
     <ClCompile Include="..\..\game\GLRect.cpp" />
     <ClCompile Include="..\..\game\GLRenderer.cpp" />
+    <ClCompile Include="..\..\game\GLSounds.cpp" />
     <ClCompile Include="..\..\game\GLUtils.cpp" />
     <ClCompile Include="..\..\themes\glyphaiii\images\background.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\images\numbers.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\images\platforms.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\images\player.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\images\playerIdle.c" />
     <ClCompile Include="..\..\themes\glyphaiii\images\torches.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -92,6 +97,7 @@
     <ClInclude Include="..\..\game\GLRect.h" />
     <ClInclude Include="..\..\game\GLRenderer.h" />
     <ClInclude Include="..\..\game\GLResources.h" />
+    <ClInclude Include="..\..\game\GLSounds.h" />
     <ClInclude Include="..\..\game\GLUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

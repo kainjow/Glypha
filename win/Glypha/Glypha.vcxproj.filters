@@ -38,6 +38,21 @@
     <ClCompile Include="..\..\game\GLRenderer.cpp">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\game\GLSounds.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\images\numbers.c">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\images\platforms.c">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\images\player.c">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\images\playerIdle.c">
+      <Filter>resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\game\GLPoint.h">
@@ -59,6 +74,9 @@
       <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="..\..\game\GLRenderer.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\game\GLSounds.h">
       <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
