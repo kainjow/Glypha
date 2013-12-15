@@ -79,5 +79,13 @@
     <ClInclude Include="..\..\game\GLSounds.h">
       <Filter>game</Filter>
     </ClInclude>
+    <ClInclude Include="..\resources.h">
+      <Filter>win</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\resources.rc">
+      <Filter>win</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

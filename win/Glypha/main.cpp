@@ -2,13 +2,7 @@
 #include <gl/gL.h>
 #include "../../game/GLGame.h"
 #include "../../game/GLUtils.h"
-
-enum {
-    kMenuNewGame = 9001,
-    kMenuPauseGame = 9002,
-    kMenuEndGame = 9003,
-    kMenuExit = 9004
-};
+#include "resources.h"
 
 class AppController {
 public:
@@ -19,10 +13,11 @@ public:
 private:
     HINSTANCE hInstance;
     HWND win;
+    HACCEL accelerators;
     GLGame game;
 
     HGLRC hRC;
-    HDC hDC;  
+    HDC hDC;
 
     static LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     void onRender();
@@ -51,7 +46,14 @@ bool AppController::init(HINSTANCE hInstance)
     winClass.hInstance = hInstance;
     winClass.hCursor = LoadCursor(NULL, IDI_APPLICATION);
     winClass.lpszClassName = L"MainWindow";
-    if (RegisterClassEx(&winClass) == 0) {
+    winClass.lpszMenuName = MAKEINTRESOURCEW(IDR_MAINMENU);
+    if (RegisterClassExW(&winClass) == 0) {
+        return false;
+    }
+
+    // Load the accelerators from the resource file so menu keyboard shortcuts work.
+    accelerators = LoadAcceleratorsW(hInstance, MAKEINTRESOURCEW(ID_MENU_ACCELERATORS));
+    if (accelerators == NULL) {
         return false;
     }
 
@@ -59,7 +61,7 @@ bool AppController::init(HINSTANCE hInstance)
     int w = 640, h = 460;
     int x = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
     int y = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
-    win = CreateWindow(winClass.lpszClassName, L"Glypha III", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, w, h, NULL, NULL, hInstance, this);
+    win = CreateWindowW(winClass.lpszClassName, L"Glypha III", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX, x, y, w, h, NULL, NULL, hInstance, this);
     if (win == NULL) {
         return false;
     }
@@ -81,27 +83,6 @@ bool AppController::init(HINSTANCE hInstance)
     if (hRC == NULL || wglMakeCurrent(hDC, hRC) == FALSE) {
         return false;
     }
-
-    // Create menubar
-    HMENU mainMenu = CreateMenu();
-    HMENU subMenu = CreatePopupMenu();
-    AppendMenu(subMenu, MF_STRING, kMenuNewGame, L"&New Game");
-    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuPauseGame, L"&Pause Game");
-    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuEndGame, L"&End Game");
-    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
-    AppendMenu(subMenu, MF_STRING, kMenuExit, L"E&xit");
-    AppendMenu(mainMenu, MF_STRING | MF_POPUP, (UINT_PTR)subMenu, L"&Game");
-    subMenu = CreatePopupMenu();
-    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuNewGame, L"&Help");
-    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
-    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuNewGame, L"High &Scores");
-    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuPauseGame, L"&Reset Scores\u2026");
-    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
-    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuExit, L"N&o Sound");
-    AppendMenu(subMenu, MF_SEPARATOR, 0, NULL);
-    AppendMenu(subMenu, MF_STRING | MF_GRAYED, kMenuExit, L"&About Glypha III\u2026");
-    AppendMenu(mainMenu, MF_STRING | MF_POPUP, (UINT_PTR)subMenu, L"&Options");
-    SetMenu(win, mainMenu);
 
     // Readjust the window so the client size matches our desired size
     RECT rcClient, rcWindow;
@@ -128,8 +109,11 @@ void AppController::run()
 {
     MSG msg;
     while (GetMessageW(&msg, NULL, 0, 0)) {
-        (void)TranslateMessage(&msg);
-        (void)DispatchMessageW(&msg);
+        // Check for keystrokes for the menus
+        if (!TranslateAcceleratorW(win, accelerators, &msg)) {
+            (void)TranslateMessage(&msg);
+            (void)DispatchMessageW(&msg);
+        }
     }
 }
 
@@ -178,7 +162,7 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
             case WM_DISPLAYCHANGE:
             case WM_TIMER:
-                (void)InvalidateRect(hwnd, NULL, TRUE);
+                (void)InvalidateRect(hwnd, NULL, FALSE);
                 result = 0;
                 wasHandled = true;
                 break;
@@ -233,10 +217,10 @@ void AppController::onResize(UINT width, UINT height)
 void AppController::onMenu(WORD cmd)
 {
     switch(cmd) {
-    case kMenuNewGame:
+    case ID_MENU_NEW_GAME:
         game.newGame();
         break;
-    case kMenuExit:
+    case ID_MENU_EXIT:
         PostMessage(win, WM_CLOSE, 0, 0);
         break;
     }
