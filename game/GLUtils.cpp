@@ -59,13 +59,13 @@ double GLUtils::now()
 #if _WIN32
 // Handy function for logging. Works like printf() but outputs
 // to the debugger window since we have no console in a Win32 GUI.
-void GLUtils::win32_log(LPCWSTR format, ...)
+void GLUtils::log(LPCWSTR format, ...)
 {
     WCHAR buf[200];
     va_list ap;
     va_start(ap, format);
-    (void)StringCbVPrintf(buf, sizeof(buf)/sizeof(buf[0]), format, ap);
+    (void)StringCbVPrintfW(buf, sizeof(buf)/sizeof(buf[0]), format, ap);
     va_end(ap);
-    OutputDebugString(buf);
+    OutputDebugStringW(buf);
 }
 #endif

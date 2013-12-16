@@ -5,11 +5,13 @@
 
 #include "GLSounds.h"
 #include "GLResources.h"
+#include "GLUtils.h"
 #if _WIN32
 #include <windows.h>
 #include <cstdint>
 #include <cstring>
 #include <cstdio>
+#include <vector>
 #endif
 
 #if _WIN32
@@ -28,15 +30,15 @@ private:
 struct WaveData {
 public:
     WAVEFORMATEX format;
-    WAVEHDR header;
     char *data;
     size_t dataLen;
+    bool playing;
     WaveData()
         : data(nullptr)
         , dataLen(0)
+        , playing(false)
     {
         ZeroMemory(&format, sizeof(format));
-        ZeroMemory(&header, sizeof(header));
     }
 };
 
@@ -146,8 +148,7 @@ bool aiffDataToWave(const uint8_t *data, unsigned dataLen, WaveData &output)
                 // This code only supports 8-bit mono.
                 return false;
             }
-        }
-        else if (std::memcmp(chunkHeader, fourccChunkSsnd, 4) == 0) {
+        } else if (std::memcmp(chunkHeader, fourccChunkSsnd, 4) == 0) {
             // We make the assumption that the SSND chunk comes after the COMM chunk. This isn't required for AIFF files though.
             sampleDataLen = (sampleSize / 8) * numSampleFrames * numChannels;
             ssndChunkLen = sampleDataLen + 8;
@@ -177,58 +178,92 @@ bool aiffDataToWave(const uint8_t *data, unsigned dataLen, WaveData &output)
     }
     delete[] sampleData;
 
-    // Setup the structures used by the waveXxx functions
+    // Setup the structure used by the waveXxx functions
     output.format.wFormatTag = WAVE_FORMAT_PCM;
     output.format.nChannels = numChannels;
     output.format.wBitsPerSample = sampleSize;
     output.format.nAvgBytesPerSec = output.format.nSamplesPerSec = sampleRate * (sampleSize / 8);
     output.format.nBlockAlign = (output.format.nChannels * output.format.wBitsPerSample) / 8;
-    output.header.lpData = waveSampleData;
-    output.header.dwBufferLength = sampleDataLen;
+    output.data = waveSampleData;
+    output.dataLen = sampleDataLen;
 
     return true;
 }
 
-void CALLBACK wave_output(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
+// WaveOut is a C++ wrapper around the waveXxx functions.
+class WaveOut {
+public:
+    WaveOut();
+    bool play(const WaveData &wave);
+
+private:
+    bool open_;
+    HWAVEOUT handle_;
+    bool playing_;
+    WAVEHDR header_;
+    void doneCallback();
+    friend void CALLBACK waveOutCallback(HWAVEOUT, UINT, DWORD_PTR, DWORD_PTR, DWORD_PTR);
+};
+
+void CALLBACK waveOutCallback(HWAVEOUT wvHandle, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
 {
     if (uMsg == WOM_DONE) {
-        BOOL *waiter = (BOOL*)dwInstance;
-        *waiter = true;
+        ((WaveOut*)dwInstance)->doneCallback();
     }
 }
 
-void playWaveData(WaveData &data)
+WaveOut::WaveOut()
+    : open_(false)
+    , handle_(nullptr)
+    , playing_(false)
 {
+}
+
+bool WaveOut::play(const WaveData &wave)
+{
+    if (playing_) {
+        return false;
+    }
     MMRESULT res;
-    HWAVEOUT wvHandle;
-    BOOL waiter = false;
-    if ((res = waveOutOpen(&wvHandle, WAVE_MAPPER, &data.format, (DWORD_PTR)wave_output, (DWORD_PTR)&waiter, CALLBACK_FUNCTION)) != MMSYSERR_NOERROR) {
-        printf("waveOutOpen failed: %u\n", res);
-        return;
+    if (!open_) {
+        res = waveOutOpen(&handle_, WAVE_MAPPER, &wave.format, (DWORD_PTR)waveOutCallback, (DWORD_PTR)this, CALLBACK_FUNCTION);
+        if (res != MMSYSERR_NOERROR) {
+            GLUtils::log(L"waveOutOpen failed: %u\n", res);
+            return false;
+        }
+        open_ = true;
     }
-    if ((res = waveOutPrepareHeader(wvHandle, &data.header, sizeof(data.header))) != MMSYSERR_NOERROR) {
-        printf("waveOutPrepareHeader failed: %u\n", res);
-    } else {
-        if ((res = waveOutWrite(wvHandle, &data.header, sizeof(data.header))) != MMSYSERR_NOERROR) {
-            printf("waveOutWrite failed: %u\n", res);
-        } else {
-            // TODO: this is a hack. Should use a condition/event.
-            while (!waiter) {
-                Sleep(100);
-            }
-        }
-        if ((res = waveOutUnprepareHeader(wvHandle, &data.header, sizeof(data.header))) != MMSYSERR_NOERROR) {
-            printf("waveOutUnprepareHeader failed: %u\n", res);
-        }
-        if ((res = waveOutClose(wvHandle)) != MMSYSERR_NOERROR) {
-            printf("waveOutClose failed: %u\n", res);
-        }
+    ZeroMemory(&header_, sizeof(header_));
+    header_.lpData = wave.data;
+    header_.dwBufferLength = wave.dataLen;
+    res = waveOutPrepareHeader(handle_, &header_, sizeof(header_));
+    if (res != MMSYSERR_NOERROR) {
+        GLUtils::log(L"waveOutPrepareHeader failed: %u\n", res);
+        return false;
     }
+    res = waveOutWrite(handle_, &header_, sizeof(header_));
+    if (res != MMSYSERR_NOERROR) {
+        GLUtils::log(L"waveOutWrite failed: %u\n", res);
+        return false;
+    }
+    playing_ = true;
+    return true;
+}
+
+void WaveOut::doneCallback()
+{
+    MMRESULT res = waveOutUnprepareHeader(handle_, &header_, sizeof(header_));
+    if (res != MMSYSERR_NOERROR) {
+        GLUtils::log(L"waveOutUnprepareHeader failed: %u\n", res);
+    }
+    playing_ = false;
 }
 
 class GLSounds::Imp {
 public:
-    Imp() {
+    Imp()
+        : outs_(3) // up to 3 simultaneous sounds
+    {
         loadSound(kBirdSound, bird_aif, bird_aif_len);
         loadSound(kFlapSound, flap_aif, flap_aif_len);
         loadSound(kGrateSound, grate_aif, grate_aif_len);
@@ -237,15 +272,27 @@ public:
     }
 
     void play(int which) {
-        playWaveData(wavs_[which]);
+        bool didPlay = false;
+        for (auto &out : outs_) {
+            if (out.play(wavs_[which])) {
+                didPlay = true;
+                break;
+            }
+        }
+        if (!didPlay) {
+            GLUtils::log(L"Didn't play %d\n", which);
+        }
     }
 
 private:
     void loadSound(int which, const unsigned char *buf, unsigned bufLen) {
-        (void)aiffDataToWave(buf, bufLen, wavs_[which]);
+        if (!aiffDataToWave(buf, bufLen, wavs_[which])) {
+            GLUtils::log(L"Can't load sound %d\n", which);
+        }
     }
 
     WaveData wavs_[kMaxSounds];
+    std::vector<WaveOut> outs_;
 };
 #endif
 
