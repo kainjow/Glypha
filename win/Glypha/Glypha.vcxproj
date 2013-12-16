@@ -51,11 +51,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;windowscodecs.lib;shlwapi.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;windowscodecs.lib;shlwapi.lib;gdiplus.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -88,6 +89,11 @@
     <ClCompile Include="..\..\themes\glyphaiii\images\player.c" />
     <ClCompile Include="..\..\themes\glyphaiii\images\playerIdle.c" />
     <ClCompile Include="..\..\themes\glyphaiii\images\torches.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\bird.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\flap.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\grate.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\screech.c" />
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\walk.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

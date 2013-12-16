@@ -5,11 +5,260 @@
 
 #include "GLSounds.h"
 #include "GLResources.h"
+#if _WIN32
+#include <windows.h>
+#include <cstdint>
+#include <cstring>
+#include <cstdio>
+#endif
 
-GLSounds::GLSounds()
+#if _WIN32
+class BufferReader {
+public:
+    BufferReader(const uint8_t *data, size_t dataLen);
+    unsigned read(uint8_t *data, size_t count);
+    bool seek(size_t offset);
+    unsigned offset();
+private:
+    const uint8_t *data_;
+    size_t dataLen_;
+    size_t offset_;
+};
+
+struct WaveData {
+public:
+    WAVEFORMATEX format;
+    WAVEHDR header;
+    char *data;
+    size_t dataLen;
+    WaveData()
+        : data(nullptr)
+        , dataLen(0)
+    {
+        ZeroMemory(&format, sizeof(format));
+        ZeroMemory(&header, sizeof(header));
+    }
+};
+
+BufferReader::BufferReader(const uint8_t *data, size_t dataLen)
+: data_(data)
+, dataLen_(dataLen)
+, offset_(0)
 {
 }
 
-void GLSounds::play(int)
+size_t BufferReader::read(uint8_t *data, size_t count)
 {
+    if (offset_ + count > dataLen_) {
+        count = dataLen_ - offset_;
+    }
+    std::memcpy(data, data_ + offset_, count);
+    offset_ += count;
+    return count;
+}
+
+bool BufferReader::seek(size_t offset)
+{
+    if (offset > dataLen_) {
+        return false;
+    }
+    offset_ = offset;
+    return true;
+}
+
+unsigned BufferReader::offset()
+{
+    return offset_;
+}
+
+uint32_t read32BigEndian(const uint8_t *data)
+{
+    uint32_t val = 0;
+    val |= (uint32_t)data[3];
+    val |= (uint32_t)data[2] << 8;
+    val |= (uint32_t)data[1] << 16;
+    val |= (uint32_t)data[0] << 24;
+    return val;
+}
+
+uint16_t read16BigEndian(const uint8_t *data)
+{
+    uint16_t val = 0;
+    val |= (uint16_t)data[1];
+    val |= (uint16_t)data[0] << 8;
+    return val;
+}
+
+// Converts an 80 bit IEEE Standard 754 floating point number to an unsigned long.
+uint32_t read80Float(const uint8_t *data)
+{
+    uint32_t mantissa = read32BigEndian(data + 2);
+    uint8_t exp = 30 - *(data + 1);
+    uint32_t last = 0;
+    while (exp--) {
+        last = mantissa;
+        mantissa >>= 1;
+    }
+    if (last & 1) {
+        mantissa++;
+    }
+    return mantissa;
+}
+
+bool aiffDataToWave(const uint8_t *data, unsigned dataLen, WaveData &output)
+{
+    BufferReader reader(data, dataLen);
+    uint16_t numChannels = 0;
+    uint32_t numSampleFrames = 0;
+    uint16_t sampleSize = 0;
+    uint32_t sampleRate = 0;
+    size_t sampleDataLen = 0;
+    size_t ssndChunkLen = 0;
+    uint8_t *sampleData = nullptr;
+
+    // Check header
+    const uint8_t fourccForm[4] = { 'F', 'O', 'R', 'M' };
+    const uint8_t fourccAiff[4] = { 'A', 'I', 'F', 'F' };
+    uint8_t header[12];
+    if (reader.read(header, sizeof(header)) != sizeof(header) ||
+        std::memcmp(header, fourccForm, sizeof(fourccForm)) != 0 ||
+        std::memcmp(header + 8, fourccAiff, sizeof(fourccAiff)) != 0) {
+        return false;
+    }
+
+    // Read chunks
+    const uint8_t fourccChunkComm[4] = { 'C', 'O', 'M', 'M' };
+    const uint8_t fourccChunkSsnd[4] = { 'S', 'S', 'N', 'D' };
+    uint8_t chunkHeader[8];
+    while (reader.read(chunkHeader, sizeof(chunkHeader)) == sizeof(chunkHeader)) {
+        uint32_t chunkLen = read32BigEndian(chunkHeader + 4);
+        size_t chunkOffset = reader.offset();
+        if (std::memcmp(chunkHeader, fourccChunkComm, 4) == 0) {
+            uint8_t commData[18];
+            if (chunkLen != sizeof(commData) || reader.read(commData, sizeof(commData)) != sizeof(commData)) {
+                return false;
+            }
+            numChannels = read16BigEndian(commData);
+            numSampleFrames = read32BigEndian(commData + 2);
+            sampleSize = read16BigEndian(commData + 6);
+            sampleRate = read80Float(commData + 8);
+            if (sampleSize != 8 || numChannels != 1) {
+                // This code only supports 8-bit mono.
+                return false;
+            }
+        }
+        else if (std::memcmp(chunkHeader, fourccChunkSsnd, 4) == 0) {
+            // We make the assumption that the SSND chunk comes after the COMM chunk. This isn't required for AIFF files though.
+            sampleDataLen = (sampleSize / 8) * numSampleFrames * numChannels;
+            ssndChunkLen = sampleDataLen + 8;
+            if (chunkLen != ssndChunkLen) {
+                return false;
+            }
+            sampleData = new uint8_t[ssndChunkLen];
+            if (reader.read(sampleData, ssndChunkLen) != ssndChunkLen) {
+                delete[] sampleData;
+                return false;
+            }
+        }
+        if (!reader.seek(chunkOffset + chunkLen)) {
+            break;
+        }
+    }
+
+    if (numChannels == 0 || numSampleFrames == 0 || sampleSize == 0 || sampleRate == 0 || sampleData == nullptr) {
+        return false;
+    }
+
+    // convert PCM samples from AIFF (0 - 255) to WAVE (-127 to +127)
+    char *waveSampleData = new char[sampleDataLen];
+    for (size_t i = 0; i < sampleDataLen; ++i) {
+        unsigned char c = sampleData[i];
+        waveSampleData[i] = c - 128;
+    }
+    delete[] sampleData;
+
+    // Setup the structures used by the waveXxx functions
+    output.format.wFormatTag = WAVE_FORMAT_PCM;
+    output.format.nChannels = numChannels;
+    output.format.wBitsPerSample = sampleSize;
+    output.format.nAvgBytesPerSec = output.format.nSamplesPerSec = sampleRate * (sampleSize / 8);
+    output.format.nBlockAlign = (output.format.nChannels * output.format.wBitsPerSample) / 8;
+    output.header.lpData = waveSampleData;
+    output.header.dwBufferLength = sampleDataLen;
+
+    return true;
+}
+
+void CALLBACK wave_output(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
+{
+    if (uMsg == WOM_DONE) {
+        BOOL *waiter = (BOOL*)dwInstance;
+        *waiter = true;
+    }
+}
+
+void playWaveData(WaveData &data)
+{
+    MMRESULT res;
+    HWAVEOUT wvHandle;
+    BOOL waiter = false;
+    if ((res = waveOutOpen(&wvHandle, WAVE_MAPPER, &data.format, (DWORD_PTR)wave_output, (DWORD_PTR)&waiter, CALLBACK_FUNCTION)) != MMSYSERR_NOERROR) {
+        printf("waveOutOpen failed: %u\n", res);
+        return;
+    }
+    if ((res = waveOutPrepareHeader(wvHandle, &data.header, sizeof(data.header))) != MMSYSERR_NOERROR) {
+        printf("waveOutPrepareHeader failed: %u\n", res);
+    } else {
+        if ((res = waveOutWrite(wvHandle, &data.header, sizeof(data.header))) != MMSYSERR_NOERROR) {
+            printf("waveOutWrite failed: %u\n", res);
+        } else {
+            // TODO: this is a hack. Should use a condition/event.
+            while (!waiter) {
+                Sleep(100);
+            }
+        }
+        if ((res = waveOutUnprepareHeader(wvHandle, &data.header, sizeof(data.header))) != MMSYSERR_NOERROR) {
+            printf("waveOutUnprepareHeader failed: %u\n", res);
+        }
+        if ((res = waveOutClose(wvHandle)) != MMSYSERR_NOERROR) {
+            printf("waveOutClose failed: %u\n", res);
+        }
+    }
+}
+
+class GLSounds::Imp {
+public:
+    Imp() {
+        loadSound(kBirdSound, bird_aif, bird_aif_len);
+        loadSound(kFlapSound, flap_aif, flap_aif_len);
+        loadSound(kGrateSound, grate_aif, grate_aif_len);
+        loadSound(kWalkSound, walk_aif, walk_aif_len);
+        loadSound(kScreechSound, screech_aif, screech_aif_len);
+    }
+
+    void play(int which) {
+        playWaveData(wavs_[which]);
+    }
+
+private:
+    void loadSound(int which, const unsigned char *buf, unsigned bufLen) {
+        (void)aiffDataToWave(buf, bufLen, wavs_[which]);
+    }
+
+    WaveData wavs_[kMaxSounds];
+};
+#endif
+
+GLSounds::GLSounds()
+#if _WIN32
+    : imp(new Imp)
+#endif
+{
+}
+
+void GLSounds::play(int which)
+{
+#if _WIN32
+    imp->play(which);
+#endif
 }

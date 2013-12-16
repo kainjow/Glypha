@@ -53,6 +53,21 @@
     <ClCompile Include="..\..\themes\glyphaiii\images\playerIdle.c">
       <Filter>resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\bird.c">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\flap.c">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\grate.c">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\screech.c">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\themes\glyphaiii\sounds\walk.c">
+      <Filter>resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\game\GLPoint.h">
