@@ -23,7 +23,7 @@ private:
     void onRender();
     void onResize(UINT width, UINT height);
     void onMenu(WORD cmd);
-    void onKey(DWORD key, bool down);
+    void onKey(WPARAM key, bool down);
 };
 
 AppController::AppController()
@@ -128,7 +128,7 @@ void AppController::run()
     }
 }
 
-void AppController::onKey(DWORD key, bool down)
+void AppController::onKey(WPARAM key, bool down)
 {
     GLGameKey gameKey;
     switch (key) {

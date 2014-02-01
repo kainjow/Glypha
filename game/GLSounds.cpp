@@ -18,9 +18,9 @@
 class BufferReader {
 public:
     BufferReader(const uint8_t *data, size_t dataLen);
-    unsigned read(uint8_t *data, size_t count);
+    size_t read(uint8_t *data, size_t count);
     bool seek(size_t offset);
-    unsigned offset();
+    size_t offset();
 private:
     const uint8_t *data_;
     size_t dataLen_;
@@ -68,7 +68,7 @@ bool BufferReader::seek(size_t offset)
     return true;
 }
 
-unsigned BufferReader::offset()
+size_t BufferReader::offset()
 {
     return offset_;
 }
@@ -235,7 +235,7 @@ bool WaveOut::play(const WaveData &wave)
     }
     ZeroMemory(&header_, sizeof(header_));
     header_.lpData = wave.data;
-    header_.dwBufferLength = wave.dataLen;
+    header_.dwBufferLength = (DWORD)wave.dataLen;
     res = waveOutPrepareHeader(handle_, &header_, sizeof(header_));
     if (res != MMSYSERR_NOERROR) {
         GLUtils::log(L"waveOutPrepareHeader failed: %u\n", res);
