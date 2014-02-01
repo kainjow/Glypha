@@ -44,7 +44,7 @@ double GLUtils::now()
 #if _WIN32
     LARGE_INTEGER t;
     (void)QueryPerformanceCounter(&t);
-    return (t.QuadPart * 1000.0) / freq.QuadPart;
+    return (double)t.QuadPart / (double)freq.QuadPart;
 #elif __APPLE__
     return mach_absolute_time() * mach_convert;
 #elif __HAIKU__

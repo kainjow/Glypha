@@ -93,11 +93,6 @@ bool AppController::init(HINSTANCE hInstance)
     ptDiff.y = (rcWindow.bottom - rcWindow.top) - rcClient.bottom;
     (void)MoveWindow(win, rcWindow.left, rcWindow.top, w + ptDiff.x, h + ptDiff.y, TRUE);
 
-    // Start the timer
-    if (SetTimer(win, 1, 1000/30, NULL) == 0) {
-        return false;
-    }
-
     // Show the window
     (void)ShowWindow(win, SW_SHOWNORMAL);
     (void)UpdateWindow(win);
@@ -108,11 +103,27 @@ bool AppController::init(HINSTANCE hInstance)
 void AppController::run()
 {
     MSG msg;
-    while (GetMessageW(&msg, NULL, 0, 0)) {
-        // Check for keystrokes for the menus
-        if (!TranslateAcceleratorW(win, accelerators, &msg)) {
-            (void)TranslateMessage(&msg);
-            (void)DispatchMessageW(&msg);
+    GLUtils utils;
+    const double fps = game.updateFrequency();
+    double curr;
+    double last = utils.now();
+    for (;;) {
+        while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
+            // Check for keystrokes for the menus
+            if (!TranslateAcceleratorW(win, accelerators, &msg)) {
+                (void)TranslateMessage(&msg);
+                (void)DispatchMessageW(&msg);
+            }
+        }
+        if (msg.message == WM_QUIT) {
+            break;
+        }
+
+        // force FPS. probably should be done in GLGame eventually
+        curr = utils.now();
+        if ((curr - last) > fps) {
+            (void)InvalidateRect(win, NULL, FALSE);
+            last = curr;
         }
     }
 }
@@ -161,7 +172,6 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
                 break;
 
             case WM_DISPLAYCHANGE:
-            case WM_TIMER:
                 (void)InvalidateRect(hwnd, NULL, FALSE);
                 result = 0;
                 wasHandled = true;
