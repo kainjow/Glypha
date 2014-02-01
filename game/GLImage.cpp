@@ -5,81 +5,11 @@
 
 #include "GLImage.h"
 #if _WIN32
-#include <gdiplus.h>
 #include <wincodec.h>
 #include <shlwapi.h>
-#include <strsafe.h>
 #elif __APPLE__
 #include <ApplicationServices/ApplicationServices.h>
 #include <OpenGL/gl.h>
-#endif
-
-#if _WIN32
-// loadWin32Texture_() is based on code from the "OpenGL GDI+ Demo" at
-// http://www.dhpoware.com/demos/glGdiplus.html
-//-----------------------------------------------------------------------------
-// Copyright (c) 2009 dhpoware. All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the "Software"),
-// to deal in the Software without restriction, including without limitation
-// the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the
-// Software is furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-// IN THE SOFTWARE.
-//-----------------------------------------------------------------------------
-bool GLImage::loadWin32Texture_(IStream *stream)
-{
-    static bool didLoadGdi = false;
-    if (didLoadGdi == false) {
-        Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-        ULONG_PTR gdiplusToken;
-        if (Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL) == Gdiplus::Ok) {
-            didLoadGdi = true;
-        } else {
-            return false;
-        }
-    }
-
-    Gdiplus::Bitmap *pBitmap = Gdiplus::Bitmap::FromStream(stream, TRUE);
-    if (pBitmap == NULL) {
-        return false;
-    }
-
-    // GDI+ pads each scanline of the loaded bitmap image to 4-byte memory
-    // boundaries. Fortunately OpenGL also aligns bitmap images to 4-byte
-    // memory boundaries by default.
-    width_ = pBitmap->GetWidth();
-    height_ = pBitmap->GetHeight();
-    int pitch = ((width_ * 32 + 31) & ~31) >> 3;
-
-    Gdiplus::BitmapData data;
-    Gdiplus::Rect rect(0, 0, width_, height_);
-    // Convert to 32-bit BGRA pixel format and fetch the pixel data.
-    if (pBitmap->LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &data) != Gdiplus::Ok) {
-        return false;
-    }
-    unsigned char *pixels = (unsigned char*)malloc(pitch * height_);
-    unsigned char *pSrcPixels = static_cast<unsigned char *>(data.Scan0);
-    for (int i = 0; i < height_; ++i) {
-        memcpy(&pixels[i * pitch], &pSrcPixels[i * data.Stride], pitch);
-    }
-    (void)pBitmap->UnlockBits(&data);
-    loadTextureData_(pixels);
-    free(pixels);
-
-    return true;
-}
 #endif
 
 GLImage::GLImage() :
@@ -92,9 +22,6 @@ void GLImage::load(const void *buf, size_t bufSize)
 #if _WIN32
     IStream *stream = SHCreateMemStream((const BYTE*)buf, (UINT)bufSize);
     if (stream != NULL) {
-#if 1
-        int ret = loadWin32Texture_(stream);
-#else
         IWICImagingFactory *pFactory;
         if (CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pFactory) == S_OK) {
             IWICBitmapDecoder *pDecoder;
@@ -106,23 +33,22 @@ void GLImage::load(const void *buf, size_t bufSize)
                         width_ = w;
                         height_ = h;
                     }
-                    WICPixelFormatGUID px;
-                    if (frame->GetPixelFormat(&px) == S_OK) {
-                        WCHAR buf[100];
-                        StringCchPrintf(buf, sizeof(buf)/sizeof(buf[0]), L"px=%u\n", px);
-                        OutputDebugString(buf);
-                    }
-
                     IWICFormatConverter *formatConverter;
                     if (pFactory->CreateFormatConverter(&formatConverter) == S_OK) {
-                        formatConverter->Initialize(frame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom);
+                        if (formatConverter->Initialize(frame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom) == S_OK) {
+                            unsigned char *pixels = new unsigned char[w * h * 4];
+                            if (formatConverter->CopyPixels(0, w * 4, w * h * 4, pixels) == S_OK) {
+                                loadTextureData_(pixels);
+                            }
+                            delete[] pixels;
+                        }
+                        formatConverter->Release();
                     }
                 }
                 pDecoder->Release();
             }
             pFactory->Release();
         }
-#endif
         stream->Release();
     }
 #elif __APPLE__
