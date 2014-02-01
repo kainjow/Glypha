@@ -39,12 +39,12 @@
 #define kMaxEnemies					8
 #define kDontFlapVel				8
 
-GLGame::GLGame() :
-    renderer_(new GLRenderer()),
-    isPlaying(false), evenFrame(true),
-    lastFlameAni(0), whichFlame1(-1), whichFlame2(-1),
-    numLightningStrikes(0),
-    theKeys(kGLGameKeyNone)
+GLGame::GLGame()
+    : renderer_(new GLRenderer())
+    , isPlaying(false), evenFrame(true)
+    , lastFlameAni(0), whichFlame1(-1), whichFlame2(-1)
+    , numLightningStrikes(0)
+    , theKeys(kGLGameKeyNone)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
