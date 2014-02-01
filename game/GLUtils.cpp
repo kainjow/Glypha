@@ -68,4 +68,13 @@ void GLUtils::log(LPCWSTR format, ...)
     va_end(ap);
     OutputDebugStringW(buf);
 }
+void GLUtils::log(LPCSTR format, ...)
+{
+    CHAR buf[200];
+    va_list ap;
+    va_start(ap, format);
+    (void)StringCbVPrintfA(buf, sizeof(buf), format, ap);
+    va_end(ap);
+    OutputDebugStringA(buf);
+}
 #endif

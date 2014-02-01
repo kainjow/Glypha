@@ -22,6 +22,7 @@ public:
 
 #if _WIN32
     static void log(LPCWSTR format, ...);
+    static void log(LPCSTR format, ...);
 #endif
     
 private:
