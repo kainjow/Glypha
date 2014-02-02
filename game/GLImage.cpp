@@ -9,7 +9,6 @@
 #include <shlwapi.h>
 #elif __APPLE__
 #include <ApplicationServices/ApplicationServices.h>
-#include <OpenGL/gl.h>
 #endif
 
 GLImage::GLImage() :

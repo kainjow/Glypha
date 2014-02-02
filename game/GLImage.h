@@ -6,16 +6,9 @@
 #ifndef GLIMAGE_H
 #define GLIMAGE_H
 
-#include <stddef.h>
-#if _WIN32
-#include <windows.h>
-#include <gl/gl.h>
-#elif __APPLE__
-#include <OpenGL/OpenGL.h>
-#elif __HAIKU__
-#include <GL/gl.h>
-#endif
+#include "GLRenderer.h"
 #include "GLRect.h"
+#include <stddef.h>
 
 class GLImage {
 public:
