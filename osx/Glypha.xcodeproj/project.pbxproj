@@ -11,6 +11,7 @@
 		A507316017A459A7009D9D07 /* walk.c in Sources */ = {isa = PBXBuildFile; fileRef = A507315F17A459A7009D9D07 /* walk.c */; };
 		A507316217A45CA1009D9D07 /* screech.c in Sources */ = {isa = PBXBuildFile; fileRef = A507316117A45CA1009D9D07 /* screech.c */; };
 		A507316617A47F01009D9D07 /* bird.c in Sources */ = {isa = PBXBuildFile; fileRef = A507316517A47F01009D9D07 /* bird.c */; };
+		A528F68C189F80470085A43D /* GLImage_CoreImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A528F68B189F80470085A43D /* GLImage_CoreImage.cpp */; };
 		A544F11417AEEF7600DBD389 /* numbers.c in Sources */ = {isa = PBXBuildFile; fileRef = A544F11317AEEF7600DBD389 /* numbers.c */; };
 		A54B601315B7CB560072674A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54B601215B7CB560072674A /* Cocoa.framework */; };
 		A54B602615B7CB570072674A /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A54B602515B7CB570072674A /* AppController.mm */; };
@@ -37,6 +38,7 @@
 		A507316117A45CA1009D9D07 /* screech.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = screech.c; path = ../themes/glyphaiii/sounds/screech.c; sourceTree = "<group>"; };
 		A507316517A47F01009D9D07 /* bird.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bird.c; path = ../themes/glyphaiii/sounds/bird.c; sourceTree = "<group>"; };
 		A50CB6E115D1736600126032 /* GLPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLPoint.h; sourceTree = "<group>"; };
+		A528F68B189F80470085A43D /* GLImage_CoreImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLImage_CoreImage.cpp; sourceTree = "<group>"; };
 		A544F11317AEEF7600DBD389 /* numbers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = numbers.c; path = ../themes/glyphaiii/images/numbers.c; sourceTree = "<group>"; };
 		A54B600E15B7CB560072674A /* Glypha III.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Glypha III.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A54B601215B7CB560072674A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -129,6 +131,7 @@
 				A55C2E5C15B908D300F17FEB /* GLRenderer.cpp */,
 				A55C2E5D15B908D300F17FEB /* GLRenderer.h */,
 				A5E2F65A15BE55A800DC68DD /* GLImage.cpp */,
+				A528F68B189F80470085A43D /* GLImage_CoreImage.cpp */,
 				A5E2F65B15BE55A800DC68DD /* GLImage.h */,
 				A57D044915B910A8005CFE23 /* GLRect.cpp */,
 				A57D044A15B910A8005CFE23 /* GLRect.h */,
@@ -233,6 +236,7 @@
 			files = (
 				A544F11417AEEF7600DBD389 /* numbers.c in Sources */,
 				A507316017A459A7009D9D07 /* walk.c in Sources */,
+				A528F68C189F80470085A43D /* GLImage_CoreImage.cpp in Sources */,
 				A5DE5FB817A454540063FE8E /* flap.c in Sources */,
 				A5DE5FB617A451E00063FE8E /* GLSounds.mm in Sources */,
 				A54B602615B7CB570072674A /* AppController.mm in Sources */,

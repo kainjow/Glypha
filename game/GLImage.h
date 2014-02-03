@@ -14,7 +14,7 @@ class GLImage {
 public:
     GLImage();
     
-    void load(const void *buf, size_t bufSize);
+    void load(const unsigned char *buf, size_t bufSize);
     bool isLoaded() const;
     
     void draw(const GLRect& destRect, const GLRect& srcRect);
@@ -26,12 +26,10 @@ public:
 
 private:
 	void loadTextureData_(const void *texData, bool hasAlpha = true);
-#if _WIN32
-    bool loadWin32Texture_(IStream *stream);
-#endif
     
     GLuint texture_;
     int width_, height_;
+    bool alpha_;
 };
 
 #endif
