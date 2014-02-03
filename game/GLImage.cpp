@@ -64,7 +64,6 @@ void GLImage::load(const void *buf, size_t bufSize)
         stream->Release();
     }
 #elif __APPLE__
-    CGContextRef ctx;
     CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8*)buf, (CFIndex)bufSize, kCFAllocatorNull);
     if (data != NULL) {
         CGImageSourceRef imageSource = CGImageSourceCreateWithData(data, NULL);
@@ -73,18 +72,18 @@ void GLImage::load(const void *buf, size_t bufSize)
             if (img != NULL) {
                 width_ = (int)CGImageGetWidth(img);
                 height_ = (int)CGImageGetHeight(img);
-                char *texData = (char*)calloc(width_ * 4 * height_, sizeof(char));
                 CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
                 if (colorSpace != NULL) {
-                    ctx = CGBitmapContextCreate(texData, width_, height_, 8, width_*4, colorSpace, kCGBitmapByteOrder32Host| kCGImageAlphaPremultipliedFirst);
+                    char *texData = (char*)calloc(width_ * 4 * height_, sizeof(char));
+                    CGContextRef ctx = CGBitmapContextCreate(texData, width_, height_, 8, width_*4, colorSpace, kCGBitmapByteOrder32Host| kCGImageAlphaPremultipliedFirst);
                     if (ctx != NULL) {
                         CGContextDrawImage(ctx, CGRectMake(0.0, 0.0, width_, height_), img);
-                        loadTextureData_(texData);
                         CGContextRelease(ctx);
+                        loadTextureData_(texData);
                     }
+                    free(texData);
                     CGColorSpaceRelease(colorSpace);
                 }
-                free(texData);
                 CGImageRelease(img);
             }
             CFRelease(imageSource);
