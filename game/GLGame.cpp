@@ -193,7 +193,9 @@ void GLGame::draw()
 
 void GLGame::handleMouseDownEvent(const GLPoint& point)
 {
-    doLightning(point);
+    if (!isPlaying) {
+        doLightning(point);
+    }
 }
 
 void GLGame::doLightning(const GLPoint& point)
