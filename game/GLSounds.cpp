@@ -12,21 +12,10 @@
 #include <cstring>
 #include <cstdio>
 #include <vector>
+#include "GLBufferReader.h"
 #endif
 
 #if _WIN32
-class BufferReader {
-public:
-    BufferReader(const uint8_t *data, size_t dataLen);
-    size_t read(uint8_t *data, size_t count);
-    bool seek(size_t offset);
-    size_t offset();
-private:
-    const uint8_t *data_;
-    size_t dataLen_;
-    size_t offset_;
-};
-
 struct WaveData {
 public:
     WAVEFORMATEX format;
@@ -41,37 +30,6 @@ public:
         ZeroMemory(&format, sizeof(format));
     }
 };
-
-BufferReader::BufferReader(const uint8_t *data, size_t dataLen)
-: data_(data)
-, dataLen_(dataLen)
-, offset_(0)
-{
-}
-
-size_t BufferReader::read(uint8_t *data, size_t count)
-{
-    if (offset_ + count > dataLen_) {
-        count = dataLen_ - offset_;
-    }
-    std::memcpy(data, data_ + offset_, count);
-    offset_ += count;
-    return count;
-}
-
-bool BufferReader::seek(size_t offset)
-{
-    if (offset > dataLen_) {
-        return false;
-    }
-    offset_ = offset;
-    return true;
-}
-
-size_t BufferReader::offset()
-{
-    return offset_;
-}
 
 uint32_t read32BigEndian(const uint8_t *data)
 {
@@ -109,7 +67,7 @@ uint32_t read80Float(const uint8_t *data)
 
 bool aiffDataToWave(const uint8_t *data, unsigned dataLen, WaveData &output)
 {
-    BufferReader reader(data, dataLen);
+    GLBufferReader reader(data, dataLen);
     uint16_t numChannels = 0;
     uint32_t numSampleFrames = 0;
     uint16_t sampleSize = 0;

@@ -25,7 +25,7 @@ public:
     int height() const;
 
 private:
-	void loadTextureData_(void *texData);
+	void loadTextureData_(const void *texData, bool hasAlpha = true);
 #if _WIN32
     bool loadWin32Texture_(IStream *stream);
 #endif
