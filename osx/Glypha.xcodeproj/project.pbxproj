@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		A528F68C189F80470085A43D /* GLImage_CoreImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A528F68B189F80470085A43D /* GLImage_CoreImage.cpp */; };
 		A54B601315B7CB560072674A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54B601215B7CB560072674A /* Cocoa.framework */; };
-		A54B602615B7CB570072674A /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A54B602515B7CB570072674A /* AppController.mm */; };
+		A54B602615B7CB570072674A /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A54B602515B7CB570072674A /* main.mm */; };
 		A54B603315B7D2460072674A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54B603215B7D2460072674A /* OpenGL.framework */; };
 		A55C2E5B15B907D900F17FEB /* GLGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A55C2E5915B907D900F17FEB /* GLGame.cpp */; };
 		A55C2E5E15B908D300F17FEB /* GLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A55C2E5C15B908D300F17FEB /* GLRenderer.cpp */; };
@@ -27,7 +27,7 @@
 		A54B600E15B7CB560072674A /* Glypha III.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Glypha III.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A54B601215B7CB560072674A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		A54B601A15B7CB570072674A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A54B602515B7CB570072674A /* AppController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppController.mm; sourceTree = "<group>"; };
+		A54B602515B7CB570072674A /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		A54B603215B7D2460072674A /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		A55C2E5915B907D900F17FEB /* GLGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLGame.cpp; sourceTree = "<group>"; };
 		A55C2E5A15B907D900F17FEB /* GLGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLGame.h; sourceTree = "<group>"; };
@@ -91,7 +91,7 @@
 		A54B601815B7CB570072674A /* osx */ = {
 			isa = PBXGroup;
 			children = (
-				A54B602515B7CB570072674A /* AppController.mm */,
+				A54B602515B7CB570072674A /* main.mm */,
 				A54B601A15B7CB570072674A /* Info.plist */,
 			);
 			name = osx;
@@ -184,7 +184,7 @@
 			files = (
 				A528F68C189F80470085A43D /* GLImage_CoreImage.cpp in Sources */,
 				A5DE5FB617A451E00063FE8E /* GLSounds.mm in Sources */,
-				A54B602615B7CB570072674A /* AppController.mm in Sources */,
+				A54B602615B7CB570072674A /* main.mm in Sources */,
 				A55C2E5B15B907D900F17FEB /* GLGame.cpp in Sources */,
 				A55C2E5E15B908D300F17FEB /* GLRenderer.cpp in Sources */,
 				A57D044B15B910A8005CFE23 /* GLRect.cpp in Sources */,
