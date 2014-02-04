@@ -1,8 +1,3 @@
-//
-//  Created by Kevin Wojniak on 7/18/12.
-//  Copyright (c) 2012 Kevin Wojniak. All rights reserved.
-//
-
 #import <Cocoa/Cocoa.h>
 #include "GLGame.h"
 #include "GLRenderer.h"

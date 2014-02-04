@@ -1,8 +1,3 @@
-//
-//  Created by Kevin Wojniak on 7/23/12.
-//  Copyright (c) 2012-2014 Kevin Wojniak. All rights reserved.
-//
-
 #include "GLImage.h"
 
 GLImage::GLImage()

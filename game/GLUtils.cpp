@@ -1,8 +1,3 @@
-//
-//  Created by Kevin Wojniak on 8/1/12.
-//  Copyright (c) 2012-2013 Kevin Wojniak. All rights reserved.
-//
-
 #include "GLUtils.h"
 #include <cstdio>
 #include <cstdlib>

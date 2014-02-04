@@ -1,8 +1,3 @@
-//
-//  Created by Kevin Wojniak on 8/1/12.
-//  Copyright (c) 2012-2013 Kevin Wojniak. All rights reserved.
-//
-
 #ifndef GLUTILS_H
 #define GLUTILS_H
 

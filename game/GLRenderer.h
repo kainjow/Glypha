@@ -1,8 +1,3 @@
-//
-//  Created by Kevin Wojniak on 7/19/12.
-//  Copyright (c) 2012 Kevin Wojniak. All rights reserved.
-//
-
 #ifndef GLRENDERER_H
 #define GLRENDERER_H
 

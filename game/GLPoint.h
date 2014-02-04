@@ -1,8 +1,3 @@
-//
-//  Created by Kevin Wojniak on 8/7/12.
-//  Copyright (c) 2012 Kevin Wojniak. All rights reserved.
-//
-
 #ifndef GLPOINT_H
 #define GLPOINT_H
 

@@ -1,8 +1,3 @@
-//
-//  Created by Kevin Wojniak on 7/27/13.
-//  Copyright (c) 2013 Kevin Wojniak. All rights reserved.
-//
-
 #include "GLSounds.h"
 #include "GLResources.h"
 #include <AVFoundation/AVFoundation.h>

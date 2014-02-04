@@ -1,8 +1,3 @@
-//
-//  Created by Kevin Wojniak on 2014/2/2.
-//  Copyright (c) 2014 Kevin Wojniak. All rights reserved.
-//
-
 #include "GLImage.h"
 #include "GLBufferReader.h"
 #include <png.h>
