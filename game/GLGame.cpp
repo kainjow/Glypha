@@ -182,6 +182,8 @@ void GLGame::draw()
         handImg.draw(theHand.dest, handRects[1]);
     }
     
+    checkPlayerWrapAround();
+    
     // Draw lightning
     if ((numLightningStrikes > 0) && ((now - lastLightningStrike) >= (1.0f/15.0f))) {
         generateLightning(lightningPoint.h, lightningPoint.v);
@@ -1084,4 +1086,59 @@ void GLGame::handleHand()
             }
             break;
         }
+}
+
+void GLGame::checkPlayerWrapAround()
+{
+    GLRect wrapRect, wasWrapRect, src;
+
+    if (thePlayer.dest.right > 640) {
+        thePlayer.wrapping = true;
+        wrapRect = thePlayer.dest;
+        wrapRect.left -= 640;
+        wrapRect.right -= 640;
+        
+        wasWrapRect = thePlayer.wasDest;
+        wasWrapRect.left -= 640;
+        wasWrapRect.right -= 640;
+        
+        if (thePlayer.mode == kBones) {
+            src = playerRects[thePlayer.srcNum];
+            src.bottom = src.top + thePlayer.frame;
+#if 0
+            CopyMask(GetPortBitMapForCopyBits(playerSrcMap),
+                     GetPortBitMapForCopyBits(playerMaskMap),
+                     GetPortBitMapForCopyBits(workSrcMap),
+                     &src, &src, &wrapRect);
+#endif
+        } else {
+            playerImg.draw(wrapRect, playerRects[thePlayer.srcNum]);
+        }
+        thePlayer.wrap = wrapRect;
+    } else if (thePlayer.dest.left < 0) {
+        thePlayer.wrapping = true;
+        wrapRect = thePlayer.dest;
+        wrapRect.left += 640;
+        wrapRect.right += 640;
+        
+        wasWrapRect = thePlayer.wasDest;
+        wasWrapRect.left += 640;
+        wasWrapRect.right += 640;
+        
+        if (thePlayer.mode == kBones) {
+            src = playerRects[thePlayer.srcNum];
+            src.bottom = src.top + thePlayer.frame;
+#if 0
+            CopyMask(GetPortBitMapForCopyBits(playerSrcMap),
+                     GetPortBitMapForCopyBits(playerMaskMap),
+                     GetPortBitMapForCopyBits(workSrcMap),
+                     &src, &src, &wrapRect);
+#endif
+        } else {
+            playerImg.draw(wrapRect, playerRects[thePlayer.srcNum]);
+        }
+        thePlayer.wrap = wrapRect;
+    } else {
+        thePlayer.wrapping = false;
+    }
 }
