@@ -44,10 +44,10 @@ void GLRenderer::clear()
 void GLRenderer::fillRect(const GLRect& rect)
 {
 	glBegin(GL_QUADS);
-	glVertex2i(rect.left(), rect.bottom());
-	glVertex2i(rect.left(), rect.top());
-	glVertex2i(rect.right(), rect.top());
-	glVertex2i(rect.right(), rect.bottom());
+	glVertex2i(rect.left, rect.bottom);
+	glVertex2i(rect.left, rect.top);
+	glVertex2i(rect.right, rect.top);
+	glVertex2i(rect.right, rect.bottom);
 	glEnd();
 }
 

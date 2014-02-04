@@ -10,18 +10,9 @@ class GLRect {
 public:
     GLRect();
     GLRect(int width, int height);
-    GLRect(int left, int top, int width, int height);
+    GLRect(int theLeft, int theTop, int width, int height);
     
-    void set(int left, int top, int right, int bottom);
-    
-    int top() const;
-    void setTop(int top);
-    int left() const;
-    void setLeft(int left);
-    int bottom() const;
-    void setBottom(int bottom);
-    int right() const;
-    void setRight(int right);
+    void set(int theLeft, int theTop, int theRight, int theBottom);
     
     int width() const;
     void setWidth(int width);
@@ -35,8 +26,7 @@ public:
     
     bool sect(const GLRect *r2);
 
-private:
-    int top_, left_, bottom_, right_;
+    int top, left, bottom, right;
 };
 
 #endif

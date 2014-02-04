@@ -95,10 +95,10 @@ GLGame::GLGame()
 
 	for (int i = 0; i < 6; i++) {
 		touchDownRects[i] = platformRects[i];
-		touchDownRects[i].setLeft(touchDownRects[i].left() + 23);
-		touchDownRects[i].setRight(touchDownRects[i].right() - 23);
-		touchDownRects[i].setBottom(touchDownRects[i].top());
-		touchDownRects[i].setTop(touchDownRects[i].bottom() - 11);
+		touchDownRects[i].left += 23;
+		touchDownRects[i].right -= 23;
+		touchDownRects[i].bottom = touchDownRects[i].top;
+		touchDownRects[i].top = touchDownRects[i].bottom - 11;
 	}
 	
     for (int i = 0; i < 11; i++) {
@@ -371,7 +371,7 @@ void GLGame::drawPlayer()
         playerIdleImg.draw(thePlayer.dest);
 	} else if (thePlayer.mode == kBones) {
 		src = playerRects[thePlayer.srcNum];
-		src.setBottom(src.top() + thePlayer.frame);
+		src.bottom = (src.top + thePlayer.frame);
         playerImg.draw(thePlayer.dest, src);
 	} else {
         src = playerRects[thePlayer.srcNum];
@@ -613,12 +613,12 @@ void GLGame::checkTouchDownCollision()
 					thePlayer.srcNum = 6;
 				if (thePlayer.vVel > 0)
 					thePlayer.vVel = 0;
-				thePlayer.dest.setBottom(thePlayer.dest.bottom() + 11);
-				thePlayer.wasDest.setBottom(thePlayer.wasDest.bottom() + 11);
-				offset = thePlayer.dest.bottom() - testRect.bottom() - 1;
-				thePlayer.dest.setBottom(thePlayer.dest.bottom() - offset);
-				thePlayer.dest.setTop(thePlayer.dest.top() - offset);
-				thePlayer.v = thePlayer.dest.top() << 4;
+				thePlayer.dest.bottom += 11;
+				thePlayer.wasDest.bottom += 11;
+				offset = thePlayer.dest.bottom - testRect.bottom - 1;
+				thePlayer.dest.bottom -= offset;
+				thePlayer.dest.top -= offset;
+				thePlayer.v = thePlayer.dest.top << 4;
                 sounds.play(kGrateSound);
 			}
 			sected = true;
@@ -628,8 +628,8 @@ void GLGame::checkTouchDownCollision()
 	if (!sected) {
 		if (thePlayer.mode == kWalking) {
 			thePlayer.mode = kFlying;
-			thePlayer.dest.setBottom(thePlayer.dest.bottom() - 11);
-			thePlayer.wasDest.setBottom(thePlayer.wasDest.bottom() - 11);
+			thePlayer.dest.bottom -= 11;
+			thePlayer.wasDest.bottom -= 11;
 		}
 	}
 }
@@ -638,7 +638,7 @@ void GLGame::checkLavaRoofCollision()
 {
 	short offset;
 	
-	if (thePlayer.dest.bottom( )> kLavaHeight)
+	if (thePlayer.dest.bottom> kLavaHeight)
 	{
 		if (thePlayer.mode == kFalling) {
 			//PlayExternalSound(kSplashSound, kSplashPriority);
@@ -647,12 +647,12 @@ void GLGame::checkLavaRoofCollision()
         }
 		thePlayer.mode = kSinking;
 	}
-	else if (thePlayer.dest.top() < kRoofHeight)
+	else if (thePlayer.dest.top < kRoofHeight)
 	{
-		offset = kRoofHeight - thePlayer.dest.top();
-		thePlayer.dest.setTop(thePlayer.dest.top() + offset);
-		thePlayer.dest.setBottom(thePlayer.dest.bottom() + offset);
-		thePlayer.v = thePlayer.dest.top() * 16;
+		offset = kRoofHeight - thePlayer.dest.top;
+		thePlayer.dest.top += offset;
+		thePlayer.dest.bottom += offset;
+		thePlayer.v = thePlayer.dest.top * 16;
         sounds.play(kGrateSound);
 		thePlayer.vVel = thePlayer.vVel / -2;
 	}
@@ -662,24 +662,24 @@ void GLGame::setAndCheckPlayerDest()
 {
 	short wasTall, wasWide;
 	
-	wasTall = thePlayer.dest.bottom() - thePlayer.dest.top();
-	wasWide = thePlayer.dest.right() - thePlayer.dest.left();
+	wasTall = thePlayer.dest.bottom - thePlayer.dest.top;
+	wasWide = thePlayer.dest.right - thePlayer.dest.left;
 	
-	thePlayer.dest.setLeft(thePlayer.h >> 4);
-	thePlayer.dest.setRight(thePlayer.dest.left() + wasWide);
-	thePlayer.dest.setTop(thePlayer.v >> 4);
-	thePlayer.dest.setBottom(thePlayer.dest.top() + wasTall);
+	thePlayer.dest.left = (thePlayer.h >> 4);
+	thePlayer.dest.right = (thePlayer.dest.left + wasWide);
+	thePlayer.dest.top = (thePlayer.v >> 4);
+	thePlayer.dest.bottom = (thePlayer.dest.top + wasTall);
 	
-	if (thePlayer.dest.left() > 640)
+	if (thePlayer.dest.left > 640)
 	{
         thePlayer.dest.offsetBy(-640, 0);
-		thePlayer.h = thePlayer.dest.left() << 4;
+		thePlayer.h = thePlayer.dest.left << 4;
         thePlayer.wasDest.offsetBy(-640, 0);
 	}
-	else if (thePlayer.dest.right() < 0)
+	else if (thePlayer.dest.right < 0)
 	{
         thePlayer.dest.offsetBy(640, 0);
-		thePlayer.h = thePlayer.dest.left() << 4;
+		thePlayer.h = thePlayer.dest.left << 4;
         thePlayer.wasDest.offsetBy(640, 0);
 	}
 }
@@ -693,19 +693,19 @@ void GLGame::checkPlatformCollision()
 	{
 		if (thePlayer.dest.sect(&platformRects[i]))
 		{
-			hRect.setLeft(thePlayer.dest.left());
-			hRect.setRight(thePlayer.dest.right());
-			hRect.setTop(thePlayer.wasDest.top());
-			hRect.setBottom(thePlayer.wasDest.bottom());
+			hRect.left = thePlayer.dest.left;
+			hRect.right = thePlayer.dest.right;
+			hRect.top = thePlayer.wasDest.top;
+			hRect.bottom = thePlayer.wasDest.bottom;
 			
 			if (hRect.sect(&platformRects[i]))
 			{
 				if (thePlayer.h > thePlayer.wasH)			// heading right
 				{
-					offset = thePlayer.dest.right() - platformRects[i].left();
-					thePlayer.dest.setLeft(thePlayer.dest.left() - offset);
-					thePlayer.dest.setRight(thePlayer.dest.right() - offset);
-					thePlayer.h = thePlayer.dest.left() << 4;
+					offset = thePlayer.dest.right - platformRects[i].left;
+					thePlayer.dest.left -= offset;
+					thePlayer.dest.right -= offset;
+					thePlayer.h = thePlayer.dest.left << 4;
 					if (thePlayer.hVel > 0)
 						thePlayer.hVel = -(thePlayer.hVel >> 1);
 					else
@@ -713,10 +713,10 @@ void GLGame::checkPlatformCollision()
 				}
 				else if (thePlayer.h < thePlayer.wasH)		// heading left
 				{
-					offset = platformRects[i].right() - thePlayer.dest.left();
-					thePlayer.dest.setLeft(thePlayer.dest.left() + offset);
-					thePlayer.dest.setRight(thePlayer.dest.right() + offset);
-					thePlayer.h = thePlayer.dest.left() << 4;
+					offset = platformRects[i].right - thePlayer.dest.left;
+					thePlayer.dest.left += offset;
+					thePlayer.dest.right += offset;
+					thePlayer.h = thePlayer.dest.left << 4;
 					if (thePlayer.hVel < 0)
 						thePlayer.hVel = -(thePlayer.hVel >> 1);
 					else
@@ -726,32 +726,32 @@ void GLGame::checkPlatformCollision()
 			}
 			else
 			{
-				vRect.setLeft(thePlayer.wasDest.left());
-				vRect.setRight(thePlayer.wasDest.right());
-				vRect.setTop(thePlayer.dest.top());
-				vRect.setBottom(thePlayer.dest.bottom());
+				vRect.left = thePlayer.wasDest.left;
+				vRect.right = thePlayer.wasDest.right;
+				vRect.top = thePlayer.dest.top;
+				vRect.bottom = thePlayer.dest.bottom;
 				
 				if (vRect.sect(&platformRects[i]))
 				{
 					if (thePlayer.wasV < thePlayer.v)		// heading down
 					{
-						offset = thePlayer.dest.bottom() - platformRects[i].top();
-						thePlayer.dest.setTop(thePlayer.dest.top() - offset);
-						thePlayer.dest.setBottom(thePlayer.dest.bottom() - offset);
-						thePlayer.v = thePlayer.dest.top() << 4;
+						offset = thePlayer.dest.bottom - platformRects[i].top;
+						thePlayer.dest.top -= offset;
+						thePlayer.dest.bottom -= offset;
+						thePlayer.v = thePlayer.dest.top << 4;
 						if (thePlayer.vVel > kDontFlapVel) {
                             sounds.play(kGrateSound);
                         }
 						if (thePlayer.mode == kFalling)
 						{
-							if ((thePlayer.dest.right() - 16) > platformRects[i].right())							{
+							if ((thePlayer.dest.right - 16) > platformRects[i].right)							{
 								thePlayer.hVel = 16;
 								if (thePlayer.vVel > 0)
 									thePlayer.vVel = -(thePlayer.vVel >> 1);
 								else
 									thePlayer.vVel = thePlayer.vVel >> 1;
 							}
-							else if ((thePlayer.dest.left() + 16) < platformRects[i].left())
+							else if ((thePlayer.dest.left + 16) < platformRects[i].left)
 							{
 								thePlayer.hVel = -16;
 								if (thePlayer.vVel > 0)
@@ -765,8 +765,8 @@ void GLGame::checkPlatformCollision()
 								thePlayer.vVel = 0;
 								thePlayer.mode = kBones;
 								thePlayer.frame = 22;
-								thePlayer.dest.setTop(thePlayer.dest.bottom() - 22);
-								thePlayer.v = thePlayer.dest.top() << 4;
+								thePlayer.dest.top = (thePlayer.dest.bottom - 22);
+								thePlayer.v = thePlayer.dest.top << 4;
 								thePlayer.srcNum = 10;
 							}
 						}
@@ -780,10 +780,10 @@ void GLGame::checkPlatformCollision()
 					}
 					else if (thePlayer.wasV > thePlayer.v)	// heading up
 					{
-						offset = platformRects[i].bottom() - thePlayer.dest.top();
-						thePlayer.dest.setTop(thePlayer.dest.top() + offset);
-						thePlayer.dest.setBottom(thePlayer.dest.bottom() + offset);
-						thePlayer.v = thePlayer.dest.top() << 4;
+						offset = platformRects[i].bottom - thePlayer.dest.top;
+						thePlayer.dest.top += offset;
+						thePlayer.dest.bottom += offset;
+						thePlayer.v = thePlayer.dest.top << 4;
                         sounds.play(kGrateSound);
 						if (thePlayer.vVel < 0)
 							thePlayer.vVel = -(thePlayer.vVel >> 1);
@@ -834,9 +834,9 @@ void GLGame::getPlayerInput()
                 thePlayer.facingRight = true;
                 if (thePlayer.clutched)
                 {
-                    thePlayer.dest.setLeft(thePlayer.dest.left() + 18);
-                    thePlayer.dest.setRight(thePlayer.dest.right() + 18);
-                    thePlayer.h = thePlayer.dest.left() << 4;
+                    thePlayer.dest.left += 18;
+                    thePlayer.dest.right += 18;
+                    thePlayer.h = thePlayer.dest.left << 4;
                     thePlayer.wasH = thePlayer.h;
                     thePlayer.wasDest = thePlayer.dest;
                 }
@@ -867,9 +867,9 @@ void GLGame::getPlayerInput()
                 thePlayer.facingRight = false;
                 if (thePlayer.clutched)
                 {
-                    thePlayer.dest.setLeft(thePlayer.dest.left() - 18);
-                    thePlayer.dest.setRight(thePlayer.dest.right() - 18);
-                    thePlayer.h = thePlayer.dest.left() << 4;
+                    thePlayer.dest.left -= 18;
+                    thePlayer.dest.right -= 18;
+                    thePlayer.h = thePlayer.dest.left << 4;
                     thePlayer.wasH = thePlayer.h;
                     thePlayer.wasDest = thePlayer.dest;
                 }

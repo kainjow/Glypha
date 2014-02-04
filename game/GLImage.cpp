@@ -52,21 +52,21 @@ void GLImage::draw(const GLRect& destRect, const GLRect& srcRect)
     }
 	
     // calculate texture coordiantes.
-	float srcMinY = (float)srcRect.top() / height_;
-	float srcMaxY = (float)srcRect.bottom() / height_;
-	float srcMinX = (float)srcRect.left() / width_;
-	float srcMaxX = (float)srcRect.right() / width_;
+	float srcMinY = (float)srcRect.top / height_;
+	float srcMaxY = (float)srcRect.bottom / height_;
+	float srcMinX = (float)srcRect.left / width_;
+	float srcMaxX = (float)srcRect.right / width_;
     
 	// draw the texture
 	glBegin(GL_QUADS);
 	glTexCoord2f(srcMinX, srcMinY);
-    glVertex2i(destRect.left(), destRect.top());
+    glVertex2i(destRect.left, destRect.top);
 	glTexCoord2f(srcMinX, srcMaxY);
-    glVertex2i(destRect.left(), destRect.bottom());
+    glVertex2i(destRect.left, destRect.bottom);
 	glTexCoord2f(srcMaxX, srcMaxY);
-    glVertex2i(destRect.right(), destRect.bottom());
+    glVertex2i(destRect.right, destRect.bottom);
 	glTexCoord2f(srcMaxX, srcMinY);
-    glVertex2i(destRect.right(), destRect.top());
+    glVertex2i(destRect.right, destRect.top);
 	glEnd();
 	
     if (alpha_) {
