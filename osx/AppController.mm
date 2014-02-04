@@ -3,37 +3,82 @@
 //  Copyright (c) 2012 Kevin Wojniak. All rights reserved.
 //
 
-#import "AppController.h"
+#import <Cocoa/Cocoa.h>
 #include "GLGame.h"
 #include "GLRenderer.h"
 
+@interface GameView : NSOpenGLView
+{
+    NSTimer *renderTimer_;
+    GLGame *game_;
+}
+
+- (void)setGame:(GLGame *)game;
+
+@end
+
+@interface AppController : NSObject <NSApplicationDelegate>
+{
+    GLGame *game_;
+    NSWindow *window_;
+    GameView *gameView_;
+}
+
+- (IBAction)newGame:(id)sender;
+
+@end
+
 @implementation AppController
 
-@synthesize window = _window;
-@synthesize gameView = _gameView;
+- (void)setupMenuBar
+{
+    NSMenu *menubar = [[[NSMenu alloc] init] autorelease];
+    [NSApp setMainMenu:menubar];
+    NSString *appName = [[NSProcessInfo processInfo] processName];
+    NSMenuItem *item;
+    
+    NSMenu *appMenu = [[[NSMenu alloc] initWithTitle:appName] autorelease];
+    NSMenuItem *appMenuItem = [[[NSMenuItem alloc] init] autorelease];
+    NSMenu *gameMenu = [[[NSMenu alloc] initWithTitle:@"Game"] autorelease];
+    NSMenuItem *gameMenuItem = [[[NSMenuItem alloc] init] autorelease];
+    [appMenuItem setSubmenu:appMenu];
+    [gameMenuItem setSubmenu:gameMenu];
+    [menubar addItem:appMenuItem];
+    [menubar addItem:gameMenuItem];
+    
+    item = [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
+    [item setTarget:NSApp];
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    NSString *quitText = [NSString stringWithFormat:@"Quit %@", appName];
+    item = [appMenu addItemWithTitle:quitText action:@selector(terminate:) keyEquivalent:@"q"];
+    [item setTarget:NSApp];
+    item = [gameMenu addItemWithTitle:@"New Game" action:@selector(newGame:) keyEquivalent:@"n"];
+    [item setTarget:self];
+}
 
 - (id)init
 {
     self = [super init];
     if (self != nil) {
+        NSUInteger style = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
+        window_ = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 640, 460) styleMask:style backing:NSBackingStoreBuffered defer:NO];
+        gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
+        [[window_ contentView] addSubview:gameView_];
         game_ = new GLGame;
+        [gameView_ setGame:game_];
+        [self setupMenuBar];
     }
     return self;
-}
-
-- (void)awakeFromNib
-{
-    [self.gameView setGame:game_];
 }
 
 - (void)applicationDidFinishLaunching:(__unused NSNotification*)note
 {
     // Center the window, then set the autosave name. If the frame already has been saved, it'll override the centering.
-    [self.window center];
-    [self.window setFrameAutosaveName:@"MainWindow"];
+    [window_ center];
+    [window_ setFrameAutosaveName:@"MainWindow"];
     
     // Show the window only after its frame has been adjusted.
-    [self.window makeKeyAndOrderFront:nil];
+    [window_ makeKeyAndOrderFront:nil];
 }
 
 - (IBAction)newGame:(__unused id)sender
@@ -168,5 +213,8 @@
 
 int main(int argc, char *argv[])
 {
+    NSApplication *app = [NSApplication sharedApplication];
+    AppController *controller = [[[AppController alloc] init] autorelease];
+    app.delegate = controller;
     return NSApplicationMain(argc, (const char **)argv);
 }
