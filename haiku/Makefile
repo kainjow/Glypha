@@ -1,6 +1,6 @@
 NAME = "GlyphaIII"
 SRCS = \
-	App.cpp \
+	main.cpp \
 	../game/GLGame.cpp \
 	../game/GLImage.cpp \
 	../game/GLRect.cpp \
