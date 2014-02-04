@@ -55,6 +55,7 @@ public:
 private:
     GLRenderer *renderer_;
     GLUtils utils;
+    double now;
     void loadImages();
     bool isPlaying, evenFrame, flapKeyDown;
     
@@ -65,20 +66,24 @@ private:
     double lastFlameAni;
     int whichFlame1, whichFlame2;
 
+    void drawLightning();
     void generateLightning(short h, short v);
-    void drawLightning(GLRenderer *r);
+    void strikeLightning();
     void doLightning(const GLPoint& point);
     GLPoint leftLightningPts[kNumLightningPts], rightLightningPts[kNumLightningPts];
     GLPoint mousePoint;
-    int numLightningStrikes;
+    int lightningCount;
     double lastLightningStrike;
     GLPoint lightningPoint;
+    int newGameLightning;
+    double lastNewGameLightning;
     
     int numLedges, levelOn, livesLeft;
     
     playerType thePlayer;
     GLRect playerRects[11];
     void resetPlayer(bool initialPlace);
+    void offAMortal();
     GLImage playerImg;
     GLImage playerIdleImg;
     void drawPlayer();
@@ -86,6 +91,8 @@ private:
     void handlePlayerIdle();
     void handlePlayerWalking();
     void handlePlayerFlying();
+    void handlePlayerSinking();
+    void handlePlayerFalling();
     void setAndCheckPlayerDest();
     void checkTouchDownCollision();
     void checkPlatformCollision();

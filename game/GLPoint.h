@@ -7,6 +7,11 @@ public:
     {
     }
     
+    GLPoint(int h_, int v_)
+        : v(v_), h(h_)
+    {
+    }
+    
     int v;
     int h;
 };

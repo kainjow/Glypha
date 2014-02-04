@@ -11,6 +11,7 @@ public:
         loadSound(kGrateSound, grate_aif, grate_aif_len);
         loadSound(kWalkSound, walk_aif, walk_aif_len);
         loadSound(kScreechSound, screech_aif, screech_aif_len);
+        loadSound(kLightningSound, lightning_aif, lightning_aif_len);
     }
     
     void play(int which) {

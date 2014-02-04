@@ -26,5 +26,7 @@ extern unsigned char screech_aif[];
 extern unsigned int screech_aif_len;
 extern unsigned char bird_aif[];
 extern unsigned int bird_aif_len;
+extern unsigned char lightning_aif[];
+extern unsigned int lightning_aif_len;
 
 #endif

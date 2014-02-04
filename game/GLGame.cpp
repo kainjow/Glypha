@@ -34,11 +34,14 @@
 #define kMaxEnemies					8
 #define kDontFlapVel				8
 
+#define kLightningDelay (1.0 / 30.0)
+
 GLGame::GLGame()
     : renderer_(new GLRenderer())
     , isPlaying(false), evenFrame(true)
     , lastFlameAni(0), whichFlame1(-1), whichFlame2(-1)
-    , numLightningStrikes(0)
+    , lightningCount(0)
+    , newGameLightning(-1)
     , theKeys(kGLGameKeyNone)
 {
     flameDestRects[0].setSize(16, 16);
@@ -149,7 +152,7 @@ void GLGame::loadImages()
 void GLGame::draw()
 {
     GLRenderer *r = renderer_;
-    double now = utils.now();
+    now = utils.now();
     
     r->clear();
     
@@ -179,16 +182,6 @@ void GLGame::draw()
     
     checkPlayerWrapAround();
     
-    // Draw lightning
-    if ((numLightningStrikes > 0) && ((now - lastLightningStrike) >= (1.0f/15.0f))) {
-        generateLightning(lightningPoint.h, lightningPoint.v);
-        lastLightningStrike = now;
-        --numLightningStrikes;
-    }
-    if (numLightningStrikes > 0) {
-        drawLightning(r);
-    }
-    
     if (isPlaying) {
         drawPlatforms();
         movePlayer();
@@ -200,6 +193,8 @@ void GLGame::draw()
         getPlayerInput();
     }
     
+    drawLightning();
+    
     evenFrame = !evenFrame;
 }
 
@@ -210,12 +205,58 @@ void GLGame::handleMouseDownEvent(const GLPoint& point)
     }
 }
 
+void GLGame::drawLightning()
+{
+    if ((lightningCount > 0) && ((now - lastLightningStrike) >= kLightningDelay)) {
+        generateLightning(lightningPoint.h, lightningPoint.v);
+        lastLightningStrike = now;
+        --lightningCount;
+    }
+    if (lightningCount > 0) {
+        strikeLightning();
+    }
+    
+    if (newGameLightning >= 0) {
+        if ((now - lastNewGameLightning) >= kLightningDelay) {
+            lastNewGameLightning = now;
+            switch (newGameLightning) {
+                case 6:
+                    generateLightning(320, 429);	// platform 0
+                    break;
+                case 5:
+                    generateLightning(95, 289);		// platform 1
+                    break;
+                case 4:
+                    generateLightning(95, 110);		// platform 3
+                    break;
+                case 3:
+                    generateLightning(320, 195);	// platform 5
+                    break;
+                case 2:
+                    generateLightning(545, 110);	// platform 4
+                    break;
+                case 1:
+                    generateLightning(545, 289);	// platform 2
+                    break;
+            }
+            --newGameLightning;
+            if (newGameLightning == -1) {
+                doLightning(GLPoint(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24));
+            }
+        }
+    }
+    if (newGameLightning >= 0) {
+        strikeLightning();
+    }
+}
+
 void GLGame::doLightning(const GLPoint& point)
 {
-    numLightningStrikes = 4;
+    sounds.play(kLightningSound);
+    lightningCount = kNumLightningStrikes;
     lightningPoint = point;
     generateLightning(lightningPoint.h, lightningPoint.v);
-    lastLightningStrike = utils.now();
+    lastLightningStrike = now;
 }
 
 void GLGame::generateLightning(short h, short v)
@@ -249,23 +290,22 @@ void GLGame::generateLightning(short h, short v)
 	}
 }
 
-void GLGame::drawLightning(GLRenderer *r)
+void GLGame::strikeLightning()
 {
+    GLRenderer *r = renderer_;
     short i;
 
     r->setFillColor(255, 255, 0);
     r->beginLines(2.0f);
     // draw lightning bolts
     r->moveTo(leftLightningPts[0].h, leftLightningPts[0].v);
-    for (i = 0; i < kNumLightningPts - 1; i++)
-    {
+    for (i = 0; i < kNumLightningPts - 1; i++) {
         r->moveTo(leftLightningPts[i].h, leftLightningPts[i].v);
         r->lineTo(leftLightningPts[i + 1].h - 1, leftLightningPts[i + 1].v);
     }
 
     r->moveTo(rightLightningPts[0].h, rightLightningPts[0].v);
-    for (i = 0; i < kNumLightningPts - 1; i++)
-    {
+    for (i = 0; i < kNumLightningPts - 1; i++) {
         r->moveTo(rightLightningPts[i].h, rightLightningPts[i].v);
         r->lineTo(rightLightningPts[i + 1].h - 1, rightLightningPts[i + 1].v);
     }
@@ -294,30 +334,28 @@ void GLGame::setUpLevel()
 	//KillOffEye();
 	
 	waveMultiple = levelOn % 5;
-	
 	switch (waveMultiple) {
 		case 0:
             numLedges = 5;
             break;
-            
 		case 1:
             numLedges = 6;
             break;
-            
 		case 2:
             numLedges = 5;
             break;
-            
 		case 3:
             numLedges = 3;
             break;
-            
 		case 4:
             numLedges = 6;
             break;
 	}
-		
-	//UpdateLevelNumbers();
+    
+    newGameLightning = 6;
+    lastNewGameLightning = 0;
+    
+	updateLevelNumbers();
 }
 
 void GLGame::resetPlayer(bool initialPlace)
@@ -378,6 +416,18 @@ void GLGame::resetPlayer(bool initialPlace)
 	thePlayer.mode = kIdle;
 }
 
+void GLGame::offAMortal()
+{
+	livesLeft--;
+	
+	if (livesLeft > 0) {
+		resetPlayer(false);
+		updateLivesNumbers();
+	} else {
+		isPlaying = false;
+	}
+}
+
 void GLGame::drawPlayer()
 {
 	GLRect src;
@@ -431,13 +481,11 @@ void GLGame::movePlayer()
             break;
             
 		case kSinking:
-            printf("Unhandled kSinking\n");
-            //HandlePlayerSinking();
+            handlePlayerSinking();
             break;
             
 		case kFalling:
-            printf("Unhandled kFalling\n");
-            //HandlePlayerFalling();
+            handlePlayerFalling();
             break;
             
 		case kBones:
@@ -607,6 +655,19 @@ void GLGame::handlePlayerFlying()
 	checkTouchDownCollision();
 }
 
+void GLGame::handlePlayerSinking()
+{
+    thePlayer.hVel = 0;
+    thePlayer.vVel = 16;
+    if (thePlayer.dest.top > kLavaHeight) {
+        offAMortal();
+    }
+
+    thePlayer.v += thePlayer.vVel;
+
+    setAndCheckPlayerDest();
+}
+
 void GLGame::checkTouchDownCollision()
 {
 	GLRect testRect;
@@ -647,6 +708,37 @@ void GLGame::checkTouchDownCollision()
 			thePlayer.wasDest.bottom -= 11;
 		}
 	}
+}
+
+void GLGame::handlePlayerFalling()
+{
+    if (thePlayer.hVel > 0) {
+        thePlayer.hVel -= kAirResistance;
+        if (thePlayer.hVel < 0) {
+            thePlayer.hVel = 0;
+        }
+    } else if (thePlayer.hVel < 0) {
+        thePlayer.hVel += kAirResistance;
+        if (thePlayer.hVel > 0) {
+            thePlayer.hVel = 0;
+        }
+    }
+
+    thePlayer.vVel += kGravity;
+
+    if (thePlayer.vVel > kMaxVVelocity) {
+        thePlayer.vVel = kMaxVVelocity;
+    } else if (thePlayer.vVel < -kMaxVVelocity) {
+        thePlayer.vVel = -kMaxVVelocity;
+    }
+
+    thePlayer.h += thePlayer.hVel;
+    thePlayer.v += thePlayer.vVel;
+
+    setAndCheckPlayerDest();
+
+    checkLavaRoofCollision();
+    checkPlatformCollision();
 }
 
 void GLGame::checkLavaRoofCollision()
