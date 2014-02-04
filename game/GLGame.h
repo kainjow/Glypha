@@ -113,6 +113,17 @@ private:
     void updateLivesNumbers();
     void updateScoreNumbers();
     void updateLevelNumbers();
+    
+    typedef struct {
+        GLRect dest;
+        int mode;
+    } handInfo;
+    GLImage handImg;
+    handInfo theHand;
+    GLRect grabZone;
+    GLRect handRects[2];
+    void initHandLocation();
+    void handleHand();
 };
 
 #endif

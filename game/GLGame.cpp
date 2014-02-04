@@ -117,6 +117,12 @@ GLGame::GLGame()
 	numbersDest[8].offsetBy(381, 443);	// # of level digit 1
 	numbersDest[9].offsetBy(389, 443);	// # of level digit 2
 	numbersDest[10].offsetBy(397, 443);	// # of level digit 3
+    
+    handRects[0].set(0, 0, 56, 57);
+    handRects[1].set(0, 0, 56, 57);
+    handRects[1].offsetBy(0, 57);
+    grabZone.set(0, 0, 96, 108);
+    grabZone.offsetBy(48, 352);
 }
 
 GLGame::~GLGame()
@@ -142,6 +148,7 @@ void GLGame::loadImages()
     playerImg.load(player_png, player_png_len);
     playerIdleImg.load(playerIdle_png, playerIdle_png_len);
     numbersImg.load(numbers_png, numbers_png_len);
+    handImg.load(hand_png, hand_png_len);
 }
 
 void GLGame::draw()
@@ -168,6 +175,13 @@ void GLGame::draw()
     torchesImg.draw(flameDestRects[0], flameRects[whichFlame1]);
     torchesImg.draw(flameDestRects[1], flameRects[whichFlame2]);
     
+    // Draw hand
+    if (theHand.mode == kOutGrabeth) {
+        handImg.draw(theHand.dest, handRects[0]);
+    } else if (theHand.mode == kClutching) {
+        handImg.draw(theHand.dest, handRects[1]);
+    }
+    
     // Draw lightning
     if ((numLightningStrikes > 0) && ((now - lastLightningStrike) >= (1.0f/15.0f))) {
         generateLightning(lightningPoint.h, lightningPoint.v);
@@ -181,6 +195,7 @@ void GLGame::draw()
     if (isPlaying) {
         drawPlatforms();
         movePlayer();
+        handleHand();
         drawPlayer();
         updateLivesNumbers();
         updateScoreNumbers();
@@ -267,6 +282,9 @@ void GLGame::newGame()
     livesLeft = kInitNumLives;
     theScore = 0L;
     isPlaying = true;
+    
+    initHandLocation();
+	theHand.mode = kLurking;
     
     setUpLevel();
     resetPlayer(true);
@@ -979,4 +997,91 @@ void GLGame::updateLevelNumbers()
 	
 	digit = (levelOn + 1) % 10;
     numbersImg.draw(numbersDest[10], numbersSrc[digit]);
+}
+
+void GLGame::initHandLocation()
+{
+    theHand.dest.set(0, 0, 56, 57);
+    theHand.dest.offsetBy(48, 460);
+}
+
+void GLGame::handleHand()
+{
+    int hDiff, vDiff, pull, speed;
+
+    switch (theHand.mode) {
+        case kLurking:
+            if (thePlayer.mode == kFlying && thePlayer.dest.sect(&grabZone)) {
+                theHand.mode = kOutGrabeth;
+                initHandLocation();
+            }
+            break;
+            
+        case kOutGrabeth:
+        case kClutching:
+            if (thePlayer.dest.sect(&grabZone)) {
+                hDiff = theHand.dest.left - thePlayer.dest.left;
+                vDiff = theHand.dest.top - thePlayer.dest.top;
+                
+                if (thePlayer.facingRight)
+                    hDiff -= 3;
+                else
+                    hDiff -= 21;
+                vDiff -= 29;
+                
+                speed = (levelOn >> 3) + 1;
+                if (hDiff < 0) {
+                    theHand.dest.left += speed;
+                    theHand.dest.right += speed;
+                } else if (hDiff > 0) {
+                    theHand.dest.left -= speed;
+                    theHand.dest.right -= speed;
+                }
+                if (vDiff < 0) {
+                    theHand.dest.top += speed;
+                    theHand.dest.bottom += speed;
+                } else if (vDiff > 0) {
+                    theHand.dest.top -= speed;
+                    theHand.dest.bottom -= speed;
+                }
+                
+                if (hDiff < 0) {
+                    hDiff = -hDiff;
+                }
+                if (vDiff < 0) {
+                    vDiff = -vDiff;
+                }
+                if ((hDiff < 8) && (vDiff < 8)) {
+                    theHand.mode = kClutching;
+                    thePlayer.clutched = true;
+                    thePlayer.hVel = thePlayer.hVel >> 3;
+                    thePlayer.vVel = thePlayer.vVel >> 3;
+                    pull = levelOn << 2;
+                    if (pull > 48)
+                        pull = 48;
+                    thePlayer.vVel += pull;
+                    theHand.dest.top = thePlayer.dest.top + 29;
+                    theHand.dest.bottom = theHand.dest.top + 57;
+                    if (thePlayer.facingRight) {
+                        theHand.dest.left = thePlayer.dest.left + 3;
+                    } else {
+                        theHand.dest.left = thePlayer.dest.left + 21;
+                    }
+                    theHand.dest.right = theHand.dest.left + 58;
+                } else {
+                    thePlayer.clutched = false;
+                    theHand.mode = kOutGrabeth;
+                }
+            } else {
+                theHand.dest.top++;
+                theHand.dest.bottom++;
+                if (theHand.dest.top > 460) {
+                    theHand.mode = kLurking;
+                } else {
+                    theHand.mode = kOutGrabeth;
+                }
+                thePlayer.clutched = false;
+            }
+            break;
+        }
 }

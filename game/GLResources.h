@@ -18,7 +18,9 @@ extern unsigned char platforms_png[];
 extern unsigned int platforms_png_len;
 extern unsigned char numbers_png[];
 extern unsigned int numbers_png_len;
-    
+extern unsigned char hand_png[];
+extern unsigned int hand_png_len;
+
 extern unsigned char flap_aif[];
 extern unsigned int flap_aif_len;
 extern unsigned char grate_aif[];
