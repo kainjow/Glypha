@@ -6,10 +6,6 @@
 #ifndef GLRESOURCES_H
 #define GLRESOURCES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern unsigned char background_png[];
 extern unsigned int background_png_len;
 extern unsigned char torches_png[];
@@ -33,9 +29,5 @@ extern unsigned char screech_aif[];
 extern unsigned int screech_aif_len;
 extern unsigned char bird_aif[];
 extern unsigned int bird_aif_len;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

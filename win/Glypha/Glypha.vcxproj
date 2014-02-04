@@ -157,19 +157,9 @@
     <ClCompile Include="..\..\game\GLImage.cpp" />
     <ClCompile Include="..\..\game\GLRect.cpp" />
     <ClCompile Include="..\..\game\GLRenderer.cpp" />
+    <ClCompile Include="..\..\game\GLResources.cpp" />
     <ClCompile Include="..\..\game\GLSounds.cpp" />
     <ClCompile Include="..\..\game\GLUtils.cpp" />
-    <ClCompile Include="..\..\themes\glyphaiii\images\background.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\images\numbers.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\images\platforms.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\images\player.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\images\playerIdle.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\images\torches.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\sounds\bird.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\sounds\flap.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\sounds\grate.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\sounds\screech.c" />
-    <ClCompile Include="..\..\themes\glyphaiii\sounds\walk.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
