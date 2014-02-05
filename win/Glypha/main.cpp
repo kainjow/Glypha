@@ -210,7 +210,7 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 	            break;
 
             case WM_LBUTTONDOWN:
-                appController->onMouseDown(lParam & 0xFFFF, lParam >> 16);
+                appController->onMouseDown(lParam & 0xFFFF, (lParam >> 16) & 0xFFFF);
                 break;
             }
         }
