@@ -24,6 +24,7 @@ private:
     void onResize(UINT width, UINT height);
     void onMenu(WORD cmd);
     void onKey(WPARAM key, bool down);
+    void onMouseDown(UINT x, UINT y);
 };
 
 AppController::AppController()
@@ -150,6 +151,11 @@ void AppController::onKey(WPARAM key, bool down)
     }
 }
 
+void AppController::onMouseDown(UINT x, UINT y)
+{
+    game.handleMouseDownEvent(GLPoint(x, y));
+}
+
 LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     LRESULT result = 0;
@@ -202,6 +208,10 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 	            result = 0;
 	            wasHandled = true;
 	            break;
+
+            case WM_LBUTTONDOWN:
+                appController->onMouseDown(lParam & 0xFFFF, lParam >> 16);
+                break;
             }
         }
 
