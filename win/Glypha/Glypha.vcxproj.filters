@@ -38,6 +38,12 @@
     <ClCompile Include="..\..\game\GLSounds.cpp">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\game\GLImage_Win32.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\game\GLBufferReader.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\game\GLPoint.h">
@@ -66,6 +72,9 @@
     </ClInclude>
     <ClInclude Include="..\resources.h">
       <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\game\GLBufferReader.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

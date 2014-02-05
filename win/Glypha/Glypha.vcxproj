@@ -153,8 +153,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\game\GLBufferReader.cpp" />
     <ClCompile Include="..\..\game\GLGame.cpp" />
     <ClCompile Include="..\..\game\GLImage.cpp" />
+    <ClCompile Include="..\..\game\GLImage_Win32.cpp" />
     <ClCompile Include="..\..\game\GLRect.cpp" />
     <ClCompile Include="..\..\game\GLRenderer.cpp" />
     <ClCompile Include="..\..\game\GLResources.cpp" />
@@ -163,6 +165,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\game\GLBufferReader.h" />
     <ClInclude Include="..\..\game\GLGame.h" />
     <ClInclude Include="..\..\game\GLImage.h" />
     <ClInclude Include="..\..\game\GLPoint.h" />
