@@ -77,6 +77,10 @@ private:
     GLPoint lightningPoint;
     int newGameLightning;
     double lastNewGameLightning;
+    GLRect obeliskRects[4];
+    GLImage obelisksImg;
+    bool flashObelisks;
+    void drawObelisks();
     
     int numLedges, levelOn, livesLeft;
     

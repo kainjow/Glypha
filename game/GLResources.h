@@ -15,6 +15,8 @@ extern unsigned char numbers_png[];
 extern unsigned int numbers_png_len;
 extern unsigned char hand_png[];
 extern unsigned int hand_png_len;
+extern unsigned char obelisks_png[];
+extern unsigned int obelisks_png_len;
 
 extern unsigned char flap_aif[];
 extern unsigned int flap_aif_len;

@@ -42,6 +42,7 @@ GLGame::GLGame()
     , lastFlameAni(0), whichFlame1(-1), whichFlame2(-1)
     , lightningCount(0)
     , newGameLightning(-1)
+    , flashObelisks(false)
     , theKeys(kGLGameKeyNone)
 {
     flameDestRects[0].setSize(16, 16);
@@ -121,6 +122,14 @@ GLGame::GLGame()
     handRects[1].offsetBy(0, 57);
     grabZone.set(0, 0, 96, 108);
     grabZone.offsetBy(48, 352);
+    
+    obeliskRects[0].set(0, 0, 20, 209);
+    obeliskRects[1].set(0, 0, 20, 209);
+    obeliskRects[1].offsetBy(0, 209);
+    obeliskRects[2].set(0, 0, 20, 209);
+    obeliskRects[2].offsetBy(161, 250);
+    obeliskRects[3].set(0, 0, 20, 209);
+    obeliskRects[3].offsetBy(457, 250);
 }
 
 GLGame::~GLGame()
@@ -147,6 +156,7 @@ void GLGame::loadImages()
     playerIdleImg.load(playerIdle_png, playerIdle_png_len);
     numbersImg.load(numbers_png, numbers_png_len);
     handImg.load(hand_png, hand_png_len);
+    obelisksImg.load(obelisks_png, obelisks_png_len);
 }
 
 void GLGame::draw()
@@ -180,17 +190,21 @@ void GLGame::draw()
         handImg.draw(theHand.dest, handRects[1]);
     }
     
-    checkPlayerWrapAround();
-    
     if (isPlaying) {
         drawPlatforms();
         movePlayer();
         handleHand();
         drawPlayer();
+        checkPlayerWrapAround();
+        drawObelisks();
         updateLivesNumbers();
         updateScoreNumbers();
         updateLevelNumbers();
         getPlayerInput();
+    } else {
+        drawLightning();
+        drawObelisks();
+
     }
     
     drawLightning();
@@ -214,6 +228,8 @@ void GLGame::drawLightning()
     }
     if (lightningCount > 0) {
         strikeLightning();
+    } else {
+        flashObelisks = false;
     }
     
     if (newGameLightning >= 0) {
@@ -252,6 +268,7 @@ void GLGame::drawLightning()
 
 void GLGame::doLightning(const GLPoint& point)
 {
+    flashObelisks = true;
     sounds.play(kLightningSound);
     lightningCount = kNumLightningStrikes;
     lightningPoint = point;
@@ -1227,5 +1244,16 @@ void GLGame::checkPlayerWrapAround()
         thePlayer.wrap = wrapRect;
     } else {
         thePlayer.wrapping = false;
+    }
+}
+
+void GLGame::drawObelisks()
+{
+    if (flashObelisks) {
+        obelisksImg.draw(obeliskRects[2], obeliskRects[0]);
+        obelisksImg.draw(obeliskRects[3], obeliskRects[1]);
+    } else {
+        bgImg.draw(obeliskRects[2], obeliskRects[2]);
+        bgImg.draw(obeliskRects[3], obeliskRects[3]);
     }
 }
