@@ -34,8 +34,14 @@ void GLImage::loadTextureData_(const void *texData, bool hasAlpha)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, hasAlpha ? GL_BGRA_EXT : GL_BGR_EXT, GL_UNSIGNED_BYTE, texData);
 }
 
-void GLImage::draw(const GLRect& destRect, const GLRect& srcRect)
+
+void GLImage::draw(const GLPoint *dest, size_t numDest, const GLPoint *src, size_t numSrc)
 {
+    if (numDest != numSrc || numDest < 3) {
+        // bug
+        return;
+    }
+    
 	// set this texture as current
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture_);
@@ -46,28 +52,35 @@ void GLImage::draw(const GLRect& destRect, const GLRect& srcRect)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 	
-    // calculate texture coordiantes.
-	float srcMinY = (float)srcRect.top / height_;
-	float srcMaxY = (float)srcRect.bottom / height_;
-	float srcMinX = (float)srcRect.left / width_;
-	float srcMaxX = (float)srcRect.right / width_;
-    
 	// draw the texture
-	glBegin(GL_QUADS);
-	glTexCoord2f(srcMinX, srcMinY);
-    glVertex2i(destRect.left, destRect.top);
-	glTexCoord2f(srcMinX, srcMaxY);
-    glVertex2i(destRect.left, destRect.bottom);
-	glTexCoord2f(srcMaxX, srcMaxY);
-    glVertex2i(destRect.right, destRect.bottom);
-	glTexCoord2f(srcMaxX, srcMinY);
-    glVertex2i(destRect.right, destRect.top);
+	glBegin(numDest == 4 ? GL_QUADS : GL_POLYGON);
+    for (size_t i = 0; i < numDest; ++i) {
+        const GLPoint destPt = dest[i];
+        const GLPoint srcPt = src[i];
+        glTexCoord2f((float)srcPt.h / width_, (float)srcPt.v / height_);
+        glVertex2i(destPt.h, destPt.v);
+    }
 	glEnd();
 	
     if (alpha_) {
         glDisable(GL_BLEND);
     }
 	glDisable(GL_TEXTURE_2D);
+}
+
+void GLImage::draw(const GLRect& destRect, const GLRect& srcRect)
+{
+    GLPoint dest[4];
+    GLPoint src[4];
+    dest[0] = GLPoint(destRect.left, destRect.top);
+    dest[1] = GLPoint(destRect.left, destRect.bottom);
+    dest[2] = GLPoint(destRect.right, destRect.bottom);
+    dest[3] = GLPoint(destRect.right, destRect.top);
+    src[0] = GLPoint(srcRect.left, srcRect.top);
+    src[1] = GLPoint(srcRect.left, srcRect.bottom);
+    src[2] = GLPoint(srcRect.right, srcRect.bottom);
+    src[3] = GLPoint(srcRect.right, srcRect.top);
+    draw(dest, sizeof(dest) / sizeof(dest[0]), src, sizeof(src) / sizeof(src[0]));
 }
 
 void GLImage::draw(const GLRect& destRect)
