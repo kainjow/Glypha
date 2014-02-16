@@ -28,7 +28,6 @@ void GLRenderer::clear()
 {
     if (didPrepare_ == false) {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClearDepth(1.0f);
         didPrepare_ = true;
     }
     
