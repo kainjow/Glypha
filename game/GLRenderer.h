@@ -30,7 +30,6 @@ public:
     void endLines();
     void moveTo(int h, int v);
     void lineTo(int h, int v);
-    void drawLine(int h1, int v1, int h2, int v2);
     
     GLRect bounds();
     

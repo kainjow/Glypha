@@ -72,12 +72,6 @@ void GLRenderer::endLines()
 	glDisable(GL_BLEND);
 }
 
-void GLRenderer::drawLine(int h1, int v1, int h2, int v2)
-{
-	glVertex2s(h1, v1);
-	glVertex2s(h2, v2);
-}
-
 void GLRenderer::moveTo(int h, int v)
 {
     lineStart_.h = h;
