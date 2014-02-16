@@ -1253,7 +1253,27 @@ void GLGame::drawObelisks()
         obelisksImg.draw(obeliskRects[2], obeliskRects[0]);
         obelisksImg.draw(obeliskRects[3], obeliskRects[1]);
     } else {
-        bgImg.draw(obeliskRects[2], obeliskRects[2]);
-        bgImg.draw(obeliskRects[3], obeliskRects[3]);
+        // Redraw obelisks and lava in "foreground"
+        GLPoint pts[12];
+        int o = 0;
+        pts[o++] = GLPoint(161, 450);
+        pts[o++] = GLPoint(161, 269);
+        pts[o++] = GLPoint(172, 250);
+        pts[o++] = GLPoint(182, 269);
+        pts[o++] = GLPoint(182, 450);
+        pts[o++] = GLPoint(161, 450);
+        pts[o++] = GLPoint(457, 450);
+        pts[o++] = GLPoint(457, 269);
+        pts[o++] = GLPoint(468, 250);
+        pts[o++] = GLPoint(478, 269);
+        pts[o++] = GLPoint(478, 450);
+        pts[o++] = GLPoint(457, 450);
+        bgImg.draw(pts, 6, pts, 6);
+        bgImg.draw(pts + 6, 6, pts + 6, 6);
+        
+        GLRect lava1(0, 450, 214, 10);
+        GLRect lava2(425, 450, 215, 10);
+        bgImg.draw(lava1, lava1);
+        bgImg.draw(lava2, lava2);
     }
 }
