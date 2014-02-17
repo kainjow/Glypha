@@ -6,6 +6,7 @@
 #include "GLRenderer.h"
 #include "GLImage.h"
 #include "GLSounds.h"
+#include "GLCursor.h"
 #include "GLUtils.h"
 
 #define kNumLightningPts 8
@@ -68,6 +69,7 @@ public:
     
 private:
     GLRenderer *renderer_;
+    GLCursor cursor;
     GLUtils utils;
     double now;
     void loadImages();

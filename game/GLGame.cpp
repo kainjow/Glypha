@@ -392,6 +392,8 @@ void GLGame::newGame()
     setUpLevel();
     generateEnemies();
     resetPlayer(true);
+    
+    cursor.obscure();
 }
 
 void GLGame::setUpLevel()
