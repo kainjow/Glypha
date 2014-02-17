@@ -520,26 +520,30 @@ void GLGame::drawHand() const
     }
 }
 
-void GLGame::drawPlayer()
+void GLGame::drawPlayer() const
 {
-	GLRect src;
-	
-	if ((evenFrame) && (thePlayer.mode == kIdle)) {
+    GLRect src;
+
+    if ((evenFrame) && (thePlayer.mode == kIdle)) {
         playerIdleImg.draw(thePlayer.dest);
-	} else if (thePlayer.mode == kBones) {
-		src = playerRects[thePlayer.srcNum];
-		src.bottom = (src.top + thePlayer.frame);
+    } else if (thePlayer.mode == kBones) {
+        src = playerRects[thePlayer.srcNum];
+        src.bottom = (src.top + thePlayer.frame);
         playerImg.draw(thePlayer.dest, src);
-	} else {
+    } else {
         src = playerRects[thePlayer.srcNum];
         playerImg.draw(thePlayer.dest, src);
-	}
-    
-	thePlayer.wasH = thePlayer.h;
-	thePlayer.wasV = thePlayer.v;
-	thePlayer.wasDest = thePlayer.dest;
-    
-    checkPlayerWrapAround();
+    }
+
+    if (thePlayer.wrapping) {
+        if (thePlayer.mode == kBones) {
+            src = playerRects[thePlayer.srcNum];
+            src.bottom = src.top + thePlayer.frame;
+            playerImg.draw(thePlayer.wrap, src);
+        } else {
+            playerImg.draw(thePlayer.wrap, playerRects[thePlayer.srcNum]);
+        }
+    }
 }
 
 void GLGame::drawPlatforms() const
@@ -586,6 +590,12 @@ void GLGame::movePlayer()
             handlePlayerBones();
             break;
 	}
+    
+    checkPlayerWrapAround();
+    
+    thePlayer.wasH = thePlayer.h;
+	thePlayer.wasV = thePlayer.v;
+	thePlayer.wasDest = thePlayer.dest;
 }
 
 void GLGame::handlePlayerIdle()
@@ -1301,53 +1311,19 @@ void GLGame::handleHand()
 
 void GLGame::checkPlayerWrapAround()
 {
-    GLRect wrapRect, wasWrapRect, src;
+    GLRect wrapRect;
 
     if (thePlayer.dest.right > 640) {
         thePlayer.wrapping = true;
         wrapRect = thePlayer.dest;
         wrapRect.left -= 640;
         wrapRect.right -= 640;
-        
-        wasWrapRect = thePlayer.wasDest;
-        wasWrapRect.left -= 640;
-        wasWrapRect.right -= 640;
-        
-        if (thePlayer.mode == kBones) {
-            src = playerRects[thePlayer.srcNum];
-            src.bottom = src.top + thePlayer.frame;
-#if 0
-            CopyMask(GetPortBitMapForCopyBits(playerSrcMap),
-                     GetPortBitMapForCopyBits(playerMaskMap),
-                     GetPortBitMapForCopyBits(workSrcMap),
-                     &src, &src, &wrapRect);
-#endif
-        } else {
-            playerImg.draw(wrapRect, playerRects[thePlayer.srcNum]);
-        }
         thePlayer.wrap = wrapRect;
     } else if (thePlayer.dest.left < 0) {
         thePlayer.wrapping = true;
         wrapRect = thePlayer.dest;
         wrapRect.left += 640;
         wrapRect.right += 640;
-        
-        wasWrapRect = thePlayer.wasDest;
-        wasWrapRect.left += 640;
-        wasWrapRect.right += 640;
-        
-        if (thePlayer.mode == kBones) {
-            src = playerRects[thePlayer.srcNum];
-            src.bottom = src.top + thePlayer.frame;
-#if 0
-            CopyMask(GetPortBitMapForCopyBits(playerSrcMap),
-                     GetPortBitMapForCopyBits(playerMaskMap),
-                     GetPortBitMapForCopyBits(workSrcMap),
-                     &src, &src, &wrapRect);
-#endif
-        } else {
-            playerImg.draw(wrapRect, playerRects[thePlayer.srcNum]);
-        }
         thePlayer.wrap = wrapRect;
     } else {
         thePlayer.wrapping = false;
@@ -1402,68 +1378,61 @@ void GLGame::handleCountDownTimer()
 
 void GLGame::moveEnemies()
 {
-	int i;
-	
-	doEnemyFlapSound = false;
-	doEnemyScrapeSound = false;
-	
-	for (i = 0; i < numEnemies; i++)
-	{
-		switch (theEnemies[i].mode)
-		{
-			case kIdle:
+    doEnemyFlapSound = false;
+    doEnemyScrapeSound = false;
+
+    for (int i = 0; i < numEnemies; i++) {
+        switch (theEnemies[i].mode) {
+            case kIdle:
                 handleIdleEnemies(i);
                 break;
                 
-			case kFlying:
+            case kFlying:
                 handleFlyingEnemies(i);
                 break;
                 
-			case kWalking:
+            case kWalking:
                 handleWalkingEnemy(i);
                 break;
                 
-			case kSpawning:
+            case kSpawning:
                 handleSpawningEnemy(i);
                 break;
                 
-			case kFalling:
+            case kFalling:
                 handleFallingEnemy(i);
                 break;
                 
-			case kEggTimer:
+            case kEggTimer:
                 handleEggEnemy(i);
                 break;
-                
-			case kDeadAndGone:
-                break;
-		}
-	}
-	
-	if (doEnemyFlapSound) {
+        }
+        
+        theEnemies[i].wasDest = theEnemies[i].dest;
+        theEnemies[i].wasH = theEnemies[i].h;
+        theEnemies[i].wasV = theEnemies[i].v;
+    }
+
+    if (doEnemyFlapSound) {
         sounds.play(kFlap2Sound);
     }
-	if (doEnemyScrapeSound) {
+    if (doEnemyScrapeSound) {
         sounds.play(kScrape2Sound);
     }
-	if ((deadEnemies >= numEnemiesThisLevel) && (countDownTimer == 0)) {
-		countDownTimer = 30;
+    if ((deadEnemies >= numEnemiesThisLevel) && (countDownTimer == 0)) {
+        countDownTimer = 30;
     }
 }
 
-void GLGame::checkEnemyWrapAround(int who)
+void GLGame::checkEnemyWrapAround(int who) const
 {
-	GLRect wrapRect, wasWrapRect, src;
+	GLRect wrapRect, src;
 	
 	if (theEnemies[who].dest.right > 640)
 	{
 		wrapRect = theEnemies[who].dest;
 		wrapRect.left -= 640;
 		wrapRect.right -= 640;
-		
-		wasWrapRect = theEnemies[who].wasDest;
-		wasWrapRect.left -= 640;
-		wasWrapRect.right -= 640;
 		
 		if ((theEnemies[who].mode == kFalling) || (theEnemies[who].mode == kEggTimer))
 		{
@@ -1487,9 +1456,6 @@ void GLGame::checkEnemyWrapAround(int who)
 		wrapRect.left += 640;
 		wrapRect.right += 640;
 		
-		wasWrapRect = theEnemies[who].wasDest;
-		wasWrapRect.left += 640;
-		wasWrapRect.right += 640;
 		if ((theEnemies[who].mode == kFalling) || (theEnemies[who].mode == kEggTimer))
 		{
 			if ((theEnemies[who].mode == kEggTimer) && (theEnemies[who].frame < 24))
@@ -1508,48 +1474,32 @@ void GLGame::checkEnemyWrapAround(int who)
 	}
 }
 
-void GLGame::drawEnemies()
+void GLGame::drawEnemies() const
 {
-	GLRect src;
-	int i;
-	
-	for (i = 0; i < numEnemies; i++)
-	{
-		switch (theEnemies[i].mode)
-		{
-			case kSpawning:
+    GLRect src;
+    for (int i = 0; i < numEnemies; i++) {
+        switch (theEnemies[i].mode) {
+            case kSpawning:
                 src = enemyRects[theEnemies[i].srcNum];
                 src.bottom = src.top + theEnemies[i].frame;
                 enemyWalk.draw(theEnemies[i].dest, src);
-                theEnemies[i].wasDest = theEnemies[i].dest;
-                theEnemies[i].wasH = theEnemies[i].h;
-                theEnemies[i].wasV = theEnemies[i].v;
-				break;
+                break;
                 
-			case kFlying:
+            case kFlying:
                 enemyFly.draw(theEnemies[i].dest, enemyRects[theEnemies[i].srcNum]);
                 checkEnemyWrapAround(i);
-                theEnemies[i].wasDest = theEnemies[i].dest;
-                theEnemies[i].wasH = theEnemies[i].h;
-                theEnemies[i].wasV = theEnemies[i].v;
                 break;
                 
-			case kWalking:
+            case kWalking:
                 enemyWalk.draw(theEnemies[i].dest, enemyRects[theEnemies[i].srcNum]);
-                theEnemies[i].wasDest = theEnemies[i].dest;
-                theEnemies[i].wasH = theEnemies[i].h;
-                theEnemies[i].wasV = theEnemies[i].v;
                 break;
                 
-			case kFalling:
+            case kFalling:
                 egg.draw(theEnemies[i].dest, eggSrcRect);
                 checkEnemyWrapAround(i);
-                theEnemies[i].wasDest = theEnemies[i].dest;
-                theEnemies[i].wasH = theEnemies[i].h;
-                theEnemies[i].wasV = theEnemies[i].v;
                 break;
                 
-			case kEggTimer:
+            case kEggTimer:
                 if (theEnemies[i].frame < 24) {
                     src = eggSrcRect;
                     src.bottom = src.top + theEnemies[i].frame;
@@ -1558,12 +1508,9 @@ void GLGame::drawEnemies()
                 }
                 egg.draw(theEnemies[i].dest, src);
                 checkEnemyWrapAround(i);
-                theEnemies[i].wasDest = theEnemies[i].dest;
-                theEnemies[i].wasH = theEnemies[i].h;
-                theEnemies[i].wasV = theEnemies[i].v;
                 break;
-		}
-	}
+        }
+    }
 }
 
 void GLGame::generateEnemies()

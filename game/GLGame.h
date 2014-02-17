@@ -119,7 +119,7 @@ private:
     void offAMortal();
     GLImage playerImg;
     GLImage playerIdleImg;
-    void drawPlayer();
+    void drawPlayer() const;
     void movePlayer();
     void handlePlayerIdle();
     void handlePlayerWalking();
@@ -181,9 +181,9 @@ private:
     GLImage enemyWalk;
     GLImage egg;
     void moveEnemies();
-    void checkEnemyWrapAround(int who);
+    void checkEnemyWrapAround(int who) const;
     void drawHand() const;
-    void drawEnemies();
+    void drawEnemies() const;
     void generateEnemies();
     bool setEnemyInitialLocation(GLRect *theRect);
     void initEnemy(short i, bool reincarnated);
