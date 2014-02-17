@@ -20,6 +20,8 @@ public:
     void zeroCorner();
     
     bool sect(const GLRect *r2);
+    
+    void inset(int dh, int dv);
 
     int top, left, bottom, right;
 };

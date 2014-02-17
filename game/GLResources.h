@@ -17,6 +17,12 @@ extern unsigned char hand_png[];
 extern unsigned int hand_png_len;
 extern unsigned char obelisks_png[];
 extern unsigned int obelisks_png_len;
+extern unsigned char enemyFly_png[];
+extern unsigned int enemyFly_png_len;
+extern unsigned char enemyWalk_png[];
+extern unsigned int enemyWalk_png_len;
+extern unsigned char egg_png[];
+extern unsigned int egg_png_len;
 
 extern unsigned char flap_aif[];
 extern unsigned int flap_aif_len;
@@ -30,5 +36,21 @@ extern unsigned char bird_aif[];
 extern unsigned int bird_aif_len;
 extern unsigned char lightning_aif[];
 extern unsigned int lightning_aif_len;
+extern unsigned char flap2_aif[];
+extern unsigned int flap2_aif_len;
+extern unsigned char scrape2_aif[];
+extern unsigned int scrape2_aif_len;
+extern unsigned char spawn_aif[];
+extern unsigned int spawn_aif_len;
+extern unsigned char splash_aif[];
+extern unsigned int splash_aif_len;
+extern unsigned char bonus_aif[];
+extern unsigned int bonus_aif_len;
+extern unsigned char boom1_aif[];
+extern unsigned int boom1_aif_len;
+extern unsigned char boom2_aif[];
+extern unsigned int boom2_aif_len;
+extern unsigned char music_aif[];
+extern unsigned int music_aif_len;
 
 #endif

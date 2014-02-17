@@ -9,6 +9,7 @@
 #include "GLUtils.h"
 
 #define kNumLightningPts 8
+#define kMaxEnemies 8
 
 struct playerType {
 	GLRect dest, wasDest, wrap;
@@ -21,6 +22,19 @@ struct playerType {
 	bool walking, wrapping;
 	bool clutched;
 };
+
+struct enemyType {
+	GLRect dest, wasDest;
+	int h, v;
+	int wasH, wasV;
+	int hVel, vVel;
+	int srcNum, mode;
+	int kind, frame;
+	int heightSmell, targetAlt;
+	int flapImpulse, pass;
+	int maxHVel, maxVVel;
+	bool facingRight;
+} ;
 
 enum GLGameKey {
     kGLGameKeyNone = 0,
@@ -97,6 +111,7 @@ private:
     void handlePlayerFlying();
     void handlePlayerSinking();
     void handlePlayerFalling();
+    void handlePlayerBones();
     void setAndCheckPlayerDest();
     void checkTouchDownCollision();
     void checkPlatformCollision();
@@ -131,6 +146,41 @@ private:
     GLRect handRects[2];
     void initHandLocation();
     void handleHand();
+    
+    int countDownTimer;
+    void handleCountDownTimer();
+    
+    int numEnemies;
+    int numEnemiesThisLevel;
+    int deadEnemies;
+    int numOwls;
+    int spawnedEnemies;
+    enemyType theEnemies[kMaxEnemies];
+    GLRect enemyInitRects[5];
+    GLRect eggSrcRect;
+    bool doEnemyFlapSound;
+	bool doEnemyScrapeSound;
+    GLImage enemyFly;
+    GLImage enemyWalk;
+    GLImage egg;
+    void moveEnemies();
+    void checkEnemyWrapAround(int who);
+    void drawEnemies();
+    void generateEnemies();
+    bool setEnemyInitialLocation(GLRect *theRect);
+    void initEnemy(short i, bool reincarnated);
+    void setEnemyAttributes(int i);
+    int assignNewAltitude();
+    void checkEnemyPlatformHit(int h);
+    void checkEnemyRoofCollision(int i);
+    void handleIdleEnemies(int i);
+    void handleFlyingEnemies(int i);
+    void handleWalkingEnemy(int i);
+    void handleSpawningEnemy(int i);
+    void handleFallingEnemy(int i);
+    void handleEggEnemy(int i);
+    void resolveEnemyPlayerHit(int i);
+    void checkPlayerEnemyCollision();
 };
 
 #endif

@@ -65,3 +65,12 @@ bool GLRect::sect(const GLRect *r2)
     const GLRect *r1 = this;
     return (r1->left < r2->right && r1->right > r2->left && r1->top < r2->bottom && r1->bottom > r2->top);
 }
+
+void GLRect::inset(int dh, int dv)
+{
+    left += dh;
+    right -= (dh * 2);
+    top += dv;
+    bottom -= (dv * 2);
+}
+

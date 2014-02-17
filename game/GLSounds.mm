@@ -12,6 +12,14 @@ public:
         loadSound(kWalkSound, walk_aif, walk_aif_len);
         loadSound(kScreechSound, screech_aif, screech_aif_len);
         loadSound(kLightningSound, lightning_aif, lightning_aif_len);
+        loadSound(kFlap2Sound, flap2_aif, flap2_aif_len);
+        loadSound(kScrape2Sound, scrape2_aif, scrape2_aif_len);
+        loadSound(kSpawnSound, spawn_aif, spawn_aif_len);
+        loadSound(kSplashSound, splash_aif, splash_aif_len);
+        loadSound(kBonusSound, bonus_aif, bonus_aif_len);
+        loadSound(kBoom1Sound, boom1_aif, boom1_aif_len);
+        loadSound(kBoom2Sound, boom2_aif, boom2_aif_len);
+        loadSound(kMusicSound, music_aif, music_aif_len);
     }
     
     void play(int which) {
@@ -25,7 +33,6 @@ public:
             }
         }
         if (!found) {
-            //NSLog(@"Copy %d", which);
             AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:sounds[which].front().data error:nil];
             sounds[which].push_back(player);
             [player play];

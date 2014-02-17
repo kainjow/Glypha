@@ -31,10 +31,30 @@
 #define kGravity					4
 
 #define kInitNumLives				5
-#define kMaxEnemies					8
 #define kDontFlapVel				8
 
 #define kLightningDelay (1.0 / 30.0)
+
+#define kOwl						0
+#define kWolf						1
+#define kJackal						2
+
+#define kEnemyImpulse			8
+
+#define kOwlMaxHVel				96
+#define kOwlMaxVVel				320
+#define kOwlHeightSmell			96
+#define kOwlFlapImpulse			32
+
+#define kWolfMaxHVel			128
+#define kWolfMaxVVel			400
+#define kWolfHeightSmell		160
+#define kWolfFlapImpulse		48
+
+#define kJackalMaxHVel			192
+#define kJackalMaxVVel			512
+#define kJackalHeightSmell		240
+#define kJackalFlapImpulse		72
 
 GLGame::GLGame()
     : renderer_(new GLRenderer())
@@ -130,6 +150,28 @@ GLGame::GLGame()
     obeliskRects[2].offsetBy(161, 250);
     obeliskRects[3].set(0, 0, 20, 209);
     obeliskRects[3].offsetBy(457, 250);
+    
+    for (int i = 0; i < 12; i++) {
+		enemyRects[i].set(0, 0, 48, 48);
+		enemyRects[i].offsetBy(0, 48 * i);
+	}
+	for (int i = 0; i < 12; i++) {
+		enemyRects[i + 12].set(0, 0, 64, 40);
+		enemyRects[i + 12].offsetBy(0, 40 * i);
+	}
+
+    enemyInitRects[0].set(0, 0, 48, 1);
+	enemyInitRects[0].offsetBy(72, 284);
+	enemyInitRects[1].set(0, 0, 48, 1);
+	enemyInitRects[1].offsetBy(520, 284);
+	enemyInitRects[2].set(0, 0, 48, 1);
+	enemyInitRects[2].offsetBy(72, 105);
+	enemyInitRects[3].set(0, 0, 48, 1);
+	enemyInitRects[3].offsetBy(520, 105);
+	enemyInitRects[4].set(0, 0, 48, 1);
+	enemyInitRects[4].offsetBy(296, 190);
+    
+    eggSrcRect.set(0, 0, 24, 24);
 }
 
 GLGame::~GLGame()
@@ -157,6 +199,9 @@ void GLGame::loadImages()
     numbersImg.load(numbers_png, numbers_png_len);
     handImg.load(hand_png, hand_png_len);
     obelisksImg.load(obelisks_png, obelisks_png_len);
+    enemyFly.load(enemyFly_png, enemyFly_png_len);
+    enemyWalk.load(enemyWalk_png, enemyWalk_png_len);
+    egg.load(egg_png, egg_png_len);
 }
 
 void GLGame::draw()
@@ -193,18 +238,20 @@ void GLGame::draw()
     if (isPlaying) {
         drawPlatforms();
         movePlayer();
+        moveEnemies();
         handleHand();
         drawPlayer();
         checkPlayerWrapAround();
+        drawEnemies();
         drawObelisks();
         updateLivesNumbers();
         updateScoreNumbers();
         updateLevelNumbers();
         getPlayerInput();
+        handleCountDownTimer();
     } else {
         drawLightning();
         drawObelisks();
-
     }
     
     drawLightning();
@@ -331,16 +378,19 @@ void GLGame::strikeLightning()
 
 void GLGame::newGame()
 {
+    countDownTimer = 0;
 	numLedges = 3;
 	levelOn = 0;
     livesLeft = kInitNumLives;
     theScore = 0L;
     isPlaying = true;
+    numOwls = 4;
     
     initHandLocation();
 	theHand.mode = kLurking;
     
     setUpLevel();
+    generateEnemies();
     resetPlayer(true);
 }
 
@@ -435,14 +485,16 @@ void GLGame::resetPlayer(bool initialPlace)
 
 void GLGame::offAMortal()
 {
-	livesLeft--;
-	
-	if (livesLeft > 0) {
-		resetPlayer(false);
-		updateLivesNumbers();
-	} else {
-		isPlaying = false;
-	}
+    livesLeft--;
+
+    if (livesLeft > 0) {
+        resetPlayer(false);
+        updateLivesNumbers();
+    } else {
+        isPlaying = false;
+        sounds.play(kMusicSound);
+        //CheckHighScore();
+    }
 }
 
 void GLGame::drawPlayer()
@@ -506,8 +558,7 @@ void GLGame::movePlayer()
             break;
             
 		case kBones:
-            printf("Unhandled kBones\n");
-            //HandlePlayerBones();
+            handlePlayerBones();
             break;
 	}
 }
@@ -595,7 +646,7 @@ void GLGame::handlePlayerWalking()
 	
 	checkTouchDownCollision();
 	//KeepPlayerOnPlatform();
-	//CheckPlayerEnemyCollision();
+	checkPlayerEnemyCollision();
 }
 
 void GLGame::handlePlayerFlying()
@@ -667,7 +718,7 @@ void GLGame::handlePlayerFlying()
 	setAndCheckPlayerDest();
 	
 	checkLavaRoofCollision();
-	//CheckPlayerEnemyCollision();
+	checkPlayerEnemyCollision();
 	checkPlatformCollision();
 	checkTouchDownCollision();
 }
@@ -758,6 +809,18 @@ void GLGame::handlePlayerFalling()
     checkPlatformCollision();
 }
 
+void GLGame::handlePlayerBones()
+{
+    if (evenFrame) {
+        thePlayer.frame--;
+        if (thePlayer.frame == 0) {
+            offAMortal();
+        } else {
+            thePlayer.dest.top = thePlayer.dest.bottom - thePlayer.frame;
+        }
+    }
+}
+
 void GLGame::checkLavaRoofCollision()
 {
 	short offset;
@@ -765,7 +828,7 @@ void GLGame::checkLavaRoofCollision()
 	if (thePlayer.dest.bottom> kLavaHeight)
 	{
 		if (thePlayer.mode == kFalling) {
-			//PlayExternalSound(kSplashSound, kSplashPriority);
+			sounds.play(kSplashSound);
 		} else {
             sounds.play(kBirdSound);
         }
@@ -885,7 +948,7 @@ void GLGame::checkPlatformCollision()
 							}
 							else
 							{
-								//PlayExternalSound(kBoom1Sound, kBoom1Priority);
+								sounds.play(kBoom1Sound);
 								thePlayer.vVel = 0;
 								thePlayer.mode = kBones;
 								thePlayer.frame = 22;
@@ -1276,4 +1339,996 @@ void GLGame::drawObelisks()
         bgImg.draw(lava1, lava1);
         bgImg.draw(lava2, lava2);
     }
+}
+
+void GLGame::handleCountDownTimer()
+{
+	if (countDownTimer == 0) {
+		return;
+	} else {
+		countDownTimer--;
+		if (countDownTimer == 0) {
+			countDownTimer = 0;
+			levelOn++;
+			updateLevelNumbers();
+			setUpLevel();
+			generateEnemies();
+		}
+	}
+}
+
+void GLGame::moveEnemies()
+{
+	int i;
+	
+	doEnemyFlapSound = false;
+	doEnemyScrapeSound = false;
+	
+	for (i = 0; i < numEnemies; i++)
+	{
+		switch (theEnemies[i].mode)
+		{
+			case kIdle:
+                handleIdleEnemies(i);
+                break;
+                
+			case kFlying:
+                handleFlyingEnemies(i);
+                break;
+                
+			case kWalking:
+                handleWalkingEnemy(i);
+                break;
+                
+			case kSpawning:
+                handleSpawningEnemy(i);
+                break;
+                
+			case kFalling:
+                handleFallingEnemy(i);
+                break;
+                
+			case kEggTimer:
+                handleEggEnemy(i);
+                break;
+                
+			case kDeadAndGone:
+                break;
+		}
+	}
+	
+	if (doEnemyFlapSound) {
+        sounds.play(kFlap2Sound);
+    }
+	if (doEnemyScrapeSound) {
+        sounds.play(kScrape2Sound);
+    }
+	if ((deadEnemies >= numEnemiesThisLevel) && (countDownTimer == 0)) {
+		countDownTimer = 30;
+    }
+}
+
+void GLGame::checkEnemyWrapAround(int who)
+{
+	GLRect wrapRect, wasWrapRect, src;
+	
+	if (theEnemies[who].dest.right > 640)
+	{
+		wrapRect = theEnemies[who].dest;
+		wrapRect.left -= 640;
+		wrapRect.right -= 640;
+		
+		wasWrapRect = theEnemies[who].wasDest;
+		wasWrapRect.left -= 640;
+		wasWrapRect.right -= 640;
+		
+		if ((theEnemies[who].mode == kFalling) || (theEnemies[who].mode == kEggTimer))
+		{
+			if ((theEnemies[who].mode == kEggTimer) && (theEnemies[who].frame < 24))
+			{
+				src = eggSrcRect;
+				src.bottom = src.top + theEnemies[who].frame;
+			}
+			else
+				src = eggSrcRect;
+            egg.draw(wrapRect, src);
+		}
+		else
+		{
+            enemyFly.draw(wrapRect, enemyRects[theEnemies[who].srcNum]);
+		}
+	}
+	else if (theEnemies[who].dest.left < 0)
+	{
+		wrapRect = theEnemies[who].dest;
+		wrapRect.left += 640;
+		wrapRect.right += 640;
+		
+		wasWrapRect = theEnemies[who].wasDest;
+		wasWrapRect.left += 640;
+		wasWrapRect.right += 640;
+		if ((theEnemies[who].mode == kFalling) || (theEnemies[who].mode == kEggTimer))
+		{
+			if ((theEnemies[who].mode == kEggTimer) && (theEnemies[who].frame < 24))
+			{
+				src = eggSrcRect;
+				src.bottom = src.top + theEnemies[who].frame;
+			}
+			else
+				src = eggSrcRect;
+            egg.draw(wrapRect, src);
+		}
+		else
+		{
+            enemyFly.draw(wrapRect, enemyRects[theEnemies[who].srcNum]);
+		}
+	}
+}
+
+void GLGame::drawEnemies()
+{
+	GLRect src;
+	int i;
+	
+	for (i = 0; i < numEnemies; i++)
+	{
+		switch (theEnemies[i].mode)
+		{
+			case kSpawning:
+                src = enemyRects[theEnemies[i].srcNum];
+                src.bottom = src.top + theEnemies[i].frame;
+                enemyWalk.draw(theEnemies[i].dest, src);
+                theEnemies[i].wasDest = theEnemies[i].dest;
+                theEnemies[i].wasH = theEnemies[i].h;
+                theEnemies[i].wasV = theEnemies[i].v;
+				break;
+                
+			case kFlying:
+                enemyFly.draw(theEnemies[i].dest, enemyRects[theEnemies[i].srcNum]);
+                checkEnemyWrapAround(i);
+                theEnemies[i].wasDest = theEnemies[i].dest;
+                theEnemies[i].wasH = theEnemies[i].h;
+                theEnemies[i].wasV = theEnemies[i].v;
+                break;
+                
+			case kWalking:
+                enemyWalk.draw(theEnemies[i].dest, enemyRects[theEnemies[i].srcNum]);
+                theEnemies[i].wasDest = theEnemies[i].dest;
+                theEnemies[i].wasH = theEnemies[i].h;
+                theEnemies[i].wasV = theEnemies[i].v;
+                break;
+                
+			case kFalling:
+                egg.draw(theEnemies[i].dest, eggSrcRect);
+                checkEnemyWrapAround(i);
+                theEnemies[i].wasDest = theEnemies[i].dest;
+                theEnemies[i].wasH = theEnemies[i].h;
+                theEnemies[i].wasV = theEnemies[i].v;
+                break;
+                
+			case kEggTimer:
+                if (theEnemies[i].frame < 24) {
+                    src = eggSrcRect;
+                    src.bottom = src.top + theEnemies[i].frame;
+                } else {
+                    src = eggSrcRect;
+                }
+                egg.draw(theEnemies[i].dest, src);
+                checkEnemyWrapAround(i);
+                theEnemies[i].wasDest = theEnemies[i].dest;
+                theEnemies[i].wasH = theEnemies[i].h;
+                theEnemies[i].wasV = theEnemies[i].v;
+                break;
+		}
+	}
+}
+
+void GLGame::generateEnemies()
+{
+	if ((levelOn % 5) == 4)			// Egg Wave
+	{
+		numEnemies = kMaxEnemies;
+		numEnemiesThisLevel = numEnemies;
+	}
+	else
+	{
+		numEnemies = ((levelOn / 5) + 2) * 2;
+		if (numEnemies > kMaxEnemies)
+			numEnemies = kMaxEnemies;
+		numEnemiesThisLevel = numEnemies * 2;
+	}
+	
+	deadEnemies = 0;
+	
+	numOwls = 4 - ((levelOn + 2) / 5);
+	if (numOwls < 0)
+		numOwls = 0;
+	
+	spawnedEnemies = 0;
+	
+	for (int i = 0; i < numEnemies; i++)
+		initEnemy(i, false);
+}
+
+bool GLGame::setEnemyInitialLocation(GLRect *theRect)
+{
+	short where, possibilities;
+	bool facing;
+	
+	possibilities = numLedges - 1;
+	where = utils.randomInt(possibilities);
+	*theRect = enemyInitRects[where];
+	
+	switch (where)
+	{
+		case 0:
+		case 2:
+            facing = TRUE;
+            break;
+            
+		case 3:
+            if (utils.randomInt(2) == 0)
+                facing = TRUE;
+            else
+                facing = FALSE;
+            break;
+            
+		default:
+            facing = FALSE;
+            break;
+	}
+	
+	if ((levelOn % 5) == 4)			// Egg Wave
+	{
+		theRect->left += 12 + utils.randomInt(48) - 24;
+		theRect->right = theRect->left + 24;
+		theRect->top = theRect->bottom - 24;
+	}
+	
+	return (facing);
+}
+
+void GLGame::initEnemy(short i, bool reincarnated)
+{
+	bool facing;
+	
+	if (spawnedEnemies < numEnemiesThisLevel)
+	{
+		facing = setEnemyInitialLocation(&theEnemies[i].dest);
+		theEnemies[i].wasDest = theEnemies[i].dest;
+		theEnemies[i].h = theEnemies[i].dest.left << 4;
+		theEnemies[i].v = theEnemies[i].dest.top << 4;
+		theEnemies[i].wasH = theEnemies[i].h;
+		theEnemies[i].wasV = theEnemies[i].v;
+		theEnemies[i].targetAlt = theEnemies[i].v - (40 << 4);
+		theEnemies[i].hVel = 0;
+		theEnemies[i].vVel = 0;
+		theEnemies[i].pass = 0;
+		if ((levelOn % 5) == 4)			// Egg Wave
+			theEnemies[i].mode = kEggTimer;
+		else
+			theEnemies[i].mode = kIdle;
+		if (i < numOwls)
+			theEnemies[i].kind = kOwl;
+		else if (i > (numOwls + 6))
+			theEnemies[i].kind = kJackal;
+		else
+			theEnemies[i].kind = kWolf;
+		theEnemies[i].facingRight = facing;
+		setEnemyAttributes(i);
+		
+		if (reincarnated)
+			theEnemies[i].frame = utils.randomInt(48) + 8 + (numOwls * 32);
+		else
+			theEnemies[i].frame = utils.randomInt(48) + 32 + (64 * i) + (numOwls * 32);
+		
+		if ((levelOn % 5) == 4)			// Egg Wave
+			theEnemies[i].kind--;
+		
+		spawnedEnemies++;
+	}
+}
+
+void GLGame::setEnemyAttributes(int i)
+{
+	short		h;
+	
+	h = (theEnemies[i].dest.left + theEnemies[i].dest.right) >> 1;
+	if (h < 320)
+		theEnemies[i].facingRight = TRUE;
+	else
+		theEnemies[i].facingRight = FALSE;
+	
+	switch (theEnemies[i].kind)
+	{
+		case kOwl:
+            if (theEnemies[i].facingRight)
+                theEnemies[i].srcNum = 0;
+            else
+                theEnemies[i].srcNum = 2;
+            theEnemies[i].maxHVel = kOwlMaxHVel;
+            theEnemies[i].maxVVel = kOwlMaxVVel;
+            theEnemies[i].heightSmell = kOwlHeightSmell;
+            theEnemies[i].flapImpulse = kOwlFlapImpulse;
+            break;
+            
+		case kWolf:
+            if (theEnemies[i].facingRight)
+                theEnemies[i].srcNum = 4;
+            else
+                theEnemies[i].srcNum = 6;
+            theEnemies[i].maxHVel = kWolfMaxHVel;
+            theEnemies[i].maxVVel = kWolfMaxVVel;
+            theEnemies[i].heightSmell = kWolfHeightSmell;
+            theEnemies[i].flapImpulse = kWolfFlapImpulse;
+            break;
+            
+		case kJackal:
+            if (theEnemies[i].facingRight)
+                theEnemies[i].srcNum = 8;
+            else
+                theEnemies[i].srcNum = 10;
+            theEnemies[i].maxHVel = kJackalMaxHVel;
+            theEnemies[i].maxVVel = kJackalMaxVVel;
+            theEnemies[i].heightSmell = kJackalHeightSmell;
+            theEnemies[i].flapImpulse = kJackalFlapImpulse;
+            break;
+	}
+}
+
+int GLGame::assignNewAltitude(void)
+{
+	int which, altitude = 0;
+	
+	which = utils.randomInt(4);
+	switch (which) {
+		case 0:
+            altitude = 65 << 4;
+            break;
+            
+		case 1:
+            altitude = 150 << 4;
+            break;
+            
+		case 2:
+            altitude = 245 << 4;
+            break;
+            
+		case 3:
+            altitude = 384 << 4;
+            break;
+	}
+	
+	return (altitude);
+}
+
+void GLGame::checkEnemyPlatformHit(int h)
+{
+	GLRect hRect, vRect, whoCares;
+	int i, offset;
+	
+	for (i = 0; i < numLedges; i++)
+	{
+		if (theEnemies[h].dest.sect(&platformRects[i]))
+		{
+			hRect.left = theEnemies[h].dest.left;
+			hRect.right = theEnemies[h].dest.right;
+			hRect.top = theEnemies[h].wasDest.top;
+			hRect.bottom = theEnemies[h].wasDest.bottom;
+			
+			if (hRect.sect(&platformRects[i]))
+			{
+				if (theEnemies[h].h > theEnemies[h].wasH)	// moving to right
+				{
+					offset = theEnemies[h].dest.right - platformRects[i].left;
+					theEnemies[h].dest.left -= offset;
+					theEnemies[h].dest.right -= offset;
+					theEnemies[h].h = theEnemies[h].dest.left << 4;
+					theEnemies[h].wasH = theEnemies[h].h;
+					if (theEnemies[h].hVel > 0)
+						theEnemies[h].hVel = -(theEnemies[h].hVel >> 1);
+					else
+						theEnemies[h].hVel = theEnemies[h].hVel >> 1;
+				}
+				if (theEnemies[h].h < theEnemies[h].wasH)	// moving to left
+				{
+					offset = platformRects[i].right - theEnemies[h].dest.left;
+					theEnemies[h].dest.left += offset;
+					theEnemies[h].dest.right += offset;
+					theEnemies[h].h = theEnemies[h].dest.left << 4;
+					theEnemies[h].wasH = theEnemies[h].h;
+					if (theEnemies[h].hVel < 0)
+						theEnemies[h].hVel = -(theEnemies[h].hVel >> 1);
+					else
+						theEnemies[h].hVel = theEnemies[h].hVel >> 1;
+				}
+				doEnemyScrapeSound = true;
+				theEnemies[h].facingRight = !theEnemies[h].facingRight;
+			}
+			else
+			{
+				vRect.left = theEnemies[h].wasDest.left;
+				vRect.right = theEnemies[h].wasDest.right;
+				vRect.top = theEnemies[h].dest.top;
+				vRect.bottom = theEnemies[h].dest.bottom;
+				
+				if (vRect.sect(&platformRects[i]))
+				{
+					if (theEnemies[h].mode == kFalling)
+					{
+						theEnemies[i].hVel -= (theEnemies[i].hVel >> 3);
+						if ((theEnemies[i].hVel < 8) && (theEnemies[i].hVel > -8))
+						{
+							if (theEnemies[i].hVel > 0)
+								theEnemies[i].hVel--;
+							else if (theEnemies[i].hVel < 0)
+								theEnemies[i].hVel++;
+						}
+					}
+					
+					if (theEnemies[h].v > theEnemies[h].wasV)		// heading down
+					{
+						offset = theEnemies[h].dest.bottom - platformRects[i].top;
+						theEnemies[h].dest.top -= offset;
+						theEnemies[h].dest.bottom -= offset;
+						theEnemies[h].v = theEnemies[h].dest.top << 4;
+						theEnemies[h].wasV = theEnemies[h].v;
+						if (theEnemies[h].vVel > kDontFlapVel) {
+							doEnemyScrapeSound = true;
+                        }
+						if (theEnemies[h].vVel > 0) {
+							theEnemies[h].vVel = -(theEnemies[h].vVel >> 1);
+						} else {
+							theEnemies[h].vVel = theEnemies[h].vVel >> 1;
+                        }
+						if ((theEnemies[h].vVel < 8) && (theEnemies[h].vVel > -8) &&
+                            (theEnemies[h].hVel == 0) && (theEnemies[h].mode == kFalling))
+						{
+							if (((theEnemies[h].dest.right - 8) > platformRects[i].right) &&
+                                (theEnemies[h].hVel == 0))
+							{				// if enemy has come to rest half off the edge…
+								theEnemies[h].hVel = 32;
+							}
+							else if (((theEnemies[h].dest.left + 8) < platformRects[i].left) &&
+                                     (theEnemies[h].hVel == 0))
+							{
+								theEnemies[h].hVel = -32;
+							}
+							else
+							{
+								theEnemies[h].mode = kEggTimer;
+								theEnemies[h].frame = (numOwls * 96) + 128;
+								theEnemies[h].vVel = 0;
+							}
+						}
+					}
+					if (theEnemies[h].v < theEnemies[h].wasV)		// heading up
+					{
+						offset = theEnemies[h].dest.top - platformRects[i].bottom;
+						theEnemies[h].dest.top -= offset;
+						theEnemies[h].dest.bottom -= offset;
+						theEnemies[h].v = theEnemies[h].dest.top << 4;
+						theEnemies[h].wasV = theEnemies[h].v;
+						doEnemyScrapeSound = true;
+						if (theEnemies[h].vVel < 0)
+							theEnemies[h].vVel = -(theEnemies[h].vVel >> 2);
+						else
+							theEnemies[h].vVel = theEnemies[h].vVel >> 2;
+						if ((theEnemies[h].vVel < 8) && (theEnemies[h].vVel > -8) &&
+                            (theEnemies[h].hVel == 0) && (theEnemies[h].mode == kFalling))
+						{
+							theEnemies[h].mode = kEggTimer;
+							theEnemies[h].frame = (numOwls * 96) + 128;
+							theEnemies[h].vVel = 0;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void GLGame::checkEnemyRoofCollision(int i)
+{
+	int offset;
+	
+	if (theEnemies[i].dest.top < (kRoofHeight - 2))
+	{
+		offset = kRoofHeight - theEnemies[i].dest.top;
+		theEnemies[i].dest.top += offset;
+		theEnemies[i].dest.bottom += offset;
+		theEnemies[i].v = theEnemies[i].dest.top << 4;
+		doEnemyScrapeSound = true;
+		theEnemies[i].vVel = -(theEnemies[i].vVel >> 2);
+	}
+	else if (theEnemies[i].dest.top > kLavaHeight)
+	{
+		theEnemies[i].mode = kDeadAndGone;
+		deadEnemies++;
+		
+		sounds.play(kSplashSound);
+		initEnemy(i, true);
+	}
+}
+
+void GLGame::handleIdleEnemies(int i)
+{
+	theEnemies[i].frame--;
+	if (theEnemies[i].frame <= 0)
+	{
+		theEnemies[i].mode = kSpawning;
+		theEnemies[i].wasH = theEnemies[i].h;
+		theEnemies[i].wasV = theEnemies[i].v;
+		theEnemies[i].hVel = 0;
+		theEnemies[i].vVel = 0;
+		theEnemies[i].frame = 0;
+		setEnemyAttributes(i);
+		sounds.play(kSpawnSound);
+	}
+}
+
+void GLGame::handleFlyingEnemies(int i)
+{
+	short dist;
+	bool shouldFlap;
+	
+	theEnemies[i].vVel += kGravity;
+	
+	dist = thePlayer.dest.top - theEnemies[i].dest.top;
+	if (dist < 0)
+		dist = -dist;
+	
+	if ((dist < theEnemies[i].heightSmell) &&
+        ((thePlayer.mode == kFlying) || (thePlayer.mode == kWalking)))
+	{							// enemy will actively seek the player
+		if (thePlayer.dest.left < theEnemies[i].dest.left)
+		{
+			dist = theEnemies[i].dest.left - thePlayer.dest.left;
+			if (dist < 320)		// closest route is to the left
+				theEnemies[i].facingRight = FALSE;
+			else				// closest route is to the right
+				theEnemies[i].facingRight = TRUE;
+		}
+		else if (thePlayer.dest.left > theEnemies[i].dest.left)
+		{
+			dist = thePlayer.dest.left - theEnemies[i].dest.left;
+			if (dist < 320)		// closest route is to the right
+				theEnemies[i].facingRight = TRUE;
+			else				// closest route is to the left
+				theEnemies[i].facingRight = FALSE;
+		}
+        // seek point 16 pixels above player
+		if (((theEnemies[i].v + 16) > thePlayer.v) && (evenFrame))
+			shouldFlap = TRUE;
+		else
+			shouldFlap = FALSE;
+	}
+	else
+	{
+		if ((theEnemies[i].v > theEnemies[i].targetAlt) && (evenFrame))
+			shouldFlap = TRUE;
+		else
+			shouldFlap = FALSE;
+	}
+	
+	if (shouldFlap)
+	{
+		theEnemies[i].vVel -= theEnemies[i].flapImpulse;
+		doEnemyFlapSound = true;
+	}
+	
+	if (theEnemies[i].facingRight)
+	{
+		theEnemies[i].hVel += kEnemyImpulse;
+		if (theEnemies[i].hVel > theEnemies[i].maxHVel)
+			theEnemies[i].hVel = theEnemies[i].maxHVel;
+		
+		switch (theEnemies[i].kind)
+		{
+			case kOwl:
+                if (shouldFlap)
+                    theEnemies[i].srcNum = 12;
+                else
+                    theEnemies[i].srcNum = 13;
+                break;
+                
+			case kWolf:
+                if (shouldFlap)
+                    theEnemies[i].srcNum = 16;
+                else
+                    theEnemies[i].srcNum = 17;
+                break;
+                
+			case kJackal:
+                if (shouldFlap)
+                    theEnemies[i].srcNum = 20;
+                else
+                    theEnemies[i].srcNum = 21;
+                break;
+		}
+		
+	}
+	else
+	{
+		theEnemies[i].hVel -= kEnemyImpulse;
+		if (theEnemies[i].hVel < -theEnemies[i].maxHVel)
+			theEnemies[i].hVel = -theEnemies[i].maxHVel;
+		
+		switch (theEnemies[i].kind)
+		{
+			case kOwl:
+                if (shouldFlap)
+                    theEnemies[i].srcNum = 14;
+                else
+                    theEnemies[i].srcNum = 15;
+                break;
+                
+			case kWolf:
+                if (shouldFlap)
+                    theEnemies[i].srcNum = 18;
+                else
+                    theEnemies[i].srcNum = 19;
+                break;
+                
+			case kJackal:
+                if (shouldFlap)
+                    theEnemies[i].srcNum = 22;
+                else
+                    theEnemies[i].srcNum = 23;
+                break;
+		}
+	}
+	
+	theEnemies[i].h += theEnemies[i].hVel;
+	theEnemies[i].dest.left = theEnemies[i].h >> 4;
+	theEnemies[i].dest.right = theEnemies[i].dest.left + 64;
+	
+	theEnemies[i].v += theEnemies[i].vVel;
+	theEnemies[i].dest.top = theEnemies[i].v >> 4;
+	theEnemies[i].dest.bottom = theEnemies[i].dest.top + 40;
+	
+	if (theEnemies[i].dest.left > 640)
+	{
+		theEnemies[i].dest.offsetBy(-640, 0);
+		theEnemies[i].h = theEnemies[i].dest.left << 4;
+		theEnemies[i].wasDest.offsetBy(-640, 0);
+		theEnemies[i].pass++;
+		if (theEnemies[i].pass > 2)		// after two screen passes…
+		{								// enemy patrols a new altitude
+			theEnemies[i].targetAlt = assignNewAltitude();
+			theEnemies[i].pass = 0;
+		}
+	}
+	else if (theEnemies[i].dest.right < 0)
+	{
+		theEnemies[i].dest.offsetBy(640, 0);
+		theEnemies[i].h = theEnemies[i].dest.left << 4;
+		theEnemies[i].wasDest.offsetBy(640, 0);
+		theEnemies[i].pass++;
+		if (theEnemies[i].pass > 2)
+		{
+			theEnemies[i].targetAlt = assignNewAltitude();
+			theEnemies[i].pass = 0;
+		}
+	}
+	
+	theEnemies[i].vVel -= theEnemies[i].vVel >> 4;	// friction
+	
+	if (theEnemies[i].vVel > theEnemies[i].maxVVel)
+		theEnemies[i].vVel = theEnemies[i].maxVVel;
+	else if (theEnemies[i].vVel < -theEnemies[i].maxVVel)
+		theEnemies[i].vVel = -theEnemies[i].maxVVel;
+	
+	checkEnemyRoofCollision(i);
+	checkEnemyPlatformHit(i);
+}
+
+void GLGame::handleWalkingEnemy(int i)
+{
+	if (theEnemies[i].facingRight)
+	{
+		theEnemies[i].dest.left += 6;
+		theEnemies[i].dest.right += 6;
+		switch (theEnemies[i].kind)
+		{
+			case kOwl:
+                theEnemies[i].srcNum = 1 - theEnemies[i].srcNum;
+                break;
+                
+			case kWolf:
+                theEnemies[i].srcNum = 9 - theEnemies[i].srcNum;
+                break;
+                
+			case kJackal:
+                theEnemies[i].srcNum = 17 - theEnemies[i].srcNum;
+                break;
+		}
+		theEnemies[i].hVel = 6 << 4;
+	}
+	else
+	{
+		theEnemies[i].dest.left -= 6;
+		theEnemies[i].dest.right -= 6;
+		switch (theEnemies[i].kind)
+		{
+			case kOwl:
+                theEnemies[i].srcNum = 5 - theEnemies[i].srcNum;
+                break;
+                
+			case kWolf:
+                theEnemies[i].srcNum = 13 - theEnemies[i].srcNum;
+                break;
+                
+			case kJackal:
+                theEnemies[i].srcNum = 21 - theEnemies[i].srcNum;
+                break;
+		}
+		theEnemies[i].hVel = -6 << 4;
+	}
+	theEnemies[i].frame++;
+	if (theEnemies[i].frame >= 8)
+	{
+		theEnemies[i].mode = kFlying;
+		theEnemies[i].frame = 0;
+		switch (theEnemies[i].kind)
+		{
+			case kOwl:
+                if (theEnemies[i].facingRight)
+                    theEnemies[i].srcNum = 12;
+                else
+                    theEnemies[i].srcNum = 14;
+                break;
+                
+			case kWolf:
+                if (theEnemies[i].facingRight)
+                    theEnemies[i].srcNum = 16;
+                else
+                    theEnemies[i].srcNum = 18;
+                break;
+                
+			case kJackal:
+                if (theEnemies[i].facingRight)
+                    theEnemies[i].srcNum = 20;
+                else
+                    theEnemies[i].srcNum = 22;
+                break;
+		}
+		
+		theEnemies[i].dest.left -= 8;
+		theEnemies[i].dest.right += 8;
+		theEnemies[i].dest.bottom = theEnemies[i].dest.top + 40;
+		theEnemies[i].h = theEnemies[i].dest.left * 16;
+		theEnemies[i].v = theEnemies[i].dest.top * 16;
+	}
+}
+
+void GLGame::handleSpawningEnemy(int i)
+{
+	theEnemies[i].frame++;
+	if (theEnemies[i].frame >= 48)
+	{
+		theEnemies[i].mode = kWalking;
+		theEnemies[i].frame = 0;
+		
+		switch (theEnemies[i].kind)
+		{
+			case kOwl:
+                if (theEnemies[i].facingRight)
+                    theEnemies[i].srcNum = 0;
+                else
+                    theEnemies[i].srcNum = 2;
+                break;
+                
+			case kWolf:
+                if (theEnemies[i].facingRight)
+                    theEnemies[i].srcNum = 4;
+                else
+                    theEnemies[i].srcNum = 6;
+                break;
+                
+			case kJackal:
+                if (theEnemies[i].facingRight)
+                    theEnemies[i].srcNum = 8;
+                else
+                    theEnemies[i].srcNum = 10;
+                break;
+		}
+	}
+	else
+		theEnemies[i].dest.top = theEnemies[i].dest.bottom - theEnemies[i].frame;
+}
+
+void GLGame::handleFallingEnemy(int i)
+{
+	theEnemies[i].vVel += kGravity;
+	
+	if (theEnemies[i].vVel > theEnemies[i].maxVVel)
+		theEnemies[i].vVel = theEnemies[i].maxVVel;
+	else if (theEnemies[i].vVel < -theEnemies[i].maxVVel)
+		theEnemies[i].vVel = -theEnemies[i].maxVVel;
+	
+	if (evenFrame)
+	{
+		theEnemies[i].hVel -= (theEnemies[i].hVel >> 5);
+		if ((theEnemies[i].hVel < 32) && (theEnemies[i].hVel > -32))
+		{
+			if (theEnemies[i].hVel > 0)
+				theEnemies[i].hVel--;
+			else if (theEnemies[i].hVel < 0)
+				theEnemies[i].hVel++;
+		}
+	}
+	
+	theEnemies[i].h += theEnemies[i].hVel;
+	theEnemies[i].dest.left = theEnemies[i].h >> 4;
+	theEnemies[i].dest.right = theEnemies[i].dest.left + 24;
+	
+	theEnemies[i].v += theEnemies[i].vVel;
+	theEnemies[i].dest.top = theEnemies[i].v >> 4;
+	theEnemies[i].dest.bottom = theEnemies[i].dest.top + 24;
+	
+	if (theEnemies[i].dest.left > 640)
+	{
+		theEnemies[i].dest.offsetBy(-640, 0);
+		theEnemies[i].h = theEnemies[i].dest.left << 4;
+		theEnemies[i].wasDest.offsetBy(-640, 0);
+	}
+	else if (theEnemies[i].dest.right < 0)
+	{
+		theEnemies[i].dest.offsetBy(640, 0);
+		theEnemies[i].h = theEnemies[i].dest.left << 4;
+		theEnemies[i].wasDest.offsetBy(640, 0);
+	}
+	
+	checkEnemyRoofCollision(i);
+	checkEnemyPlatformHit(i);
+}
+
+void GLGame::handleEggEnemy(int i)
+{
+	int center;
+	
+	theEnemies[i].frame--;
+	if (theEnemies[i].frame < 24) {
+		theEnemies[i].dest.top = theEnemies[i].dest.bottom - theEnemies[i].frame;
+		if (theEnemies[i].frame == 0) {		// a sphinx is born!
+			theEnemies[i].frame = 0;
+			sounds.play(kSpawnSound);
+			center = (theEnemies[i].dest.left + theEnemies[i].dest.right) >> 1;
+			theEnemies[i].dest.left = center - 24;
+			theEnemies[i].dest.right = center + 24;
+			theEnemies[i].wasDest = theEnemies[i].dest;
+			theEnemies[i].h = theEnemies[i].dest.left << 4;
+			theEnemies[i].v = theEnemies[i].dest.top << 4;
+			theEnemies[i].wasH = theEnemies[i].h;
+			theEnemies[i].wasV = theEnemies[i].v;
+			theEnemies[i].hVel = 0;
+			theEnemies[i].vVel = 0;
+			theEnemies[i].mode = kSpawning;
+			theEnemies[i].kind++;
+			if (theEnemies[i].kind > kJackal) {
+				theEnemies[i].kind = kJackal;
+            }
+			setEnemyAttributes(i);
+		}
+	}
+}
+
+void GLGame::resolveEnemyPlayerHit(int i)
+{
+	int wasVel, diff, h, v;
+	
+	if ((theEnemies[i].mode == kFalling) || (theEnemies[i].mode == kEggTimer))
+	{
+		deadEnemies++;
+		
+		theEnemies[i].mode = kDeadAndGone;
+		theScore += 500L;
+		updateScoreNumbers();
+		sounds.play(kBonusSound);
+		initEnemy(i, true);
+	}
+	else
+	{
+		diff = (theEnemies[i].dest.top + 25) - (thePlayer.dest.top + 19);
+		
+		if (diff < -2)		// player is bested
+		{
+			if (lightningCount == 0)
+			{
+                doLightning(GLPoint(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24));
+				lightningCount = 6;
+			}
+			
+			thePlayer.mode = kFalling;
+			if (thePlayer.facingRight) {
+				thePlayer.srcNum = 8;
+			} else {
+				thePlayer.srcNum = 9;
+            }
+			thePlayer.dest.bottom = thePlayer.dest.top + 37;
+			sounds.play(kBoom2Sound);
+		}
+		else if (diff > 2)	// enemy killed
+		{
+			if ((theEnemies[i].mode == kSpawning) && (theEnemies[i].frame < 16))
+				return;
+			
+			h = (theEnemies[i].dest.left + theEnemies[i].dest.right) >> 1;
+			if (theEnemies[i].mode == kSpawning)
+				v = theEnemies[i].dest.bottom - 2;
+			else
+				v = (theEnemies[i].dest.top + theEnemies[i].dest.bottom) >> 1;
+			theEnemies[i].dest.left = h - 12;
+			theEnemies[i].dest.right = h + 12;
+			if (theEnemies[i].mode == kSpawning)
+				theEnemies[i].dest.top = v - 24;
+			else
+				theEnemies[i].dest.top = v - 12;
+			theEnemies[i].dest.bottom = theEnemies[i].dest.top + 24;
+			theEnemies[i].h = theEnemies[i].dest.left << 4;
+			theEnemies[i].v = theEnemies[i].dest.top << 4;
+			theEnemies[i].mode = kFalling;
+			theEnemies[i].wasDest = theEnemies[i].dest;
+			theEnemies[i].wasH = theEnemies[i].h;
+			theEnemies[i].wasV = theEnemies[i].v;
+			
+			switch (theEnemies[i].kind)
+			{
+				case kOwl:
+                    theScore += 500L;
+                    break;
+                    
+				case kWolf:
+                    theScore += 1000L;
+                    break;
+                    
+				case kJackal:
+                    theScore += 1500L;
+                    break;
+			}
+			updateScoreNumbers();
+			sounds.play(kBoom2Sound);
+		}
+		else		// neither player nor enemy killed
+		{
+			if (theEnemies[i].hVel > 0)
+				theEnemies[i].facingRight = TRUE;
+			else
+				theEnemies[i].facingRight = FALSE;
+            sounds.play(kScreechSound);
+		}
+		
+		wasVel = thePlayer.hVel;
+		thePlayer.hVel = theEnemies[i].hVel;
+		theEnemies[i].hVel = wasVel;
+		wasVel = thePlayer.vVel;
+		thePlayer.vVel = theEnemies[i].vVel;
+		theEnemies[i].vVel = wasVel;
+	}
+}
+
+void GLGame::checkPlayerEnemyCollision()
+{
+	GLRect whoCares, playTest, wrapTest;
+	int i;
+	
+	playTest = thePlayer.dest;
+	playTest.inset(8, 8);
+	if (thePlayer.wrapping) {
+		wrapTest = thePlayer.wrap;
+    }
+	wrapTest.inset(8, 8);
+	
+	for (i = 0; i < numEnemies; i++) {
+		if ((theEnemies[i].mode != kIdle) && (theEnemies[i].mode != kDeadAndGone)) {
+			if (playTest.sect(&theEnemies[i].dest)) {
+				resolveEnemyPlayerHit(i);
+			} else if (thePlayer.wrapping) {
+				if (wrapTest.sect(&theEnemies[i].dest)) {
+					resolveEnemyPlayerHit(i);
+                }
+			}
+		}
+	}
 }
