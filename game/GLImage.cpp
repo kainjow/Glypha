@@ -35,7 +35,7 @@ void GLImage::loadTextureData_(const void *texData, bool hasAlpha)
 }
 
 
-void GLImage::draw(const GLPoint *dest, size_t numDest, const GLPoint *src, size_t numSrc)
+void GLImage::draw(const GLPoint *dest, size_t numDest, const GLPoint *src, size_t numSrc) const
 {
     if (numDest != numSrc || numDest < 3) {
         // bug
@@ -68,7 +68,7 @@ void GLImage::draw(const GLPoint *dest, size_t numDest, const GLPoint *src, size
 	glDisable(GL_TEXTURE_2D);
 }
 
-void GLImage::draw(const GLRect& destRect, const GLRect& srcRect)
+void GLImage::draw(const GLRect& destRect, const GLRect& srcRect) const
 {
     GLPoint dest[4];
     GLPoint src[4];
@@ -83,12 +83,12 @@ void GLImage::draw(const GLRect& destRect, const GLRect& srcRect)
     draw(dest, sizeof(dest) / sizeof(dest[0]), src, sizeof(src) / sizeof(src[0]));
 }
 
-void GLImage::draw(const GLRect& destRect)
+void GLImage::draw(const GLRect& destRect) const
 {
     draw(destRect, GLRect(0, 0, width_, height_));
 }
 
-void GLImage::draw(int x, int y)
+void GLImage::draw(int x, int y) const
 {
     draw(GLRect(x, y, width_, height_), GLRect(0, 0, width_, height_));
 }

@@ -11,13 +11,13 @@ class GLUtils {
 public:
     GLUtils();
     
-    int randomInt(int end);
+    int randomInt(int end) const;
     
-    double now();
+    double now() const;
 
 #if _WIN32
-    static void log(LPCWSTR format, ...);
-    static void log(LPCSTR format, ...);
+    static void log(LPCWSTR format, ...) const;
+    static void log(LPCSTR format, ...) const;
 #endif
     
 private:

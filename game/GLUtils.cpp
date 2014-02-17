@@ -24,7 +24,7 @@ GLUtils::GLUtils()
 }
 
 // Returns a random number from 0 - end
-int GLUtils::randomInt(int end)
+int GLUtils::randomInt(int end) const
 {
 #if _WIN32
     return ((int)rand() % end);
@@ -34,7 +34,7 @@ int GLUtils::randomInt(int end)
 }
 
 // Returns the time in seconds with millisecond precision
-double GLUtils::now()
+double GLUtils::now() const
 {
 #if _WIN32
     LARGE_INTEGER t;
@@ -52,7 +52,7 @@ double GLUtils::now()
 #if _WIN32
 // Handy function for logging. Works like printf() but outputs
 // to the debugger window since we have no console in a Win32 GUI.
-void GLUtils::log(LPCWSTR format, ...)
+void GLUtils::log(LPCWSTR format, ...) const
 {
     WCHAR buf[200];
     va_list ap;
@@ -61,7 +61,7 @@ void GLUtils::log(LPCWSTR format, ...)
     va_end(ap);
     OutputDebugStringW(buf);
 }
-void GLUtils::log(LPCSTR format, ...)
+void GLUtils::log(LPCSTR format, ...) const
 {
     CHAR buf[200];
     va_list ap;

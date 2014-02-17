@@ -19,7 +19,7 @@ public:
     
     void zeroCorner();
     
-    bool sect(const GLRect *r2);
+    bool sect(const GLRect *r2) const;
     
     void inset(int dh, int dv);
 

@@ -60,7 +60,7 @@ void GLRect::zeroCorner()		// Offset rect to (0, 0)
 	top = 0;
 }
 
-bool GLRect::sect(const GLRect *r2)
+bool GLRect::sect(const GLRect *r2) const
 {
     const GLRect *r1 = this;
     return (r1->left < r2->right && r1->right > r2->left && r1->top < r2->bottom && r1->bottom > r2->top);
