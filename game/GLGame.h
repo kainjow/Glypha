@@ -133,6 +133,7 @@ private:
     void setUpLevel();
     void checkLavaRoofCollision();
     void checkPlayerWrapAround();
+    void keepPlayerOnPlatform();
     
     void getPlayerInput();
     int theKeys;

@@ -670,7 +670,7 @@ void GLGame::handlePlayerWalking()
 	setAndCheckPlayerDest();
 	
 	checkTouchDownCollision();
-	//KeepPlayerOnPlatform();
+	keepPlayerOnPlatform();
 	checkPlayerEnemyCollision();
 }
 
@@ -843,6 +843,22 @@ void GLGame::handlePlayerBones()
         } else {
             thePlayer.dest.top = thePlayer.dest.bottom - thePlayer.frame;
         }
+    }
+}
+
+void GLGame::keepPlayerOnPlatform()
+{
+    for (int i = 0; i < numLedges; i++) {
+        if ((thePlayer.dest.sect(&platformRects[i])) && (thePlayer.vVel > 0)) {
+            int offset = thePlayer.dest.bottom - platformRects[i].top - 1;
+            thePlayer.dest.top -= offset;
+            thePlayer.dest.bottom -= offset;
+            thePlayer.v = thePlayer.dest.top * 16;
+        }
+    }
+
+    if (thePlayer.vVel > 0) {
+        thePlayer.vVel = 0;
     }
 }
 
