@@ -16,12 +16,20 @@
 {
     GLGame *game_;
     NSWindow *window_;
+    NSMenuItem *newGame_;
+    NSMenuItem *endGame_;
     GameView *gameView_;
 }
 
 - (IBAction)newGame:(id)sender;
+- (void)handleGameEvent:(GLGameEvent)event;
 
 @end
+
+static void callback(GLGameEvent event, void *context)
+{
+    [(AppController*)context handleGameEvent:event];
+}
 
 @implementation AppController
 
@@ -35,6 +43,7 @@
     NSMenu *appMenu = [[[NSMenu alloc] initWithTitle:appName] autorelease];
     NSMenuItem *appMenuItem = [[[NSMenuItem alloc] init] autorelease];
     NSMenu *gameMenu = [[[NSMenu alloc] initWithTitle:@"Game"] autorelease];
+    [gameMenu setAutoenablesItems:NO];
     NSMenuItem *gameMenuItem = [[[NSMenuItem alloc] init] autorelease];
     [appMenuItem setSubmenu:appMenu];
     [gameMenuItem setSubmenu:gameMenu];
@@ -47,8 +56,11 @@
     NSString *quitText = [NSString stringWithFormat:@"Quit %@", appName];
     item = [appMenu addItemWithTitle:quitText action:@selector(terminate:) keyEquivalent:@"q"];
     [item setTarget:NSApp];
-    item = [gameMenu addItemWithTitle:@"New Game" action:@selector(newGame:) keyEquivalent:@"n"];
-    [item setTarget:self];
+    newGame_ = [gameMenu addItemWithTitle:@"New Game" action:@selector(newGame:) keyEquivalent:@"n"];
+    [newGame_ setTarget:self];
+    endGame_ = [gameMenu addItemWithTitle:@"End Game" action:@selector(endGame:) keyEquivalent:@"e"];
+    [endGame_ setTarget:self];
+    [endGame_ setEnabled:NO];
 }
 
 - (id)init
@@ -60,7 +72,7 @@
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
         [[window_ contentView] addSubview:gameView_];
         [self setupMenuBar];
-        game_ = new GLGame;
+        game_ = new GLGame(callback, self);
         [gameView_ setGame:game_];
     }
     return self;
@@ -79,6 +91,25 @@
 - (IBAction)newGame:(__unused id)sender
 {
     game_->newGame();
+}
+
+- (IBAction)endGame:(__unused id)sender
+{
+    game_->endGame();
+}
+
+- (void)handleGameEvent:(GLGameEvent)event
+{
+    switch (event) {
+        case kGLGameStarted:
+            [newGame_ setEnabled:NO];
+            [endGame_ setEnabled:YES];
+            break;
+        case kGLGameEnded:
+            [newGame_ setEnabled:YES];
+            [endGame_ setEnabled:NO];
+            break;
+    }
 }
 
 @end
