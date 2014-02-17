@@ -1,14 +1,6 @@
 #include "GLRenderer.h"
 
-GLRenderer::GLRenderer()
-{
-}
-
-GLRenderer::~GLRenderer()
-{
-}
-
-void GLRenderer::resize(int width, int height)
+void GL::Renderer::resize(int width, int height)
 {
     GLsizei w = width, h = height;
 	
@@ -24,7 +16,7 @@ void GLRenderer::resize(int width, int height)
     bounds_.setSize(width, height);
 }
 
-void GLRenderer::clear()
+void GL::Renderer::clear()
 {
     if (didPrepare_ == false) {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -35,7 +27,7 @@ void GLRenderer::clear()
 	glLoadIdentity();
 }
 
-void GLRenderer::fillRect(const GLRect& rect)
+void GL::Renderer::fillRect(const GL::Rect& rect)
 {
 	glBegin(GL_QUADS);
 	glVertex2i(rect.left, rect.bottom);
@@ -45,17 +37,17 @@ void GLRenderer::fillRect(const GLRect& rect)
 	glEnd();
 }
 
-void GLRenderer::setFillColor(int red, int green, int blue)
+void GL::Renderer::setFillColor(int red, int green, int blue)
 {
     glColor3f((GLfloat)red, (GLfloat)green, (GLfloat)blue);
 }
 
-GLRect GLRenderer::bounds()
+GL::Rect GL::Renderer::bounds()
 {
     return bounds_;
 }
 
-void GLRenderer::beginLines(float lineWidth)
+void GL::Renderer::beginLines(float lineWidth)
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -65,20 +57,20 @@ void GLRenderer::beginLines(float lineWidth)
 	glBegin(GL_LINES);
 }
 
-void GLRenderer::endLines()
+void GL::Renderer::endLines()
 {
 	glEnd();
 	glDisable(GL_LINE_SMOOTH);
 	glDisable(GL_BLEND);
 }
 
-void GLRenderer::moveTo(int h, int v)
+void GL::Renderer::moveTo(int h, int v)
 {
     lineStart_.h = h;
     lineStart_.v = v;
 }
 
-void GLRenderer::lineTo(int h, int v)
+void GL::Renderer::lineTo(int h, int v)
 {
 	glVertex2s(lineStart_.h, lineStart_.v);
 	glVertex2s(h, v);

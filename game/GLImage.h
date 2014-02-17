@@ -5,16 +5,18 @@
 #include "GLRect.h"
 #include <stddef.h>
 
-class GLImage {
+namespace GL {
+
+class Image {
 public:
-    GLImage();
+    Image();
     
     void load(const unsigned char *buf, size_t bufSize);
     bool isLoaded() const;
     
-    void draw(const GLPoint *dest, size_t numDest, const GLPoint *src, size_t numSrc) const;
-    void draw(const GLRect& destRect, const GLRect& srcRect) const;
-    void draw(const GLRect& destRect) const;
+    void draw(const Point *dest, size_t numDest, const Point *src, size_t numSrc) const;
+    void draw(const Rect& destRect, const Rect& srcRect) const;
+    void draw(const Rect& destRect) const;
     void draw(int x, int y) const;
     
     int width() const;
@@ -27,5 +29,7 @@ private:
     int width_, height_;
     bool alpha_;
 };
+    
+}
 
 #endif

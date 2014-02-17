@@ -6,12 +6,12 @@ struct Context {
     std::list<AVAudioPlayer*> sounds[kMaxSounds];
 };
 
-void GLSounds::initContext()
+void GL::Sounds::initContext()
 {
     context = new Context;
 }
 
-void GLSounds::play(int which)
+void GL::Sounds::play(int which)
 {
     Context *ctx = static_cast<Context*>(context);
     bool found = false;
@@ -30,7 +30,7 @@ void GLSounds::play(int which)
     }
 }
 
-void GLSounds::load(int which, const unsigned char *buf, unsigned bufLen)
+void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen)
 {
     Context *ctx = static_cast<Context*>(context);
     NSData *data = [NSData dataWithBytesNoCopy:(void*)buf length:bufLen freeWhenDone:NO];

@@ -1,12 +1,12 @@
 #include "GLCursor.h"
 #include <AppKit/AppKit.h>
 
-void GLCursor::obscure()
+void GL::Cursor::obscure()
 {
     [NSCursor setHiddenUntilMouseMoves:YES];
 }
 
-void GLCursor::show()
+void GL::Cursor::show()
 {
     [NSCursor setHiddenUntilMouseMoves:NO];
 }

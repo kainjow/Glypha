@@ -15,15 +15,14 @@
 #include <QtOpenGL>
 #endif
 
-class GLRenderer {
+namespace GL {
+
+class Renderer {
 public:
-    GLRenderer();
-    virtual ~GLRenderer();
-    
     void resize(int width, int height);
     void clear();
     
-    void fillRect(const GLRect& rect);
+    void fillRect(const Rect& rect);
     void setFillColor(int red, int green, int blue);
 
     void beginLines(float lineWidth);
@@ -31,12 +30,14 @@ public:
     void moveTo(int h, int v);
     void lineTo(int h, int v);
     
-    GLRect bounds();
+    Rect bounds();
     
 private:
-    GLRect bounds_;
+    Rect bounds_;
     bool didPrepare_;
-    GLPoint lineStart_;
+    Point lineStart_;
 };
+
+}
 
 #endif

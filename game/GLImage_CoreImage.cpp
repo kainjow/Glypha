@@ -1,7 +1,7 @@
 #include "GLImage.h"
 #include <ApplicationServices/ApplicationServices.h>
 
-void GLImage::load(const unsigned char *buf, size_t bufSize)
+void GL::Image::load(const unsigned char *buf, size_t bufSize)
 {
     CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8*)buf, (CFIndex)bufSize, kCFAllocatorNull);
     if (data != NULL) {

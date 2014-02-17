@@ -5,16 +5,16 @@
 @interface GameView : NSOpenGLView
 {
     NSTimer *renderTimer_;
-    GLGame *game_;
+    GL::Game *game_;
 }
 
-- (void)setGame:(GLGame *)game;
+- (void)setGame:(GL::Game *)game;
 
 @end
 
 @interface AppController : NSObject <NSApplicationDelegate>
 {
-    GLGame *game_;
+    GL::Game *game_;
     NSWindow *window_;
     NSMenuItem *newGame_;
     NSMenuItem *endGame_;
@@ -22,11 +22,11 @@
 }
 
 - (IBAction)newGame:(id)sender;
-- (void)handleGameEvent:(GLGameEvent)event;
+- (void)handleGameEvent:(GL::Game::Event)event;
 
 @end
 
-static void callback(GLGameEvent event, void *context)
+static void callback(GL::Game::Event event, void *context)
 {
     [(AppController*)context handleGameEvent:event];
 }
@@ -72,7 +72,7 @@ static void callback(GLGameEvent event, void *context)
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
         [[window_ contentView] addSubview:gameView_];
         [self setupMenuBar];
-        game_ = new GLGame(callback, self);
+        game_ = new GL::Game(callback, self);
         [gameView_ setGame:game_];
     }
     return self;
@@ -98,14 +98,14 @@ static void callback(GLGameEvent event, void *context)
     game_->endGame();
 }
 
-- (void)handleGameEvent:(GLGameEvent)event
+- (void)handleGameEvent:(GL::Game::Event)event
 {
     switch (event) {
-        case kGLGameStarted:
+        case GL::Game::EventStarted:
             [newGame_ setEnabled:NO];
             [endGame_ setEnabled:YES];
             break;
-        case kGLGameEnded:
+        case GL::Game::EventEnded:
             [newGame_ setEnabled:YES];
             [endGame_ setEnabled:NO];
             break;
@@ -123,7 +123,7 @@ static void callback(GLGameEvent event, void *context)
     return [super initWithFrame:frameRect pixelFormat:format];
 }
 
-- (void)setGame:(GLGame *)game
+- (void)setGame:(GL::Game *)game
 {
     game_ = game;
 }
@@ -166,7 +166,7 @@ static void callback(GLGameEvent event, void *context)
 - (void)mouseDown:(NSEvent *)event
 {
     NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
-    GLPoint point(mouseLoc.x, game_->renderer()->bounds().height() - mouseLoc.y);
+    GL::Point point(mouseLoc.x, game_->renderer()->bounds().height() - mouseLoc.y);
     game_->handleMouseDownEvent(point);
 }
 
@@ -175,34 +175,34 @@ static void callback(GLGameEvent event, void *context)
     NSString *chars = [event characters];
     for (NSUInteger i = 0; i < [chars length]; ++i) {
         unichar ch = [chars characterAtIndex:i];
-        GLGameKey key;
+        GL::Game::Key key;
         switch (ch) {
             case ' ':
-                key = kGLGameKeySpacebar;
+                key = GL::Game::KeySpacebar;
                 break;
             case NSDownArrowFunctionKey:
-                key = kGLGameKeyDownArrow;
+                key = GL::Game::KeyDownArrow;
                 break;
             case NSLeftArrowFunctionKey:
-                key = kGLGameKeyLeftArrow;
+                key = GL::Game::KeyLeftArrow;
                 break;
             case NSRightArrowFunctionKey:
-                key = kGLGameKeyRightArrow;
+                key = GL::Game::KeyRightArrow;
                 break;
             case 'a':
-                key = kGLGameKeyA;
+                key = GL::Game::KeyA;
                 break;
             case 's':
-                key = kGLGameKeyS;
+                key = GL::Game::KeyS;
                 break;
             case ';':
-                key = kGLGameKeyColon;
+                key = GL::Game::KeyColon;
                 break;
             case '"':
-                key = kGLGameKeyQuote;
+                key = GL::Game::KeyQuote;
                 break;
             default:
-                key = kGLGameKeyNone;
+                key = GL::Game::KeyNone;
                 break;
         }
         if (up) {

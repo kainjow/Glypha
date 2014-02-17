@@ -58,15 +58,15 @@
 
 #define kUpdateFreq (1.0/30.0)
 
-GLGame::GLGame(GLGameCallback callback, void *context)
+GL::Game::Game(Callback callback, void *context)
     : callback_(callback)
     , callbackContext_(context)
-    , renderer_(new GLRenderer())
+    , renderer_(new Renderer())
     , playing(false), evenFrame(true)
     , lightningCount(0)
     , newGameLightning(-1)
     , flashObelisks(false)
-    , theKeys(kGLGameKeyNone)
+    , theKeys(KeyNone)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -177,17 +177,17 @@ GLGame::GLGame(GLGameCallback callback, void *context)
     eggSrcRect.set(0, 0, 24, 24);
 }
 
-GLGame::~GLGame()
+GL::Game::~Game()
 {
     delete renderer_;
 }
 
-GLRenderer* GLGame::renderer()
+GL::Renderer* GL::Game::renderer()
 {
     return renderer_;   
 }
 
-void GLGame::loadImages()
+void GL::Game::loadImages()
 {
     bgImg.load(background_png, background_png_len);
     torchesImg.load(torches_png, torches_png_len);
@@ -202,7 +202,7 @@ void GLGame::loadImages()
     egg.load(egg_png, egg_png_len);
 }
 
-void GLGame::run()
+void GL::Game::run()
 {
     // Create images the first time
     if (!bgImg.isLoaded()) {
@@ -219,7 +219,7 @@ void GLGame::run()
     drawFrame();
 }
 
-void GLGame::update()
+void GL::Game::update()
 {
     if (playing) {
         movePlayer();
@@ -231,9 +231,9 @@ void GLGame::update()
     evenFrame = !evenFrame;
 }
 
-void GLGame::drawFrame()
+void GL::Game::drawFrame()
 {
-    GLRenderer *r = renderer_;
+    Renderer *r = renderer_;
     r->clear();
     drawBackground();
     drawTorches();
@@ -251,14 +251,14 @@ void GLGame::drawFrame()
     drawObelisks();
 }
 
-void GLGame::handleMouseDownEvent(const GLPoint& point)
+void GL::Game::handleMouseDownEvent(const GL::Point& point)
 {
     if (!playing) {
         doLightning(point);
     }
 }
 
-void GLGame::drawLightning()
+void GL::Game::drawLightning()
 {
     if ((lightningCount > 0) && ((now - lastLightningStrike) >= kLightningDelay)) {
         generateLightning(lightningPoint.h, lightningPoint.v);
@@ -296,7 +296,7 @@ void GLGame::drawLightning()
             }
             --newGameLightning;
             if (newGameLightning == -1) {
-                doLightning(GLPoint(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24));
+                doLightning(GL::Point(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24));
             }
         }
     }
@@ -305,7 +305,7 @@ void GLGame::drawLightning()
     }
 }
 
-void GLGame::doLightning(const GLPoint& point)
+void GL::Game::doLightning(const GL::Point& point)
 {
     flashObelisks = true;
     sounds.play(kLightningSound);
@@ -315,7 +315,7 @@ void GLGame::doLightning(const GLPoint& point)
     lastLightningStrike = now;
 }
 
-void GLGame::generateLightning(short h, short v)
+void GL::Game::generateLightning(short h, short v)
 {
     const short kLeftObeliskH = 172;
     const short kLeftObeliskV = 250;
@@ -346,9 +346,9 @@ void GLGame::generateLightning(short h, short v)
 	}
 }
 
-void GLGame::strikeLightning()
+void GL::Game::strikeLightning()
 {
-    GLRenderer *r = renderer_;
+    Renderer *r = renderer_;
     short i;
 
     r->setFillColor(255, 255, 0);
@@ -368,7 +368,7 @@ void GLGame::strikeLightning()
     r->endLines();
 }
 
-void GLGame::newGame()
+void GL::Game::newGame()
 {
     countDownTimer = 0;
 	numLedges = 3;
@@ -386,19 +386,19 @@ void GLGame::newGame()
     resetPlayer(true);
     
     cursor.obscure();
-    callback_(kGLGameStarted, callbackContext_);
+    callback_(EventStarted, callbackContext_);
 }
 
-void GLGame::endGame()
+void GL::Game::endGame()
 {
     playing = false;
     sounds.play(kMusicSound);
     //CheckHighScore();
     cursor.show();
-    callback_(kGLGameEnded, callbackContext_);
+    callback_(EventEnded, callbackContext_);
 }
 
-void GLGame::setUpLevel()
+void GL::Game::setUpLevel()
 {
 	short waveMultiple;
 	
@@ -427,7 +427,7 @@ void GLGame::setUpLevel()
     lastNewGameLightning = 0;
 }
 
-void GLGame::resetPlayer(bool initialPlace)
+void GL::Game::resetPlayer(bool initialPlace)
 {
 	int location;
 	
@@ -485,7 +485,7 @@ void GLGame::resetPlayer(bool initialPlace)
 	thePlayer.mode = kIdle;
 }
 
-void GLGame::offAMortal()
+void GL::Game::offAMortal()
 {
     livesLeft--;
 
@@ -496,12 +496,12 @@ void GLGame::offAMortal()
     }
 }
 
-void GLGame::drawBackground() const
+void GL::Game::drawBackground() const
 {
     bgImg.draw(0, 0);
 }
 
-void GLGame::drawTorches() const
+void GL::Game::drawTorches() const
 {
     int who = utils.randomInt(4);
     if (evenFrame) {
@@ -511,7 +511,7 @@ void GLGame::drawTorches() const
     }
 }
 
-void GLGame::drawHand() const
+void GL::Game::drawHand() const
 {
     if (theHand.mode == kOutGrabeth) {
         handImg.draw(theHand.dest, handRects[0]);
@@ -520,9 +520,9 @@ void GLGame::drawHand() const
     }
 }
 
-void GLGame::drawPlayer() const
+void GL::Game::drawPlayer() const
 {
-    GLRect src;
+    GL::Rect src;
 
     if ((evenFrame) && (thePlayer.mode == kIdle)) {
         playerIdleImg.draw(thePlayer.dest);
@@ -546,7 +546,7 @@ void GLGame::drawPlayer() const
     }
 }
 
-void GLGame::drawPlatforms() const
+void GL::Game::drawPlatforms() const
 {
 	if (numLedges > 3) {
         platformImg.draw(platformCopyRects[7], platformCopyRects[2]);
@@ -563,7 +563,7 @@ void GLGame::drawPlatforms() const
 	}
 }
 
-void GLGame::movePlayer()
+void GL::Game::movePlayer()
 {
 	switch (thePlayer.mode) {
 		case kIdle:
@@ -598,7 +598,7 @@ void GLGame::movePlayer()
 	thePlayer.wasDest = thePlayer.dest;
 }
 
-void GLGame::handlePlayerIdle()
+void GL::Game::handlePlayerIdle()
 {
 	thePlayer.frame--;
 	if (thePlayer.frame == 0) {
@@ -607,7 +607,7 @@ void GLGame::handlePlayerIdle()
 	setAndCheckPlayerDest();
 }
 
-void GLGame::handlePlayerWalking()
+void GL::Game::handlePlayerWalking()
 {
 	short desiredHVel;
 	
@@ -684,7 +684,7 @@ void GLGame::handlePlayerWalking()
 	checkPlayerEnemyCollision();
 }
 
-void GLGame::handlePlayerFlying()
+void GL::Game::handlePlayerFlying()
 {
 	if (thePlayer.hVel > 0)
 	{
@@ -758,7 +758,7 @@ void GLGame::handlePlayerFlying()
 	checkTouchDownCollision();
 }
 
-void GLGame::handlePlayerSinking()
+void GL::Game::handlePlayerSinking()
 {
     thePlayer.hVel = 0;
     thePlayer.vVel = 16;
@@ -771,9 +771,9 @@ void GLGame::handlePlayerSinking()
     setAndCheckPlayerDest();
 }
 
-void GLGame::checkTouchDownCollision()
+void GL::Game::checkTouchDownCollision()
 {
-	GLRect testRect;
+	GL::Rect testRect;
 	short offset;
 	bool sected = false;
 	
@@ -813,7 +813,7 @@ void GLGame::checkTouchDownCollision()
 	}
 }
 
-void GLGame::handlePlayerFalling()
+void GL::Game::handlePlayerFalling()
 {
     if (thePlayer.hVel > 0) {
         thePlayer.hVel -= kAirResistance;
@@ -844,7 +844,7 @@ void GLGame::handlePlayerFalling()
     checkPlatformCollision();
 }
 
-void GLGame::handlePlayerBones()
+void GL::Game::handlePlayerBones()
 {
     if (evenFrame) {
         thePlayer.frame--;
@@ -856,7 +856,7 @@ void GLGame::handlePlayerBones()
     }
 }
 
-void GLGame::keepPlayerOnPlatform()
+void GL::Game::keepPlayerOnPlatform()
 {
     for (int i = 0; i < numLedges; i++) {
         if ((thePlayer.dest.sect(&platformRects[i])) && (thePlayer.vVel > 0)) {
@@ -872,7 +872,7 @@ void GLGame::keepPlayerOnPlatform()
     }
 }
 
-void GLGame::checkLavaRoofCollision()
+void GL::Game::checkLavaRoofCollision()
 {
 	short offset;
 	
@@ -896,7 +896,7 @@ void GLGame::checkLavaRoofCollision()
 	}
 }
 
-void GLGame::setAndCheckPlayerDest()
+void GL::Game::setAndCheckPlayerDest()
 {
 	short wasTall, wasWide;
 	
@@ -922,9 +922,9 @@ void GLGame::setAndCheckPlayerDest()
 	}
 }
 
-void GLGame::checkPlatformCollision()
+void GL::Game::checkPlatformCollision()
 {
-	GLRect hRect, vRect;
+	GL::Rect hRect, vRect;
 	short offset;
 	
 	for (int i = 0; i < numLedges; i++)
@@ -1034,12 +1034,12 @@ void GLGame::checkPlatformCollision()
 	}
 }
 
-void GLGame::getPlayerInput()
+void GL::Game::getPlayerInput()
 {
 	thePlayer.flapping = false;
 	thePlayer.walking = false;
 	
-    if ((theKeys & kGLGameKeySpacebar) || (theKeys & kGLGameKeyDownArrow)) {
+    if ((theKeys & KeySpacebar) || (theKeys & KeyDownArrow)) {
         if (thePlayer.mode == kIdle) {
             thePlayer.mode = kWalking;
             thePlayer.frame = 0;
@@ -1055,9 +1055,9 @@ void GLGame::getPlayerInput()
         flapKeyDown = false;
     }
     
-    if (((theKeys & kGLGameKeyRightArrow) ||
-         (theKeys & kGLGameKeyS) ||
-         (theKeys & kGLGameKeyQuote)) &&
+    if (((theKeys & KeyRightArrow) ||
+         (theKeys & KeyS) ||
+         (theKeys & KeyQuote)) &&
         (thePlayer.hVel < kMaxHVelocity))
     {
         if (thePlayer.mode == kIdle)
@@ -1088,9 +1088,9 @@ void GLGame::getPlayerInput()
             }
         }
     }
-    else if (((theKeys & kGLGameKeyLeftArrow) ||
-              (theKeys & kGLGameKeyA) ||
-              (theKeys & kGLGameKeyColon)) &&
+    else if (((theKeys & KeyLeftArrow) ||
+              (theKeys & KeyA) ||
+              (theKeys & KeyColon)) &&
              (thePlayer.hVel > -kMaxHVelocity))
     {
         if (thePlayer.mode == kIdle)
@@ -1123,17 +1123,17 @@ void GLGame::getPlayerInput()
     }
 }
 
-void GLGame::handleKeyDownEvent(GLGameKey key)
+void GL::Game::handleKeyDownEvent(Key key)
 {
     theKeys |= key;
 }
 
-void GLGame::handleKeyUpEvent(GLGameKey key)
+void GL::Game::handleKeyUpEvent(Key key)
 {
     theKeys &= ~key;
 }
 
-void GLGame::drawLivesNumbers() const
+void GL::Game::drawLivesNumbers() const
 {
 	short digit;
 	
@@ -1148,7 +1148,7 @@ void GLGame::drawLivesNumbers() const
     numbersImg.draw(numbersDest[1], numbersSrc[digit]);
 }
 
-void GLGame::addToScore(int value)
+void GL::Game::addToScore(int value)
 {
     long oldDigit, newDigit;
     oldDigit = theScore / 10000L;
@@ -1157,7 +1157,7 @@ void GLGame::addToScore(int value)
     livesLeft += (newDigit - oldDigit);
 }
 
-void GLGame::drawScoreNumbers() const
+void GL::Game::drawScoreNumbers() const
 {
 	long digit;
 	
@@ -1200,7 +1200,7 @@ void GLGame::drawScoreNumbers() const
     numbersImg.draw(numbersDest[7], numbersSrc[digit]);
 }
 
-void GLGame::drawLevelNumbers() const
+void GL::Game::drawLevelNumbers() const
 {
 	short digit;
 	
@@ -1222,13 +1222,13 @@ void GLGame::drawLevelNumbers() const
     numbersImg.draw(numbersDest[10], numbersSrc[digit]);
 }
 
-void GLGame::initHandLocation()
+void GL::Game::initHandLocation()
 {
     theHand.dest.set(0, 0, 56, 57);
     theHand.dest.offsetBy(48, 460);
 }
 
-void GLGame::handleHand()
+void GL::Game::handleHand()
 {
     int hDiff, vDiff, pull, speed;
 
@@ -1309,9 +1309,9 @@ void GLGame::handleHand()
         }
 }
 
-void GLGame::checkPlayerWrapAround()
+void GL::Game::checkPlayerWrapAround()
 {
-    GLRect wrapRect;
+    GL::Rect wrapRect;
 
     if (thePlayer.dest.right > 640) {
         thePlayer.wrapping = true;
@@ -1330,38 +1330,38 @@ void GLGame::checkPlayerWrapAround()
     }
 }
 
-void GLGame::drawObelisks() const
+void GL::Game::drawObelisks() const
 {
     if (flashObelisks) {
         obelisksImg.draw(obeliskRects[2], obeliskRects[0]);
         obelisksImg.draw(obeliskRects[3], obeliskRects[1]);
     } else {
         // Redraw obelisks and lava in "foreground"
-        GLPoint pts[12];
+        GL::Point pts[12];
         int o = 0;
-        pts[o++] = GLPoint(161, 450);
-        pts[o++] = GLPoint(161, 269);
-        pts[o++] = GLPoint(172, 250);
-        pts[o++] = GLPoint(182, 269);
-        pts[o++] = GLPoint(182, 450);
-        pts[o++] = GLPoint(161, 450);
-        pts[o++] = GLPoint(457, 450);
-        pts[o++] = GLPoint(457, 269);
-        pts[o++] = GLPoint(468, 250);
-        pts[o++] = GLPoint(478, 269);
-        pts[o++] = GLPoint(478, 450);
-        pts[o++] = GLPoint(457, 450);
+        pts[o++] = GL::Point(161, 450);
+        pts[o++] = GL::Point(161, 269);
+        pts[o++] = GL::Point(172, 250);
+        pts[o++] = GL::Point(182, 269);
+        pts[o++] = GL::Point(182, 450);
+        pts[o++] = GL::Point(161, 450);
+        pts[o++] = GL::Point(457, 450);
+        pts[o++] = GL::Point(457, 269);
+        pts[o++] = GL::Point(468, 250);
+        pts[o++] = GL::Point(478, 269);
+        pts[o++] = GL::Point(478, 450);
+        pts[o++] = GL::Point(457, 450);
         bgImg.draw(pts, 6, pts, 6);
         bgImg.draw(pts + 6, 6, pts + 6, 6);
         
-        GLRect lava1(0, 450, 214, 10);
-        GLRect lava2(425, 450, 215, 10);
+        GL::Rect lava1(0, 450, 214, 10);
+        GL::Rect lava2(425, 450, 215, 10);
         bgImg.draw(lava1, lava1);
         bgImg.draw(lava2, lava2);
     }
 }
 
-void GLGame::handleCountDownTimer()
+void GL::Game::handleCountDownTimer()
 {
 	if (countDownTimer == 0) {
 		return;
@@ -1376,7 +1376,7 @@ void GLGame::handleCountDownTimer()
 	}
 }
 
-void GLGame::moveEnemies()
+void GL::Game::moveEnemies()
 {
     doEnemyFlapSound = false;
     doEnemyScrapeSound = false;
@@ -1424,9 +1424,9 @@ void GLGame::moveEnemies()
     }
 }
 
-void GLGame::checkEnemyWrapAround(int who) const
+void GL::Game::checkEnemyWrapAround(int who) const
 {
-	GLRect wrapRect, src;
+	GL::Rect wrapRect, src;
 	
 	if (theEnemies[who].dest.right > 640)
 	{
@@ -1474,9 +1474,9 @@ void GLGame::checkEnemyWrapAround(int who) const
 	}
 }
 
-void GLGame::drawEnemies() const
+void GL::Game::drawEnemies() const
 {
-    GLRect src;
+    GL::Rect src;
     for (int i = 0; i < numEnemies; i++) {
         switch (theEnemies[i].mode) {
             case kSpawning:
@@ -1513,7 +1513,7 @@ void GLGame::drawEnemies() const
     }
 }
 
-void GLGame::generateEnemies()
+void GL::Game::generateEnemies()
 {
 	if ((levelOn % 5) == 4)			// Egg Wave
 	{
@@ -1540,7 +1540,7 @@ void GLGame::generateEnemies()
 		initEnemy(i, false);
 }
 
-bool GLGame::setEnemyInitialLocation(GLRect *theRect)
+bool GL::Game::setEnemyInitialLocation(GL::Rect *theRect)
 {
 	short where, possibilities;
 	bool facing;
@@ -1578,7 +1578,7 @@ bool GLGame::setEnemyInitialLocation(GLRect *theRect)
 	return (facing);
 }
 
-void GLGame::initEnemy(short i, bool reincarnated)
+void GL::Game::initEnemy(short i, bool reincarnated)
 {
 	bool facing;
 	
@@ -1619,7 +1619,7 @@ void GLGame::initEnemy(short i, bool reincarnated)
 	}
 }
 
-void GLGame::setEnemyAttributes(int i)
+void GL::Game::setEnemyAttributes(int i)
 {
 	short		h;
 	
@@ -1666,7 +1666,7 @@ void GLGame::setEnemyAttributes(int i)
 	}
 }
 
-int GLGame::assignNewAltitude(void)
+int GL::Game::assignNewAltitude(void)
 {
 	int which, altitude = 0;
 	
@@ -1692,9 +1692,9 @@ int GLGame::assignNewAltitude(void)
 	return (altitude);
 }
 
-void GLGame::checkEnemyPlatformHit(int h)
+void GL::Game::checkEnemyPlatformHit(int h)
 {
-	GLRect hRect, vRect, whoCares;
+	GL::Rect hRect, vRect, whoCares;
 	int i, offset;
 	
 	for (i = 0; i < numLedges; i++)
@@ -1818,7 +1818,7 @@ void GLGame::checkEnemyPlatformHit(int h)
 	}
 }
 
-void GLGame::checkEnemyRoofCollision(int i)
+void GL::Game::checkEnemyRoofCollision(int i)
 {
 	int offset;
 	
@@ -1841,7 +1841,7 @@ void GLGame::checkEnemyRoofCollision(int i)
 	}
 }
 
-void GLGame::handleIdleEnemies(int i)
+void GL::Game::handleIdleEnemies(int i)
 {
 	theEnemies[i].frame--;
 	if (theEnemies[i].frame <= 0)
@@ -1857,7 +1857,7 @@ void GLGame::handleIdleEnemies(int i)
 	}
 }
 
-void GLGame::handleFlyingEnemies(int i)
+void GL::Game::handleFlyingEnemies(int i)
 {
 	short dist;
 	bool shouldFlap;
@@ -2013,7 +2013,7 @@ void GLGame::handleFlyingEnemies(int i)
 	checkEnemyPlatformHit(i);
 }
 
-void GLGame::handleWalkingEnemy(int i)
+void GL::Game::handleWalkingEnemy(int i)
 {
 	if (theEnemies[i].facingRight)
 	{
@@ -2092,7 +2092,7 @@ void GLGame::handleWalkingEnemy(int i)
 	}
 }
 
-void GLGame::handleSpawningEnemy(int i)
+void GL::Game::handleSpawningEnemy(int i)
 {
 	theEnemies[i].frame++;
 	if (theEnemies[i].frame >= 48)
@@ -2128,7 +2128,7 @@ void GLGame::handleSpawningEnemy(int i)
 		theEnemies[i].dest.top = theEnemies[i].dest.bottom - theEnemies[i].frame;
 }
 
-void GLGame::handleFallingEnemy(int i)
+void GL::Game::handleFallingEnemy(int i)
 {
 	theEnemies[i].vVel += kGravity;
 	
@@ -2174,7 +2174,7 @@ void GLGame::handleFallingEnemy(int i)
 	checkEnemyPlatformHit(i);
 }
 
-void GLGame::handleEggEnemy(int i)
+void GL::Game::handleEggEnemy(int i)
 {
 	int center;
 	
@@ -2204,7 +2204,7 @@ void GLGame::handleEggEnemy(int i)
 	}
 }
 
-void GLGame::resolveEnemyPlayerHit(int i)
+void GL::Game::resolveEnemyPlayerHit(int i)
 {
 	int wasVel, diff, h, v;
 	
@@ -2225,7 +2225,7 @@ void GLGame::resolveEnemyPlayerHit(int i)
 		{
 			if (lightningCount == 0)
 			{
-                doLightning(GLPoint(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24));
+                doLightning(GL::Point(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24));
 				lightningCount = 6;
 			}
 			
@@ -2296,9 +2296,9 @@ void GLGame::resolveEnemyPlayerHit(int i)
 	}
 }
 
-void GLGame::checkPlayerEnemyCollision()
+void GL::Game::checkPlayerEnemyCollision()
 {
-	GLRect whoCares, playTest, wrapTest;
+	GL::Rect whoCares, playTest, wrapTest;
 	int i;
 	
 	playTest = thePlayer.dest;

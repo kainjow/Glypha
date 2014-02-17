@@ -22,9 +22,11 @@ enum {
     kMaxSounds
 };
 
-class GLSounds {
+namespace GL {
+
+class Sounds {
 public:
-    GLSounds() {
+    Sounds() {
         initContext();
         load(kBirdSound, bird_aif, bird_aif_len);
         load(kBonusSound, bonus_aif, bonus_aif_len);
@@ -49,5 +51,7 @@ public:
 private:
     void *context;
 };
+    
+}
 
 #endif

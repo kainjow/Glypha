@@ -7,9 +7,11 @@
 #include <windows.h>
 #endif
 
-class GLUtils {
+namespace GL {
+
+class Utils {
 public:
-    GLUtils();
+    Utils();
     
     int randomInt(int end) const;
     
@@ -27,5 +29,7 @@ private:
     LARGE_INTEGER freq;
 #endif
 };
+
+}
 
 #endif

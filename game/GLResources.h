@@ -1,6 +1,8 @@
 #ifndef GLRESOURCES_H
 #define GLRESOURCES_H
 
+namespace GL {
+
 extern unsigned char background_png[];
 extern unsigned int background_png_len;
 extern unsigned char torches_png[];
@@ -52,5 +54,7 @@ extern unsigned char boom2_aif[];
 extern unsigned int boom2_aif_len;
 extern unsigned char music_aif[];
 extern unsigned int music_aif_len;
+
+}
 
 #endif

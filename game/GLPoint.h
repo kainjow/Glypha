@@ -1,13 +1,15 @@
 #ifndef GLPOINT_H
 #define GLPOINT_H
 
-class GLPoint {
+namespace GL {
+
+class Point {
 public:
-    GLPoint() : v(0), h(0)
+    Point() : v(0), h(0)
     {
     }
     
-    GLPoint(int h_, int v_)
+    Point(int h_, int v_)
         : v(v_), h(h_)
     {
     }
@@ -15,5 +17,7 @@ public:
     int v;
     int h;
 };
+    
+}
 
 #endif

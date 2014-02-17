@@ -1,21 +1,21 @@
 #include "GLRect.h"
 
-GLRect::GLRect()
+GL::Rect::Rect()
     : top(0), left(0), bottom(0), right(0)
 {
 }
 
-GLRect::GLRect(int width, int height)
+GL::Rect::Rect(int width, int height)
     : top(0), left(0), bottom(width), right(height)
 {
 }
 
-GLRect::GLRect(int theLeft, int theTop, int width, int height)
+GL::Rect::Rect(int theLeft, int theTop, int width, int height)
     : top(theTop), left(theLeft), bottom(theTop + height), right(theLeft + width)
 {
 }
 
-void GLRect::set(int theLeft, int theTop, int theRight, int theBottom)
+void GL::Rect::set(int theLeft, int theTop, int theRight, int theBottom)
 {
     left = theLeft;
     top = theTop;
@@ -23,22 +23,22 @@ void GLRect::set(int theLeft, int theTop, int theRight, int theBottom)
     bottom = theBottom;
 }
 
-int GLRect::width() const
+int GL::Rect::width() const
 {
     return right - left;
 }
 
-void GLRect::setWidth(int width)
+void GL::Rect::setWidth(int width)
 {
     right = left + width;
 }
 
-int GLRect::height() const
+int GL::Rect::height() const
 {
     return bottom - top;
 }
 
-void GLRect::offsetBy(int horizontal, int vertical)
+void GL::Rect::offsetBy(int horizontal, int vertical)
 {
     left += horizontal;
     right += horizontal;
@@ -46,13 +46,13 @@ void GLRect::offsetBy(int horizontal, int vertical)
     bottom += vertical;
 }
 
-void GLRect::setSize(int width, int height)
+void GL::Rect::setSize(int width, int height)
 {
     right = left + width;
     bottom = top + height;
 }
 
-void GLRect::zeroCorner()		// Offset rect to (0, 0)
+void GL::Rect::zeroCorner()		// Offset rect to (0, 0)
 {
 	right -= left;
 	bottom -= top;
@@ -60,13 +60,13 @@ void GLRect::zeroCorner()		// Offset rect to (0, 0)
 	top = 0;
 }
 
-bool GLRect::sect(const GLRect *r2) const
+bool GL::Rect::sect(const GL::Rect *r2) const
 {
-    const GLRect *r1 = this;
+    const Rect *r1 = this;
     return (r1->left < r2->right && r1->right > r2->left && r1->top < r2->bottom && r1->bottom > r2->top);
 }
 
-void GLRect::inset(int dh, int dv)
+void GL::Rect::inset(int dh, int dv)
 {
     left += dh;
     right -= (dh * 2);

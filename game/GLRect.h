@@ -1,11 +1,13 @@
 #ifndef GLRECT
 #define GLRECT
 
-class GLRect {
+namespace GL {
+
+class Rect {
 public:
-    GLRect();
-    GLRect(int width, int height);
-    GLRect(int theLeft, int theTop, int width, int height);
+    Rect();
+    Rect(int width, int height);
+    Rect(int theLeft, int theTop, int width, int height);
     
     void set(int theLeft, int theTop, int theRight, int theBottom);
     
@@ -19,11 +21,13 @@ public:
     
     void zeroCorner();
     
-    bool sect(const GLRect *r2) const;
+    bool sect(const Rect *r2) const;
     
     void inset(int dh, int dv);
 
     int top, left, bottom, right;
 };
+
+}
 
 #endif

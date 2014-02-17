@@ -1,6 +1,6 @@
 #include "GLImage.h"
 
-GLImage::GLImage()
+GL::Image::Image()
     : texture_(0)
     , width_(0)
     , height_(0)
@@ -8,12 +8,12 @@ GLImage::GLImage()
 {
 }
 
-bool GLImage::isLoaded() const
+bool GL::Image::isLoaded() const
 {
     return texture_ != 0;
 }
 
-void GLImage::loadTextureData_(const void *texData, bool hasAlpha)
+void GL::Image::loadTextureData_(const void *texData, bool hasAlpha)
 {
     alpha_ = hasAlpha;
     
@@ -35,7 +35,7 @@ void GLImage::loadTextureData_(const void *texData, bool hasAlpha)
 }
 
 
-void GLImage::draw(const GLPoint *dest, size_t numDest, const GLPoint *src, size_t numSrc) const
+void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src, size_t numSrc) const
 {
     if (numDest != numSrc || numDest < 3) {
         // bug
@@ -55,8 +55,8 @@ void GLImage::draw(const GLPoint *dest, size_t numDest, const GLPoint *src, size
 	// draw the texture
 	glBegin(numDest == 4 ? GL_QUADS : GL_POLYGON);
     for (size_t i = 0; i < numDest; ++i) {
-        const GLPoint destPt = dest[i];
-        const GLPoint srcPt = src[i];
+        const GL::Point destPt = dest[i];
+        const GL::Point srcPt = src[i];
         glTexCoord2f((float)srcPt.h / width_, (float)srcPt.v / height_);
         glVertex2i(destPt.h, destPt.v);
     }
@@ -68,37 +68,37 @@ void GLImage::draw(const GLPoint *dest, size_t numDest, const GLPoint *src, size
 	glDisable(GL_TEXTURE_2D);
 }
 
-void GLImage::draw(const GLRect& destRect, const GLRect& srcRect) const
+void GL::Image::draw(const GL::Rect& destRect, const GL::Rect& srcRect) const
 {
-    GLPoint dest[4];
-    GLPoint src[4];
-    dest[0] = GLPoint(destRect.left, destRect.top);
-    dest[1] = GLPoint(destRect.left, destRect.bottom);
-    dest[2] = GLPoint(destRect.right, destRect.bottom);
-    dest[3] = GLPoint(destRect.right, destRect.top);
-    src[0] = GLPoint(srcRect.left, srcRect.top);
-    src[1] = GLPoint(srcRect.left, srcRect.bottom);
-    src[2] = GLPoint(srcRect.right, srcRect.bottom);
-    src[3] = GLPoint(srcRect.right, srcRect.top);
+    GL::Point dest[4];
+    GL::Point src[4];
+    dest[0] = GL::Point(destRect.left, destRect.top);
+    dest[1] = GL::Point(destRect.left, destRect.bottom);
+    dest[2] = GL::Point(destRect.right, destRect.bottom);
+    dest[3] = GL::Point(destRect.right, destRect.top);
+    src[0] = GL::Point(srcRect.left, srcRect.top);
+    src[1] = GL::Point(srcRect.left, srcRect.bottom);
+    src[2] = GL::Point(srcRect.right, srcRect.bottom);
+    src[3] = GL::Point(srcRect.right, srcRect.top);
     draw(dest, sizeof(dest) / sizeof(dest[0]), src, sizeof(src) / sizeof(src[0]));
 }
 
-void GLImage::draw(const GLRect& destRect) const
+void GL::Image::draw(const GL::Rect& destRect) const
 {
-    draw(destRect, GLRect(0, 0, width_, height_));
+    draw(destRect, GL::Rect(0, 0, width_, height_));
 }
 
-void GLImage::draw(int x, int y) const
+void GL::Image::draw(int x, int y) const
 {
-    draw(GLRect(x, y, width_, height_), GLRect(0, 0, width_, height_));
+    draw(GL::Rect(x, y, width_, height_), GL::Rect(0, 0, width_, height_));
 }
 
-int GLImage::width() const
+int GL::Image::width() const
 {
     return width_;
 }
 
-int GLImage::height() const
+int GL::Image::height() const
 {
     return height_;
 }

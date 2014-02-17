@@ -9,77 +9,54 @@
 #include "GLCursor.h"
 #include "GLUtils.h"
 
+namespace GL {
+    
 #define kNumLightningPts 8
 #define kMaxEnemies 8
 
-struct playerType {
-	GLRect dest, wasDest, wrap;
-	int h, v;
-	int wasH, wasV;
-	int hVel, vVel;
-	int srcNum, mode;
-	int frame;
-	bool facingRight, flapping;
-	bool walking, wrapping;
-	bool clutched;
-};
-
-struct enemyType {
-	GLRect dest, wasDest;
-	int h, v;
-	int wasH, wasV;
-	int hVel, vVel;
-	int srcNum, mode;
-	int kind, frame;
-	int heightSmell, targetAlt;
-	int flapImpulse, pass;
-	int maxHVel, maxVVel;
-	bool facingRight;
-} ;
-
-enum GLGameKey {
-    kGLGameKeyNone = 0,
-    
-    kGLGameKeySpacebar = 1,
-    kGLGameKeyDownArrow = 2,
-    kGLGameKeyLeftArrow = 4,
-    kGLGameKeyRightArrow = 8,
-    kGLGameKeyA = 16,
-    kGLGameKeyS = 32,
-    kGLGameKeyColon = 64,
-    kGLGameKeyQuote = 128,
-};
-
-enum GLGameEvent {
-    kGLGameStarted,
-    kGLGameEnded,
-};
-
-typedef void (*GLGameCallback)(GLGameEvent event, void *context);
-
-class GLGame {
+class Game {
 public:
-    GLGame(GLGameCallback callback, void *context);
-    ~GLGame();
+    enum Key {
+        KeyNone = 0,
+        KeySpacebar = 1,
+        KeyDownArrow = 2,
+        KeyLeftArrow = 4,
+        KeyRightArrow = 8,
+        KeyA = 16,
+        KeyS = 32,
+        KeyColon = 64,
+        KeyQuote = 128,
+    };
     
-    GLRenderer* renderer();
+    enum Event {
+        EventStarted = 0,
+        EventEnded = 1,
+    };
+
+    typedef void (*Callback)(Event event, void *context);
+
+    Game(Callback callback, void *context);
+    ~Game();
+    
+    Renderer* renderer();
     
     void run();
     
-    void handleMouseDownEvent(const GLPoint& point);
-    void handleKeyDownEvent(GLGameKey key);
-    void handleKeyUpEvent(GLGameKey key);
+    void handleMouseDownEvent(const Point& point);
+    void handleKeyDownEvent(Key key);
+    void handleKeyUpEvent(Key key);
     
     void newGame();
     void endGame();
     
 private:
-    GLGameCallback callback_;
+    Callback callback_;
     void *callbackContext_;
     
-    GLRenderer *renderer_;
-    GLCursor cursor;
-    GLUtils utils;
+    Renderer *renderer_;
+    Cursor cursor;
+    Sounds sounds;
+    Utils utils;
     
     double now;
     void loadImages();
@@ -88,37 +65,48 @@ private:
     void update();
     void drawFrame();
     
-    GLImage bgImg;
+    Image bgImg;
     void drawBackground() const;
 
-    GLImage torchesImg;
-    GLRect flameDestRects[2], flameRects[4];
+    Image torchesImg;
+    Rect flameDestRects[2], flameRects[4];
     void drawTorches() const;
 
     void drawLightning();
     void generateLightning(short h, short v);
     void strikeLightning();
-    void doLightning(const GLPoint& point);
-    GLPoint leftLightningPts[kNumLightningPts], rightLightningPts[kNumLightningPts];
-    GLPoint mousePoint;
+    void doLightning(const Point& point);
+    Point leftLightningPts[kNumLightningPts], rightLightningPts[kNumLightningPts];
+    Point mousePoint;
     int lightningCount;
     double lastLightningStrike;
-    GLPoint lightningPoint;
+    Point lightningPoint;
     int newGameLightning;
     double lastNewGameLightning;
-    GLRect obeliskRects[4];
-    GLImage obelisksImg;
+    Rect obeliskRects[4];
+    Image obelisksImg;
     bool flashObelisks;
     void drawObelisks() const;
     
     int numLedges, levelOn, livesLeft;
     
+    struct playerType {
+        Rect dest, wasDest, wrap;
+        int h, v;
+        int wasH, wasV;
+        int hVel, vVel;
+        int srcNum, mode;
+        int frame;
+        bool facingRight, flapping;
+        bool walking, wrapping;
+        bool clutched;
+    };
     playerType thePlayer;
-    GLRect playerRects[11];
+    Rect playerRects[11];
     void resetPlayer(bool initialPlace);
     void offAMortal();
-    GLImage playerImg;
-    GLImage playerIdleImg;
+    Image playerImg;
+    Image playerIdleImg;
     void drawPlayer() const;
     void movePlayer();
     void handlePlayerIdle();
@@ -137,30 +125,28 @@ private:
     
     void getPlayerInput();
     int theKeys;
-    GLRect platformRects[6], touchDownRects[6], enemyRects[24];
+    Rect platformRects[6], touchDownRects[6], enemyRects[24];
     
-    GLRect platformCopyRects[9];
+    Rect platformCopyRects[9];
     void drawPlatforms() const;
-    GLImage platformImg;
-    
-    GLSounds sounds;
+    Image platformImg;
     
     long theScore;
-    GLImage numbersImg;
-    GLRect numbersSrc[11], numbersDest[11];
+    Image numbersImg;
+    Rect numbersSrc[11], numbersDest[11];
     void drawLivesNumbers() const;
     void drawScoreNumbers() const;
     void drawLevelNumbers() const;
     void addToScore(int value);
     
     typedef struct {
-        GLRect dest;
+        Rect dest;
         int mode;
     } handInfo;
-    GLImage handImg;
+    Image handImg;
     handInfo theHand;
-    GLRect grabZone;
-    GLRect handRects[2];
+    Rect grabZone;
+    Rect handRects[2];
     void initHandLocation();
     void handleHand();
     
@@ -172,20 +158,32 @@ private:
     int deadEnemies;
     int numOwls;
     int spawnedEnemies;
+    struct enemyType {
+        Rect dest, wasDest;
+        int h, v;
+        int wasH, wasV;
+        int hVel, vVel;
+        int srcNum, mode;
+        int kind, frame;
+        int heightSmell, targetAlt;
+        int flapImpulse, pass;
+        int maxHVel, maxVVel;
+        bool facingRight;
+    };
     enemyType theEnemies[kMaxEnemies];
-    GLRect enemyInitRects[5];
-    GLRect eggSrcRect;
+    Rect enemyInitRects[5];
+    Rect eggSrcRect;
     bool doEnemyFlapSound;
 	bool doEnemyScrapeSound;
-    GLImage enemyFly;
-    GLImage enemyWalk;
-    GLImage egg;
+    Image enemyFly;
+    Image enemyWalk;
+    Image egg;
     void moveEnemies();
     void checkEnemyWrapAround(int who) const;
     void drawHand() const;
     void drawEnemies() const;
     void generateEnemies();
-    bool setEnemyInitialLocation(GLRect *theRect);
+    bool setEnemyInitialLocation(Rect *theRect);
     void initEnemy(short i, bool reincarnated);
     void setEnemyAttributes(int i);
     int assignNewAltitude();
@@ -200,5 +198,7 @@ private:
     void resolveEnemyPlayerHit(int i);
     void checkPlayerEnemyCollision();
 };
+
+}
 
 #endif

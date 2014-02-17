@@ -6,7 +6,7 @@
 #include <strsafe.h>
 #endif
 
-GLUtils::GLUtils()
+GL::Utils::Utils()
 {
 #if __APPLE__
     mach_timebase_info_data_t timebaseInfo;
@@ -24,7 +24,7 @@ GLUtils::GLUtils()
 }
 
 // Returns a random number from 0 - end
-int GLUtils::randomInt(int end) const
+int GL::Utils::randomInt(int end) const
 {
 #if _WIN32
     return ((int)rand() % end);
@@ -34,7 +34,7 @@ int GLUtils::randomInt(int end) const
 }
 
 // Returns the time in seconds with millisecond precision
-double GLUtils::now() const
+double GL::Utils::now() const
 {
 #if _WIN32
     LARGE_INTEGER t;
@@ -52,7 +52,7 @@ double GLUtils::now() const
 #if _WIN32
 // Handy function for logging. Works like printf() but outputs
 // to the debugger window since we have no console in a Win32 GUI.
-void GLUtils::log(LPCWSTR format, ...) const
+void GL::Utils::log(LPCWSTR format, ...) const
 {
     WCHAR buf[200];
     va_list ap;
@@ -61,7 +61,7 @@ void GLUtils::log(LPCWSTR format, ...) const
     va_end(ap);
     OutputDebugStringW(buf);
 }
-void GLUtils::log(LPCSTR format, ...) const
+void GL::Utils::log(LPCSTR format, ...) const
 {
     CHAR buf[200];
     va_list ap;
