@@ -87,11 +87,13 @@ private:
     bool playing, evenFrame, flapKeyDown;
     
     GLImage bgImg;
+    void drawBackground();
 
     GLImage torchesImg;
     GLRect flameDestRects[2], flameRects[4];
     double lastFlameAni;
     int whichFlame1, whichFlame2;
+    void drawTorches();
 
     void drawLightning();
     void generateLightning(short h, short v);
@@ -178,6 +180,7 @@ private:
     GLImage egg;
     void moveEnemies();
     void checkEnemyWrapAround(int who);
+    void drawHand();
     void drawEnemies();
     void generateEnemies();
     bool setEnemyInitialLocation(GLRect *theRect);

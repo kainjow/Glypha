@@ -218,34 +218,22 @@ void GLGame::draw()
         loadImages();
     }
     
-    // Draw the background
-    bgImg.draw(0, 0);
-    
-    // Draw the torches
-    if (((now - lastFlameAni) >= (1.0f/25.0f)) || (whichFlame1 == -1)) {
-        whichFlame1 = utils.randomInt(4);
-        whichFlame2 = utils.randomInt(4);
-        lastFlameAni = now;
-    }
-    torchesImg.draw(flameDestRects[0], flameRects[whichFlame1]);
-    torchesImg.draw(flameDestRects[1], flameRects[whichFlame2]);
+    drawBackground();
+    drawTorches();
     
     // Draw hand
-    if (theHand.mode == kOutGrabeth) {
-        handImg.draw(theHand.dest, handRects[0]);
-    } else if (theHand.mode == kClutching) {
-        handImg.draw(theHand.dest, handRects[1]);
-    }
-    
     if (playing) {
         drawPlatforms();
-        movePlayer();
-        moveEnemies();
-        handleHand();
+        drawHand();
         drawPlayer();
         checkPlayerWrapAround();
         drawEnemies();
         drawObelisks();
+
+        movePlayer();
+        moveEnemies();
+        handleHand();
+
         updateLivesNumbers();
         updateScoreNumbers();
         updateLevelNumbers();
@@ -506,6 +494,32 @@ void GLGame::offAMortal()
         updateLivesNumbers();
     } else {
         endGame();
+    }
+}
+
+void GLGame::drawBackground()
+{
+    bgImg.draw(0, 0);
+}
+
+void GLGame::drawTorches()
+{
+    if (((now - lastFlameAni) >= (1.0f/25.0f)) || (whichFlame1 == -1)) {
+        whichFlame1 = utils.randomInt(4);
+        whichFlame2 = utils.randomInt(4);
+        lastFlameAni = now;
+    }
+    torchesImg.draw(flameDestRects[0], flameRects[whichFlame1]);
+    torchesImg.draw(flameDestRects[1], flameRects[whichFlame2]);
+    
+}
+
+void GLGame::drawHand()
+{
+    if (theHand.mode == kOutGrabeth) {
+        handImg.draw(theHand.dest, handRects[0]);
+    } else if (theHand.mode == kClutching) {
+        handImg.draw(theHand.dest, handRects[1]);
     }
 }
 
