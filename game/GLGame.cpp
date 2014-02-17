@@ -178,6 +178,11 @@ GL::Game::Game(Callback callback, void *context)
 	enemyInitRects[4].offsetBy(296, 190);
     
     eggSrcRect.set(0, 0, 24, 24);
+    
+    for (int i = 0; i < 4; i++) {
+        eyeRects[i].set(0, 0, 48, 31);
+        eyeRects[i].offsetBy(0, i * 31);
+    }
 }
 
 GL::Game::~Game()
@@ -203,6 +208,7 @@ void GL::Game::loadImages()
     enemyFly.load(enemyFly_png, enemyFly_png_len);
     enemyWalk.load(enemyWalk_png, enemyWalk_png_len);
     egg.load(egg_png, egg_png_len);
+    eyeImg.load(eye_png, eye_png_len);
 }
 
 void GL::Game::run()
@@ -239,6 +245,7 @@ void GL::Game::update()
         movePlayer();
         moveEnemies();
         handleHand();
+        handleEye();
         getPlayerInput();
         handleCountDownTimer();
     }
@@ -255,6 +262,7 @@ void GL::Game::drawFrame() const
     if (playing) {
         drawPlatforms();
         drawHand();
+        drawEye();
         drawPlayer();
         drawEnemies();
         drawObelisks();
@@ -382,7 +390,7 @@ void GL::Game::newGame()
 	numLedges = 3;
 	levelOn = 0;
     livesLeft = kInitNumLives;
-    theScore = 0L;
+    score_ = 0L;
     playing = true;
     numOwls = 4;
     
@@ -410,7 +418,7 @@ void GL::Game::setUpLevel()
 {
 	int waveMultiple;
 	
-	//KillOffEye();
+	killOffEye();
 	
 	waveMultiple = levelOn % 5;
 	switch (waveMultiple) {
@@ -1168,9 +1176,9 @@ void GL::Game::drawLivesNumbers() const
 void GL::Game::addToScore(int value)
 {
     long oldDigit, newDigit;
-    oldDigit = theScore / 10000L;
-    theScore += value;
-    newDigit = theScore / 10000L;
+    oldDigit = score_ / 10000L;
+    score_ += value;
+    newDigit = score_ / 10000L;
     livesLeft += (newDigit - oldDigit);
 }
 
@@ -1178,42 +1186,42 @@ void GL::Game::drawScoreNumbers() const
 {
 	long digit;
 	
-	digit = theScore / 100000L;
+	digit = score_ / 100000L;
 	digit = digit % 10L;
-	if ((digit == 0) && (theScore < 1000000L)) {
+	if ((digit == 0) && (score_ < 1000000L)) {
 		digit = 10;
     }
     numbersImg.draw(numbersDest[2], numbersSrc[digit]);
 	
-	digit = theScore / 10000L;
+	digit = score_ / 10000L;
 	digit = digit % 10L;
-	if ((digit == 0) && (theScore < 100000L)) {
+	if ((digit == 0) && (score_ < 100000L)) {
 		digit = 10;
     }
     numbersImg.draw(numbersDest[3], numbersSrc[digit]);
 	
-	digit = theScore / 1000L;
+	digit = score_ / 1000L;
 	digit = digit % 10L;
-	if ((digit == 0) && (theScore < 10000L)) {
+	if ((digit == 0) && (score_ < 10000L)) {
 		digit = 10;
     }
     numbersImg.draw(numbersDest[4], numbersSrc[digit]);
 	
-	digit = theScore / 100L;
+	digit = score_ / 100L;
 	digit = digit % 10L;
-	if ((digit == 0) && (theScore < 1000L)) {
+	if ((digit == 0) && (score_ < 1000L)) {
 		digit = 10;
     }
     numbersImg.draw(numbersDest[5], numbersSrc[digit]);
 	
-	digit = theScore / 10L;
+	digit = score_ / 10L;
 	digit = digit % 10L;
-	if ((digit == 0) && (theScore < 100L)) {
+	if ((digit == 0) && (score_ < 100L)) {
 		digit = 10;
     }
     numbersImg.draw(numbersDest[6], numbersSrc[digit]);
 	
-	digit = theScore % 10L;
+	digit = score_ % 10L;
     numbersImg.draw(numbersDest[7], numbersSrc[digit]);
 }
 
@@ -2335,4 +2343,160 @@ void GL::Game::checkPlayerEnemyCollision()
 			}
 		}
 	}
+}
+
+void GL::Game::initEye()
+{
+    theEye.dest.set(0, 0, 48, 31);
+    theEye.dest.offsetBy(296, 97);
+    theEye.mode = kWaiting;
+    theEye.frame = (numOwls + 2) * 720;
+    theEye.srcNum = 0;
+    theEye.opening = 1;
+    theEye.killed = false;
+    theEye.entering = false;
+}
+
+void GL::Game::killOffEye()
+{
+    if (theEye.mode == kStalking) {
+        theEye.killed = true;
+        theEye.opening = 1;
+        theEye.entering = false;
+        if (theEye.srcNum == 0) {
+            theEye.srcNum = 1;
+        }
+    } else {
+        initEye();
+    }
+}
+
+void GL::Game::handleEye()
+{
+    int diffH = 0, diffV = 0, speed;
+
+    if (theEye.mode == kStalking) {		// eye is about
+        speed = (levelOn >> 4) + 1;
+        if (speed > 3) {
+            speed = 3;
+        }
+        
+        if ((theEye.killed) || (theEye.entering)) {
+            speed = 0;
+        } else if ((thePlayer.mode != kFlying) && (thePlayer.mode != kWalking)) {
+            diffH = theEye.dest.left - 296;
+            diffV = theEye.dest.bottom - 128;
+        } else {
+            diffH = theEye.dest.left - thePlayer.dest.left;
+            diffV = theEye.dest.bottom - thePlayer.dest.bottom;
+        }
+        
+        if (diffH > 0) {
+            if (diffH < speed) {
+                theEye.dest.left -= diffH;
+            } else {
+                theEye.dest.left -= speed;
+            }
+            theEye.dest.right = theEye.dest.left + 48;
+        } else if (diffH < 0) {
+            if (-diffH < speed) {
+                theEye.dest.left -= diffH;
+            } else {
+                theEye.dest.left += speed;
+            }
+            theEye.dest.right = theEye.dest.left + 48;
+        }
+        if (diffV > 0) {
+            if (diffV < speed) {
+                theEye.dest.bottom -= diffV;
+            } else {
+                theEye.dest.bottom -= speed;
+            }
+            theEye.dest.top = theEye.dest.bottom - 31;
+        } else if (diffV < 0) {
+            if (-diffV < speed) {
+                theEye.dest.bottom -= diffV;
+            } else {
+                theEye.dest.bottom += speed;
+            }
+            theEye.dest.top = theEye.dest.bottom - 31;
+        }
+        
+        theEye.frame++;
+        
+        if (theEye.srcNum != 0) {
+            if (theEye.frame > 3) {		// eye-closing frame holds for 3 frames
+                theEye.frame = 0;
+                theEye.srcNum += theEye.opening;
+                if (theEye.srcNum > 3) {
+                    theEye.srcNum = 3;
+                    theEye.opening = -1;
+                    if (theEye.killed) {
+                        initEye();
+                    }
+                } else if (theEye.srcNum <= 0) {
+                    theEye.srcNum = 0;
+                    theEye.opening = 1;
+                    theEye.frame = 0;
+                    theEye.entering = false;
+                }
+            }
+        } else if (theEye.frame > 256) {
+            theEye.srcNum = 1;
+            theEye.opening = 1;
+            theEye.frame = 0;
+        }
+        
+        diffH = theEye.dest.left - thePlayer.dest.left;
+        diffV = theEye.dest.bottom - thePlayer.dest.bottom;
+        if (diffH < 0) {
+            diffH = -diffH;
+        }
+        if (diffV < 0) {
+            diffV = -diffV;
+        }
+        
+        if ((diffH < 16) && (diffV < 16) && (!theEye.entering) &&
+            (!theEye.killed)) {			// close enough to call it a kill
+            if (theEye.srcNum == 0)	{		// if eye open, player is killed
+                if (lightningCount == 0) {
+                    doLightning(Point(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24), 6);
+                }
+                thePlayer.mode = kFalling;
+                if (thePlayer.facingRight) {
+                    thePlayer.srcNum = 8;
+                } else {
+                    thePlayer.srcNum = 9;
+                }
+                thePlayer.dest.bottom = thePlayer.dest.top + 37;
+                sounds.play(kBoom2Sound);
+            } else { // wow, player killed the eye
+                if (lightningCount == 0) {
+                    doLightning(Point(theEye.dest.left + 24, theEye.dest.top + 16), 15);
+                }
+                addToScore(2000);
+                sounds.play(kBonusSound);
+                
+                killOffEye();
+            }
+        }
+    } else if (theEye.frame > 0) {
+        theEye.frame--;
+        if (theEye.frame == 0) {		// eye appears
+            theEye.mode = kStalking;
+            if (lightningCount == 0) {
+                doLightning(Point(theEye.dest.left + 24, theEye.dest.top + 16), 6);
+            }
+            theEye.srcNum = 3;
+            theEye.opening = 1;
+            theEye.entering = true;
+        }
+    }
+}
+
+void GL::Game::drawEye() const
+{
+    if (theEye.mode == kStalking) {
+        eyeImg.draw(theEye.dest, eyeRects[theEye.srcNum]);
+    }
 }

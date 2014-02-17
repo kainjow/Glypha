@@ -172,7 +172,7 @@ private:
     void drawPlatforms() const;
     Image platformImg;
     
-    long theScore;
+    long score_;
     Image numbersImg;
     Rect numbersSrc[11], numbersDest[11];
     void drawLivesNumbers() const;
@@ -236,6 +236,19 @@ private:
     void handleEggEnemy(int i);
     void resolveEnemyPlayerHit(int i);
     void checkPlayerEnemyCollision();
+    
+    struct eyeInfo {
+        Rect dest;
+        int mode, opening;
+        int srcNum, frame;
+        bool killed, entering;
+    } theEye;
+    Image eyeImg;
+    Rect eyeRects[4];
+    void initEye();
+    void killOffEye();
+    void handleEye();
+    void drawEye() const;
 };
 
 }
