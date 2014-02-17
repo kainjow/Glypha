@@ -66,7 +66,7 @@ GL::Game::Game(Callback callback, void *context)
     , lightningCount(0)
     , newGameLightning(-1)
     , flashObelisks(false)
-    , theKeys(KeyNone)
+    , keys_(KeyNone)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -1034,6 +1034,9 @@ void GL::Game::checkPlatformCollision()
 
 void GL::Game::getPlayerInput()
 {
+    Locker locker(lock_);
+    int theKeys = keys_;
+    
 	thePlayer.flapping = false;
 	thePlayer.walking = false;
 	
@@ -1123,12 +1126,14 @@ void GL::Game::getPlayerInput()
 
 void GL::Game::handleKeyDownEvent(Key key)
 {
-    theKeys |= key;
+    Locker locker(lock_);
+    keys_ |= key;
 }
 
 void GL::Game::handleKeyUpEvent(Key key)
 {
-    theKeys &= ~key;
+    Locker locker(lock_);
+    keys_ &= ~key;
 }
 
 void GL::Game::drawLivesNumbers() const

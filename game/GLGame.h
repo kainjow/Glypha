@@ -8,9 +8,48 @@
 #include "GLSounds.h"
 #include "GLCursor.h"
 #include "GLUtils.h"
+#if _WIN32
+#else
+#include <pthread.h>
+#endif
 
 namespace GL {
-    
+
+class Lock {
+#if _WIN32
+#else
+public:
+    Lock() {
+        pthread_mutex_init(&mutex_, NULL);
+    }
+    ~Lock() {
+        pthread_mutex_destroy(&mutex_);
+    }
+    void lock() {
+        pthread_mutex_lock(&mutex_);
+    }
+    void unlock() {
+        pthread_mutex_unlock(&mutex_);
+    }
+private:
+    pthread_mutex_t mutex_;
+#endif
+};
+
+class Locker {
+public:
+    Locker(Lock& lock)
+        : lock_(lock)
+    {
+        lock_.lock();
+    }
+    ~Locker() {
+        lock_.unlock();
+    }
+private:
+    Lock& lock_;
+};
+
 #define kNumLightningPts 8
 #define kMaxEnemies 8
 
@@ -57,6 +96,7 @@ private:
     Cursor cursor;
     Sounds sounds;
     Utils utils;
+    Lock lock_;
     
     double now;
     void loadImages();
@@ -123,7 +163,7 @@ private:
     void keepPlayerOnPlatform();
     
     void getPlayerInput();
-    int theKeys;
+    int keys_;
     Rect platformRects[6], touchDownRects[6], enemyRects[24];
     
     Rect platformCopyRects[9];
