@@ -15,6 +15,7 @@
 		A55C2E5E15B908D300F17FEB /* GLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A55C2E5C15B908D300F17FEB /* GLRenderer.cpp */; };
 		A5719FEA18B1911800FECD41 /* GLSoundsCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = A5719FE918B1911800FECD41 /* GLSoundsCocoa.mm */; };
 		A5719FED18B1A0EC00FECD41 /* GLCursorCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = A5719FEB18B1A0EC00FECD41 /* GLCursorCocoa.mm */; };
+		A57A03E318B1ED9F003156B9 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A57A03E218B1ED9F003156B9 /* CoreVideo.framework */; };
 		A57D044B15B910A8005CFE23 /* GLRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A57D044915B910A8005CFE23 /* GLRect.cpp */; };
 		A59E06E018A070B8009DF983 /* GLResources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A59E06DF18A070B8009DF983 /* GLResources.cpp */; };
 		A5B35A3415CA285400A91A5E /* GLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5B35A3215CA285400A91A5E /* GLUtils.cpp */; };
@@ -37,6 +38,7 @@
 		A5719FE918B1911800FECD41 /* GLSoundsCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLSoundsCocoa.mm; sourceTree = "<group>"; };
 		A5719FEB18B1A0EC00FECD41 /* GLCursorCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLCursorCocoa.mm; sourceTree = "<group>"; };
 		A5719FEC18B1A0EC00FECD41 /* GLCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLCursor.h; sourceTree = "<group>"; };
+		A57A03E218B1ED9F003156B9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		A57D044915B910A8005CFE23 /* GLRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLRect.cpp; sourceTree = "<group>"; };
 		A57D044A15B910A8005CFE23 /* GLRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLRect.h; sourceTree = "<group>"; };
 		A59E06DF18A070B8009DF983 /* GLResources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLResources.cpp; sourceTree = "<group>"; };
@@ -54,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A57A03E318B1ED9F003156B9 /* CoreVideo.framework in Frameworks */,
 				A5DE5FBA17A456690063FE8E /* AVFoundation.framework in Frameworks */,
 				A54B603315B7D2460072674A /* OpenGL.framework in Frameworks */,
 				A54B601315B7CB560072674A /* Cocoa.framework in Frameworks */,
@@ -84,6 +87,7 @@
 		A54B601115B7CB560072674A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A57A03E218B1ED9F003156B9 /* CoreVideo.framework */,
 				A5DE5FB917A456690063FE8E /* AVFoundation.framework */,
 				A54B601215B7CB560072674A /* Cocoa.framework */,
 				A54B603215B7D2460072674A /* OpenGL.framework */,

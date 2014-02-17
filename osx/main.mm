@@ -1,10 +1,12 @@
 #import <Cocoa/Cocoa.h>
+#import <CoreVideo/CoreVideo.h>
 #include "GLGame.h"
 #include "GLRenderer.h"
 #include "GLResources.h"
 
 @interface GameView : NSOpenGLView
 {
+    CVDisplayLinkRef displayLink_;
     NSTimer *renderTimer_;
     GL::Game *game_;
 }
@@ -125,9 +127,21 @@ static void callback(GL::Game::Event event, void *context)
     return [super initWithFrame:frameRect pixelFormat:format];
 }
 
+- (void)dealloc
+{
+    CVDisplayLinkRelease(displayLink_);
+    [super dealloc];
+}
+
 - (void)setGame:(GL::Game *)game
 {
     game_ = game;
+}
+
+static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink __unused, const CVTimeStamp* now __unused, const CVTimeStamp* outputTime __unused, CVOptionFlags flagsIn __unused, CVOptionFlags* flagsOut __unused, void* displayLinkContext)
+{
+    [(GameView*)displayLinkContext render];
+    return kCVReturnSuccess;
 }
 
 - (void)prepareOpenGL
@@ -136,10 +150,26 @@ static void callback(GL::Game::Event event, void *context)
     GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval]; 
 
+#if 1
+    // Create a display link capable of being used with all active displays
+    CVDisplayLinkCreateWithActiveCGDisplays(&displayLink_);
+    
+    // Set the renderer output callback function
+    CVDisplayLinkSetOutputCallback(displayLink_, &MyDisplayLinkCallback, self);
+    
+    // Set the display link for the current renderer
+    CGLContextObj cglContext = (CGLContextObj)[[self openGLContext] CGLContextObj];
+    CGLPixelFormatObj cglPixelFormat = (CGLPixelFormatObj)[[self pixelFormat] CGLPixelFormatObj];
+    CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(displayLink_, cglContext, cglPixelFormat);
+    
+    // Activate the display link
+    CVDisplayLinkStart(displayLink_);
+#else
     // Start the timer, and add it to other run loop modes so it redraws when a modal dialog is up or during event loops.
     renderTimer_ = [[NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(renderTimer) userInfo:nil repeats:YES] retain];
     [[NSRunLoop currentRunLoop] addTimer:renderTimer_ forMode:NSEventTrackingRunLoopMode];
     [[NSRunLoop currentRunLoop] addTimer:renderTimer_ forMode:NSModalPanelRunLoopMode];
+#endif
 }
 
 - (void)renderTimer
@@ -154,15 +184,21 @@ static void callback(GL::Game::Event event, void *context)
 	[[self openGLContext] update];
 }
 
+- (void)render
+{
+    if (game_) {
+        NSOpenGLContext *ctx = [self openGLContext];
+        [ctx makeCurrentContext];
+        CGLLockContext((CGLContextObj)[ctx CGLContextObj]);
+        game_->run();
+        [ctx flushBuffer];
+        CGLUnlockContext((CGLContextObj)[ctx CGLContextObj]);;
+    }
+}
+
 - (void)drawRect:(__unused NSRect)rect
 {
-    if (!game_) {
-        return;
-    }
-    NSOpenGLContext *ctx = [self openGLContext];
-	[ctx makeCurrentContext];
-	game_->run();
-	[ctx flushBuffer];
+    [self render];
 }
 
 - (void)mouseDown:(NSEvent *)event
