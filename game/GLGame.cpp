@@ -311,7 +311,7 @@ void GL::Game::doLightning(const GL::Point& point)
     lastLightningStrike = now;
 }
 
-void GL::Game::generateLightning(short h, short v)
+void GL::Game::generateLightning(int h, int v)
 {
     const int kLeftObeliskH = 172;
     const int kLeftObeliskV = 250;
@@ -394,7 +394,7 @@ void GL::Game::endGame()
 
 void GL::Game::setUpLevel()
 {
-	short waveMultiple;
+	int waveMultiple;
 	
 	//KillOffEye();
 	
@@ -603,7 +603,7 @@ void GL::Game::handlePlayerIdle()
 
 void GL::Game::handlePlayerWalking()
 {
-	short desiredHVel;
+	int desiredHVel;
 	
 	if (thePlayer.walking) {
 		if (evenFrame) {
@@ -768,7 +768,7 @@ void GL::Game::handlePlayerSinking()
 void GL::Game::checkTouchDownCollision()
 {
 	GL::Rect testRect;
-	short offset;
+	int offset;
 	bool sected = false;
 	
 	for (int i = 0; i < numLedges; i++) {
@@ -868,7 +868,7 @@ void GL::Game::keepPlayerOnPlatform()
 
 void GL::Game::checkLavaRoofCollision()
 {
-	short offset;
+	int offset;
 	
 	if (thePlayer.dest.bottom> kLavaHeight)
 	{
@@ -892,7 +892,7 @@ void GL::Game::checkLavaRoofCollision()
 
 void GL::Game::setAndCheckPlayerDest()
 {
-	short wasTall, wasWide;
+	int wasTall, wasWide;
 	
 	wasTall = thePlayer.dest.bottom - thePlayer.dest.top;
 	wasWide = thePlayer.dest.right - thePlayer.dest.left;
@@ -919,7 +919,7 @@ void GL::Game::setAndCheckPlayerDest()
 void GL::Game::checkPlatformCollision()
 {
 	GL::Rect hRect, vRect;
-	short offset;
+	int offset;
 	
 	for (int i = 0; i < numLedges; i++)
 	{
@@ -1129,7 +1129,7 @@ void GL::Game::handleKeyUpEvent(Key key)
 
 void GL::Game::drawLivesNumbers() const
 {
-	short digit;
+	int digit;
 	
 	digit = (livesLeft - 1) / 10;
 	digit = digit % 10L;
@@ -1196,7 +1196,7 @@ void GL::Game::drawScoreNumbers() const
 
 void GL::Game::drawLevelNumbers() const
 {
-	short digit;
+	int digit;
 	
 	digit = (levelOn + 1) / 100;
 	digit = digit % 10L;
@@ -1536,7 +1536,7 @@ void GL::Game::generateEnemies()
 
 bool GL::Game::setEnemyInitialLocation(GL::Rect *theRect)
 {
-	short where, possibilities;
+	int where, possibilities;
 	bool facing;
 	
 	possibilities = numLedges - 1;
@@ -1547,18 +1547,18 @@ bool GL::Game::setEnemyInitialLocation(GL::Rect *theRect)
 	{
 		case 0:
 		case 2:
-            facing = TRUE;
+            facing = true;
             break;
             
 		case 3:
             if (utils.randomInt(2) == 0)
-                facing = TRUE;
+                facing = true;
             else
-                facing = FALSE;
+                facing = false;
             break;
             
 		default:
-            facing = FALSE;
+            facing = false;
             break;
 	}
 	
@@ -1572,7 +1572,7 @@ bool GL::Game::setEnemyInitialLocation(GL::Rect *theRect)
 	return (facing);
 }
 
-void GL::Game::initEnemy(short i, bool reincarnated)
+void GL::Game::initEnemy(int i, bool reincarnated)
 {
 	bool facing;
 	
@@ -1615,13 +1615,13 @@ void GL::Game::initEnemy(short i, bool reincarnated)
 
 void GL::Game::setEnemyAttributes(int i)
 {
-	short		h;
+	int		h;
 	
 	h = (theEnemies[i].dest.left + theEnemies[i].dest.right) >> 1;
 	if (h < 320)
-		theEnemies[i].facingRight = TRUE;
+		theEnemies[i].facingRight = true;
 	else
-		theEnemies[i].facingRight = FALSE;
+		theEnemies[i].facingRight = false;
 	
 	switch (theEnemies[i].kind)
 	{
@@ -1853,7 +1853,7 @@ void GL::Game::handleIdleEnemies(int i)
 
 void GL::Game::handleFlyingEnemies(int i)
 {
-	short dist;
+	int dist;
 	bool shouldFlap;
 	
 	theEnemies[i].vVel += kGravity;
@@ -1869,30 +1869,30 @@ void GL::Game::handleFlyingEnemies(int i)
 		{
 			dist = theEnemies[i].dest.left - thePlayer.dest.left;
 			if (dist < 320)		// closest route is to the left
-				theEnemies[i].facingRight = FALSE;
+				theEnemies[i].facingRight = false;
 			else				// closest route is to the right
-				theEnemies[i].facingRight = TRUE;
+				theEnemies[i].facingRight = true;
 		}
 		else if (thePlayer.dest.left > theEnemies[i].dest.left)
 		{
 			dist = thePlayer.dest.left - theEnemies[i].dest.left;
 			if (dist < 320)		// closest route is to the right
-				theEnemies[i].facingRight = TRUE;
+				theEnemies[i].facingRight = true;
 			else				// closest route is to the left
-				theEnemies[i].facingRight = FALSE;
+				theEnemies[i].facingRight = false;
 		}
         // seek point 16 pixels above player
 		if (((theEnemies[i].v + 16) > thePlayer.v) && (evenFrame))
-			shouldFlap = TRUE;
+			shouldFlap = true;
 		else
-			shouldFlap = FALSE;
+			shouldFlap = false;
 	}
 	else
 	{
 		if ((theEnemies[i].v > theEnemies[i].targetAlt) && (evenFrame))
-			shouldFlap = TRUE;
+			shouldFlap = true;
 		else
-			shouldFlap = FALSE;
+			shouldFlap = false;
 	}
 	
 	if (shouldFlap)
@@ -2275,9 +2275,9 @@ void GL::Game::resolveEnemyPlayerHit(int i)
 		else		// neither player nor enemy killed
 		{
 			if (theEnemies[i].hVel > 0)
-				theEnemies[i].facingRight = TRUE;
+				theEnemies[i].facingRight = true;
 			else
-				theEnemies[i].facingRight = FALSE;
+				theEnemies[i].facingRight = false;
             sounds.play(kScreechSound);
 		}
 		

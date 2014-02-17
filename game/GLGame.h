@@ -73,7 +73,7 @@ private:
     void drawTorches() const;
 
     void handleLightning();
-    void generateLightning(short h, short v);
+    void generateLightning(int h, int v);
     void drawLightning() const;
     void doLightning(const Point& point);
     Point leftLightningPts[kNumLightningPts], rightLightningPts[kNumLightningPts];
@@ -181,7 +181,7 @@ private:
     void drawEnemies() const;
     void generateEnemies();
     bool setEnemyInitialLocation(Rect *theRect);
-    void initEnemy(short i, bool reincarnated);
+    void initEnemy(int i, bool reincarnated);
     void setEnemyAttributes(int i);
     int assignNewAltitude();
     void checkEnemyPlatformHit(int h);
