@@ -33,7 +33,7 @@
 #define kInitNumLives				5
 #define kDontFlapVel				8
 
-#define kLightningDelay (1.0 / 30.0)
+#define kLightningDelay (1.0 / 25.0)
 
 #define kOwl						0
 #define kWolf						1
@@ -228,10 +228,11 @@ void GL::Game::update()
         getPlayerInput();
         handleCountDownTimer();
     }
+    handleLightning();
     evenFrame = !evenFrame;
 }
 
-void GL::Game::drawFrame()
+void GL::Game::drawFrame() const
 {
     Renderer *r = renderer_;
     r->clear();
@@ -247,8 +248,8 @@ void GL::Game::drawFrame()
         drawScoreNumbers();
         drawLevelNumbers();
     }
-    drawLightning();
     drawObelisks();
+    drawLightning();
 }
 
 void GL::Game::handleMouseDownEvent(const GL::Point& point)
@@ -258,16 +259,14 @@ void GL::Game::handleMouseDownEvent(const GL::Point& point)
     }
 }
 
-void GL::Game::drawLightning()
+void GL::Game::handleLightning()
 {
     if ((lightningCount > 0) && ((now - lastLightningStrike) >= kLightningDelay)) {
         generateLightning(lightningPoint.h, lightningPoint.v);
         lastLightningStrike = now;
         --lightningCount;
     }
-    if (lightningCount > 0) {
-        strikeLightning();
-    } else {
+    if (lightningCount <= 0) {
         flashObelisks = false;
     }
     
@@ -300,9 +299,6 @@ void GL::Game::drawLightning()
             }
         }
     }
-    if (newGameLightning >= 0) {
-        strikeLightning();
-    }
 }
 
 void GL::Game::doLightning(const GL::Point& point)
@@ -317,51 +313,49 @@ void GL::Game::doLightning(const GL::Point& point)
 
 void GL::Game::generateLightning(short h, short v)
 {
-    const short kLeftObeliskH = 172;
-    const short kLeftObeliskV = 250;
-    const short kRightObeliskH = 468;
-    const short kRightObeliskV = 250;
-    const short kWander = 16;
-	short i, leftDeltaH, rightDeltaH, leftDeltaV, rightDeltaV, range;
-	
-	leftDeltaH = h - kLeftObeliskH;				// determine the h and v distances between…
-	
-	rightDeltaH = h - kRightObeliskH;			// obelisks and the target point
-	leftDeltaV = v - kLeftObeliskV;
-	rightDeltaV = v - kRightObeliskV;
-	
-	for (i = 0; i < kNumLightningPts; i++)		// calculate an even spread of points between…
-	{											// obelisk tips and the target point
-		leftLightningPts[i].h = (leftDeltaH * i) / (kNumLightningPts - 1) + kLeftObeliskH;
-		leftLightningPts[i].v = (leftDeltaV * i) / (kNumLightningPts - 1) + kLeftObeliskV;
-		rightLightningPts[i].h = (rightDeltaH * i) / (kNumLightningPts - 1) + kRightObeliskH;
-		rightLightningPts[i].v = (rightDeltaV * i) / (kNumLightningPts - 1) + kRightObeliskV;
-	}
-	
-	range = kWander * 2 + 1;					// randomly scatter the points vertically…
-	for (i = 1; i < kNumLightningPts - 1; i++)	// but NOT the 1st or last points
-	{
-		leftLightningPts[i].v += utils.randomInt(range) - kWander;
-		rightLightningPts[i].v += utils.randomInt(range) - kWander;
-	}
+    const int kLeftObeliskH = 172;
+    const int kLeftObeliskV = 250;
+    const int kRightObeliskH = 468;
+    const int kRightObeliskV = 250;
+    const int kWander = 16;
+    int leftDeltaH, rightDeltaH, leftDeltaV, rightDeltaV, range;
+
+    leftDeltaH = h - kLeftObeliskH;				// determine the h and v distances between
+    rightDeltaH = h - kRightObeliskH;			// obelisks and the target point
+    leftDeltaV = v - kLeftObeliskV;
+    rightDeltaV = v - kRightObeliskV;
+
+    for (int i = 0; i < kNumLightningPts; i++) { // calculate an even spread of points between
+                                                 // obelisk tips and the target point
+        leftLightningPts[i].h = (leftDeltaH * i) / (kNumLightningPts - 1) + kLeftObeliskH;
+        leftLightningPts[i].v = (leftDeltaV * i) / (kNumLightningPts - 1) + kLeftObeliskV;
+        rightLightningPts[i].h = (rightDeltaH * i) / (kNumLightningPts - 1) + kRightObeliskH;
+        rightLightningPts[i].v = (rightDeltaV * i) / (kNumLightningPts - 1) + kRightObeliskV;
+    }
+
+    range = kWander * 2 + 1;					// randomly scatter the points vertically
+    for (int i = 1; i < kNumLightningPts - 1; i++) { // but NOT the 1st or last points
+        leftLightningPts[i].v += utils.randomInt(range) - kWander;
+        rightLightningPts[i].v += utils.randomInt(range) - kWander;
+    }
 }
 
-void GL::Game::strikeLightning()
+void GL::Game::drawLightning() const
 {
+    if (lightningCount <= 0 && newGameLightning < 0) {
+        return;
+    }
+    
     Renderer *r = renderer_;
-    short i;
-
     r->setFillColor(255, 255, 0);
     r->beginLines(2.0f);
-    // draw lightning bolts
     r->moveTo(leftLightningPts[0].h, leftLightningPts[0].v);
-    for (i = 0; i < kNumLightningPts - 1; i++) {
+    for (int i = 0; i < kNumLightningPts - 1; i++) {
         r->moveTo(leftLightningPts[i].h, leftLightningPts[i].v);
         r->lineTo(leftLightningPts[i + 1].h - 1, leftLightningPts[i + 1].v);
     }
-
     r->moveTo(rightLightningPts[0].h, rightLightningPts[0].v);
-    for (i = 0; i < kNumLightningPts - 1; i++) {
+    for (int i = 0; i < kNumLightningPts - 1; i++) {
         r->moveTo(rightLightningPts[i].h, rightLightningPts[i].v);
         r->lineTo(rightLightningPts[i + 1].h - 1, rightLightningPts[i + 1].v);
     }
@@ -1776,7 +1770,7 @@ void GL::Game::checkEnemyPlatformHit(int h)
 						{
 							if (((theEnemies[h].dest.right - 8) > platformRects[i].right) &&
                                 (theEnemies[h].hVel == 0))
-							{				// if enemy has come to rest half off the edge…
+							{				// if enemy has come to rest half off the edge
 								theEnemies[h].hVel = 32;
 							}
 							else if (((theEnemies[h].dest.left + 8) < platformRects[i].left) &&
@@ -1983,7 +1977,7 @@ void GL::Game::handleFlyingEnemies(int i)
 		theEnemies[i].h = theEnemies[i].dest.left << 4;
 		theEnemies[i].wasDest.offsetBy(-640, 0);
 		theEnemies[i].pass++;
-		if (theEnemies[i].pass > 2)		// after two screen passes…
+		if (theEnemies[i].pass > 2)		// after two screen passes
 		{								// enemy patrols a new altitude
 			theEnemies[i].targetAlt = assignNewAltitude();
 			theEnemies[i].pass = 0;

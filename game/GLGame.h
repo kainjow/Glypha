@@ -63,7 +63,7 @@ private:
     bool playing, evenFrame, flapKeyDown;
     
     void update();
-    void drawFrame();
+    void drawFrame() const;
     
     Image bgImg;
     void drawBackground() const;
@@ -72,9 +72,9 @@ private:
     Rect flameDestRects[2], flameRects[4];
     void drawTorches() const;
 
-    void drawLightning();
+    void handleLightning();
     void generateLightning(short h, short v);
-    void strikeLightning();
+    void drawLightning() const;
     void doLightning(const Point& point);
     Point leftLightningPts[kNumLightningPts], rightLightningPts[kNumLightningPts];
     Point mousePoint;
