@@ -50,9 +50,16 @@ enum GLGameKey {
     kGLGameKeyQuote = 128,
 };
 
+enum GLGameEvent {
+    kGLGameStarted,
+    kGLGameEnded,
+};
+
+typedef void (*GLGameCallback)(GLGameEvent event, void *context);
+
 class GLGame {
 public:
-    GLGame();
+    GLGame(GLGameCallback callback, void *context);
     ~GLGame();
     
     GLRenderer* renderer();
@@ -66,14 +73,18 @@ public:
     void handleKeyUpEvent(GLGameKey key);
     
     void newGame();
+    void endGame();
     
 private:
+    GLGameCallback callback_;
+    void *callbackContext_;
+    
     GLRenderer *renderer_;
     GLCursor cursor;
     GLUtils utils;
     double now;
     void loadImages();
-    bool isPlaying, evenFrame, flapKeyDown;
+    bool playing, evenFrame, flapKeyDown;
     
     GLImage bgImg;
 

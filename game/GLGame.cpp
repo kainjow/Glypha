@@ -56,9 +56,11 @@
 #define kJackalHeightSmell		240
 #define kJackalFlapImpulse		72
 
-GLGame::GLGame()
-    : renderer_(new GLRenderer())
-    , isPlaying(false), evenFrame(true)
+GLGame::GLGame(GLGameCallback callback, void *context)
+    : callback_(callback)
+    , callbackContext_(context)
+    , renderer_(new GLRenderer())
+    , playing(false), evenFrame(true)
     , lastFlameAni(0), whichFlame1(-1), whichFlame2(-1)
     , lightningCount(0)
     , newGameLightning(-1)
@@ -235,7 +237,7 @@ void GLGame::draw()
         handImg.draw(theHand.dest, handRects[1]);
     }
     
-    if (isPlaying) {
+    if (playing) {
         drawPlatforms();
         movePlayer();
         moveEnemies();
@@ -261,7 +263,7 @@ void GLGame::draw()
 
 void GLGame::handleMouseDownEvent(const GLPoint& point)
 {
-    if (!isPlaying) {
+    if (!playing) {
         doLightning(point);
     }
 }
@@ -383,7 +385,7 @@ void GLGame::newGame()
 	levelOn = 0;
     livesLeft = kInitNumLives;
     theScore = 0L;
-    isPlaying = true;
+    playing = true;
     numOwls = 4;
     
     initHandLocation();
@@ -394,6 +396,16 @@ void GLGame::newGame()
     resetPlayer(true);
     
     cursor.obscure();
+    callback_(kGLGameStarted, callbackContext_);
+}
+
+void GLGame::endGame()
+{
+    playing = false;
+    sounds.play(kMusicSound);
+    //CheckHighScore();
+    cursor.show();
+    callback_(kGLGameEnded, callbackContext_);
 }
 
 void GLGame::setUpLevel()
@@ -493,9 +505,7 @@ void GLGame::offAMortal()
         resetPlayer(false);
         updateLivesNumbers();
     } else {
-        isPlaying = false;
-        sounds.play(kMusicSound);
-        //CheckHighScore();
+        endGame();
     }
 }
 
