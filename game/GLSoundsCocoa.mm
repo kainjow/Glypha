@@ -24,6 +24,7 @@ void GL::Sounds::play(int which)
         }
     }
     if (!found) {
+        NSLog(@"Preloaded sound not available for %d", which);
         AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:ctx->sounds[which].front().data error:nil];
         ctx->sounds[which].push_back(player);
         [player play];
@@ -34,7 +35,10 @@ void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen)
 {
     Context *ctx = static_cast<Context*>(context);
     NSData *data = [NSData dataWithBytesNoCopy:(void*)buf length:bufLen freeWhenDone:NO];
-    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:data error:nil];
-    [player prepareToPlay];
-    ctx->sounds[which].push_back(player);
+    int count = preloadCount(which);
+    for (int i = 0; i < count; ++i) {
+        AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:data error:nil];
+        [player prepareToPlay];
+        ctx->sounds[which].push_back(player);
+    }
 }

@@ -44,6 +44,23 @@ public:
         load(kWalkSound, walk_aif, walk_aif_len);
     }
     
+    int preloadCount(int which) {
+        switch (which) {
+            case kBonusSound:
+            case kFlap2Sound:
+            case kFlapSound:
+            case kGrateSound:
+            case kLightningSound:
+            case kScrape2Sound:
+            case kSpawnSound:
+            case kWalkSound:
+                return 3;
+            case kScreechSound:
+                return 8;
+        }
+        return 1;
+    }
+    
     void initContext();
     void load(int which, const unsigned char *buf, unsigned bufLen);
     void play(int which);
