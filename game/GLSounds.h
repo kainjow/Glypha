@@ -1,6 +1,8 @@
 #ifndef GLSOUNDS_H
 #define GLSOUNDS_H
 
+#include "GLResources.h"
+
 enum {
     kBirdSound = 0,
     kBonusSound = 1,
@@ -22,13 +24,30 @@ enum {
 
 class GLSounds {
 public:
-    GLSounds();
+    GLSounds() {
+        initContext();
+        load(kBirdSound, bird_aif, bird_aif_len);
+        load(kBonusSound, bonus_aif, bonus_aif_len);
+        load(kBoom1Sound, boom1_aif, boom1_aif_len);
+        load(kBoom2Sound, boom2_aif, boom2_aif_len);
+        load(kFlap2Sound, flap2_aif, flap2_aif_len);
+        load(kFlapSound, flap_aif, flap_aif_len);
+        load(kGrateSound, grate_aif, grate_aif_len);
+        load(kLightningSound, lightning_aif, lightning_aif_len);
+        load(kMusicSound, music_aif, music_aif_len);
+        load(kScrape2Sound, scrape2_aif, scrape2_aif_len);
+        load(kScreechSound, screech_aif, screech_aif_len);
+        load(kSpawnSound, spawn_aif, spawn_aif_len);
+        load(kSplashSound, splash_aif, splash_aif_len);
+        load(kWalkSound, walk_aif, walk_aif_len);
+    }
     
+    void initContext();
+    void load(int which, const unsigned char *buf, unsigned bufLen);
     void play(int which);
     
 private:
-    class Imp;
-    Imp *imp;
+    void *context;
 };
 
 #endif

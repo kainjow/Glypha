@@ -1,16 +1,12 @@
 #include "GLSounds.h"
-#include "GLResources.h"
 #include "GLUtils.h"
-#if _WIN32
 #include <windows.h>
 #include <cstdint>
 #include <cstring>
 #include <cstdio>
 #include <vector>
 #include "GLBufferReader.h"
-#endif
 
-#if _WIN32
 struct WaveData {
 public:
     WAVEFORMATEX format;
@@ -217,12 +213,6 @@ public:
     Imp()
         : outs_(3) // up to 3 simultaneous sounds
     {
-        loadSound(kBirdSound, bird_aif, bird_aif_len);
-        loadSound(kFlapSound, flap_aif, flap_aif_len);
-        loadSound(kGrateSound, grate_aif, grate_aif_len);
-        loadSound(kWalkSound, walk_aif, walk_aif_len);
-        loadSound(kScreechSound, screech_aif, screech_aif_len);
-        loadSound(kLightningSound, lightning_aif, lightning_aif_len);
     }
 
     void play(int which) {
@@ -238,28 +228,13 @@ public:
         }
     }
 
-private:
     void loadSound(int which, const unsigned char *buf, unsigned bufLen) {
         if (!aiffDataToWave(buf, bufLen, wavs_[which])) {
             GLUtils::log(L"Can't load sound %d\n", which);
         }
     }
 
+private:
     WaveData wavs_[kMaxSounds];
     std::vector<WaveOut> outs_;
 };
-#endif
-
-GLSounds::GLSounds()
-#if _WIN32
-    : imp(new Imp)
-#endif
-{
-}
-
-void GLSounds::play(int which)
-{
-#if _WIN32
-    imp->play(which);
-#endif
-}

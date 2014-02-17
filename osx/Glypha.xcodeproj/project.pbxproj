@@ -13,10 +13,10 @@
 		A54B603315B7D2460072674A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A54B603215B7D2460072674A /* OpenGL.framework */; };
 		A55C2E5B15B907D900F17FEB /* GLGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A55C2E5915B907D900F17FEB /* GLGame.cpp */; };
 		A55C2E5E15B908D300F17FEB /* GLRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A55C2E5C15B908D300F17FEB /* GLRenderer.cpp */; };
+		A5719FEA18B1911800FECD41 /* GLSoundsCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = A5719FE918B1911800FECD41 /* GLSoundsCocoa.mm */; };
 		A57D044B15B910A8005CFE23 /* GLRect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A57D044915B910A8005CFE23 /* GLRect.cpp */; };
 		A59E06E018A070B8009DF983 /* GLResources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A59E06DF18A070B8009DF983 /* GLResources.cpp */; };
 		A5B35A3415CA285400A91A5E /* GLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5B35A3215CA285400A91A5E /* GLUtils.cpp */; };
-		A5DE5FB617A451E00063FE8E /* GLSounds.mm in Sources */ = {isa = PBXBuildFile; fileRef = A5DE5FB417A451E00063FE8E /* GLSounds.mm */; };
 		A5DE5FBA17A456690063FE8E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5DE5FB917A456690063FE8E /* AVFoundation.framework */; };
 		A5E2F65C15BE55A900DC68DD /* GLImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5E2F65A15BE55A800DC68DD /* GLImage.cpp */; };
 /* End PBXBuildFile section */
@@ -33,12 +33,12 @@
 		A55C2E5A15B907D900F17FEB /* GLGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLGame.h; sourceTree = "<group>"; };
 		A55C2E5C15B908D300F17FEB /* GLRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLRenderer.cpp; sourceTree = "<group>"; };
 		A55C2E5D15B908D300F17FEB /* GLRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLRenderer.h; sourceTree = "<group>"; };
+		A5719FE918B1911800FECD41 /* GLSoundsCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLSoundsCocoa.mm; sourceTree = "<group>"; };
 		A57D044915B910A8005CFE23 /* GLRect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLRect.cpp; sourceTree = "<group>"; };
 		A57D044A15B910A8005CFE23 /* GLRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLRect.h; sourceTree = "<group>"; };
 		A59E06DF18A070B8009DF983 /* GLResources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLResources.cpp; sourceTree = "<group>"; };
 		A5B35A3215CA285400A91A5E /* GLUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLUtils.cpp; sourceTree = "<group>"; };
 		A5B35A3315CA285400A91A5E /* GLUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLUtils.h; sourceTree = "<group>"; };
-		A5DE5FB417A451E00063FE8E /* GLSounds.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLSounds.mm; sourceTree = "<group>"; };
 		A5DE5FB517A451E00063FE8E /* GLSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLSounds.h; sourceTree = "<group>"; };
 		A5DE5FB917A456690063FE8E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		A5E2F65A15BE55A800DC68DD /* GLImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GLImage.cpp; sourceTree = "<group>"; };
@@ -112,8 +112,8 @@
 				A50CB6E115D1736600126032 /* GLPoint.h */,
 				A5B35A3215CA285400A91A5E /* GLUtils.cpp */,
 				A5B35A3315CA285400A91A5E /* GLUtils.h */,
-				A5DE5FB417A451E00063FE8E /* GLSounds.mm */,
 				A5DE5FB517A451E00063FE8E /* GLSounds.h */,
+				A5719FE918B1911800FECD41 /* GLSoundsCocoa.mm */,
 				A59E06DF18A070B8009DF983 /* GLResources.cpp */,
 				A5E2F66315BE5DE900DC68DD /* GLResources.h */,
 			);
@@ -182,8 +182,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5719FEA18B1911800FECD41 /* GLSoundsCocoa.mm in Sources */,
 				A528F68C189F80470085A43D /* GLImage_CoreImage.cpp in Sources */,
-				A5DE5FB617A451E00063FE8E /* GLSounds.mm in Sources */,
 				A54B602615B7CB570072674A /* main.mm in Sources */,
 				A55C2E5B15B907D900F17FEB /* GLGame.cpp in Sources */,
 				A55C2E5E15B908D300F17FEB /* GLRenderer.cpp in Sources */,
