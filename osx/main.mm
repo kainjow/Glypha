@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #include "GLGame.h"
 #include "GLRenderer.h"
+#include "GLResources.h"
 
 @interface GameView : NSOpenGLView
 {
@@ -33,11 +34,10 @@ static void callback(GL::Game::Event event, void *context)
 
 @implementation AppController
 
-- (void)setupMenuBar
+- (void)setupMenuBar:(NSString *)appName
 {
     NSMenu *menubar = [[[NSMenu alloc] init] autorelease];
     [NSApp setMainMenu:menubar];
-    NSString *appName = [[NSProcessInfo processInfo] processName];
     NSMenuItem *item;
     
     NSMenu *appMenu = [[[NSMenu alloc] initWithTitle:appName] autorelease];
@@ -67,11 +67,13 @@ static void callback(GL::Game::Event event, void *context)
 {
     self = [super init];
     if (self != nil) {
+        NSString *appName = [NSString stringWithUTF8String:GL::kGameName];
         NSUInteger style = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
         window_ = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 640, 460) styleMask:style backing:NSBackingStoreBuffered defer:NO];
+        [window_ setTitle:appName];
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
         [[window_ contentView] addSubview:gameView_];
-        [self setupMenuBar];
+        [self setupMenuBar:appName];
         game_ = new GL::Game(callback, self);
         [gameView_ setGame:game_];
     }
