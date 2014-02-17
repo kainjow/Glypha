@@ -255,7 +255,7 @@ void GL::Game::drawFrame() const
 void GL::Game::handleMouseDownEvent(const GL::Point& point)
 {
     if (!playing) {
-        doLightning(point);
+        doLightning(point, kNumLightningStrikes);
     }
 }
 
@@ -295,17 +295,17 @@ void GL::Game::handleLightning()
             }
             --newGameLightning;
             if (newGameLightning == -1) {
-                doLightning(GL::Point(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24));
+                doLightning(GL::Point(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24), kNumLightningStrikes);
             }
         }
     }
 }
 
-void GL::Game::doLightning(const GL::Point& point)
+void GL::Game::doLightning(const GL::Point& point, int count)
 {
     flashObelisks = true;
     sounds.play(kLightningSound);
-    lightningCount = kNumLightningStrikes;
+    lightningCount = count;
     lightningPoint = point;
     generateLightning(lightningPoint.h, lightningPoint.v);
     lastLightningStrike = now;
@@ -477,6 +477,10 @@ void GL::Game::resetPlayer(bool initialPlace)
 	thePlayer.wrapping = false;
 	thePlayer.clutched = false;
 	thePlayer.mode = kIdle;
+    
+    if (lightningCount == 0) {
+        doLightning(GL::Point(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24), kNumLightningStrikes);
+    }
 }
 
 void GL::Game::offAMortal()
@@ -2219,8 +2223,7 @@ void GL::Game::resolveEnemyPlayerHit(int i)
 		{
 			if (lightningCount == 0)
 			{
-                doLightning(GL::Point(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24));
-				lightningCount = 6;
+                doLightning(GL::Point(thePlayer.dest.left + 24, thePlayer.dest.bottom - 24), 6);
 			}
 			
 			thePlayer.mode = kFalling;

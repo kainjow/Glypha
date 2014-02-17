@@ -75,7 +75,7 @@ private:
     void handleLightning();
     void generateLightning(int h, int v);
     void drawLightning() const;
-    void doLightning(const Point& point);
+    void doLightning(const Point& point, int count);
     Point leftLightningPts[kNumLightningPts], rightLightningPts[kNumLightningPts];
     Point mousePoint;
     int lightningCount;
