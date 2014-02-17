@@ -99,6 +99,8 @@ private:
     Lock lock_;
     
     double now;
+    double lastTime;
+    double accumulator;
     void loadImages();
     bool playing, evenFrame, flapKeyDown;
     

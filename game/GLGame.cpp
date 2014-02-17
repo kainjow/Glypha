@@ -62,6 +62,9 @@ GL::Game::Game(Callback callback, void *context)
     : callback_(callback)
     , callbackContext_(context)
     , renderer_(new Renderer())
+    , now(utils.now())
+    , lastTime(now)
+    , accumulator(0)
     , playing(false), evenFrame(true)
     , lightningCount(0)
     , newGameLightning(-1)
@@ -209,13 +212,24 @@ void GL::Game::run()
         loadImages();
     }
     
+    // See http://gafferongames.com/game-physics/fix-your-timestep/
+    // and http://sacredsoftware.net/tutorials/Animation/TimeBasedAnimation.xhtml
     static double freq = kUpdateFreq;
     double n0 = utils.now();
-    if ((n0 - now) >= freq) {
-        now = n0;
+    double frameTime = n0 - lastTime;
+    lastTime = n0;
+    accumulator += frameTime;
+    unsigned count = 0;
+    while (accumulator >= freq) {
         update();
+        now += freq;
+        accumulator -= freq;
+        ++count;
     }
-    
+    if (count > 2) {
+        printf("%u cycles\n", count);
+    }
+
     drawFrame();
 }
 
