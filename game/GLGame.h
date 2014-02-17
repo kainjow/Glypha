@@ -90,7 +90,7 @@ private:
     
     int numLedges, levelOn, livesLeft;
     
-    struct playerType {
+    struct Player {
         Rect dest, wasDest, wrap;
         int h, v;
         int wasH, wasV;
@@ -100,8 +100,7 @@ private:
         bool facingRight, flapping;
         bool walking, wrapping;
         bool clutched;
-    };
-    playerType thePlayer;
+    } thePlayer;
     Rect playerRects[11];
     void resetPlayer(bool initialPlace);
     void offAMortal();
@@ -139,12 +138,11 @@ private:
     void drawLevelNumbers() const;
     void addToScore(int value);
     
-    typedef struct {
+    struct Hand {
         Rect dest;
         int mode;
-    } handInfo;
+    } theHand;
     Image handImg;
-    handInfo theHand;
     Rect grabZone;
     Rect handRects[2];
     void initHandLocation();
@@ -158,7 +156,7 @@ private:
     int deadEnemies;
     int numOwls;
     int spawnedEnemies;
-    struct enemyType {
+    struct Enemy {
         Rect dest, wasDest;
         int h, v;
         int wasH, wasV;
@@ -169,8 +167,7 @@ private:
         int flapImpulse, pass;
         int maxHVel, maxVVel;
         bool facingRight;
-    };
-    enemyType theEnemies[kMaxEnemies];
+    } theEnemies[kMaxEnemies];
     Rect enemyInitRects[5];
     Rect eggSrcRect;
     bool doEnemyFlapSound;
