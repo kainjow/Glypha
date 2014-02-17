@@ -135,7 +135,7 @@ static void callback(GLGameEvent event, void *context)
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval]; 
 
     // Start the timer, and add it to other run loop modes so it redraws when a modal dialog is up or during event loops.
-    renderTimer_ = [[NSTimer scheduledTimerWithTimeInterval:game_->updateFrequency() target:self selector:@selector(renderTimer) userInfo:nil repeats:YES] retain];
+    renderTimer_ = [[NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(renderTimer) userInfo:nil repeats:YES] retain];
     [[NSRunLoop currentRunLoop] addTimer:renderTimer_ forMode:NSEventTrackingRunLoopMode];
     [[NSRunLoop currentRunLoop] addTimer:renderTimer_ forMode:NSModalPanelRunLoopMode];
 }
@@ -159,7 +159,7 @@ static void callback(GLGameEvent event, void *context)
     }
     NSOpenGLContext *ctx = [self openGLContext];
 	[ctx makeCurrentContext];
-	game_->draw();
+	game_->run();
 	[ctx flushBuffer];
 }
 

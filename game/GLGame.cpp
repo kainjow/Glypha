@@ -56,12 +56,13 @@
 #define kJackalHeightSmell		240
 #define kJackalFlapImpulse		72
 
+#define kUpdateFreq (1.0/30.0)
+
 GLGame::GLGame(GLGameCallback callback, void *context)
     : callback_(callback)
     , callbackContext_(context)
     , renderer_(new GLRenderer())
     , playing(false), evenFrame(true)
-    , lastFlameAni(0), whichFlame1(-1), whichFlame2(-1)
     , lightningCount(0)
     , newGameLightning(-1)
     , flashObelisks(false)
@@ -186,11 +187,6 @@ GLRenderer* GLGame::renderer()
     return renderer_;   
 }
 
-double GLGame::updateFrequency()
-{
-    return 1.0/30.0;
-}
-
 void GLGame::loadImages()
 {
     bgImg.load(background_png, background_png_len);
@@ -206,47 +202,53 @@ void GLGame::loadImages()
     egg.load(egg_png, egg_png_len);
 }
 
-void GLGame::draw()
+void GLGame::run()
 {
-    GLRenderer *r = renderer_;
-    now = utils.now();
-    
-    r->clear();
-    
     // Create images the first time
     if (!bgImg.isLoaded()) {
         loadImages();
     }
     
+    static double freq = kUpdateFreq;
+    double n0 = utils.now();
+    if ((n0 - now) >= freq) {
+        now = n0;
+        update();
+    }
+    
+    drawFrame();
+}
+
+void GLGame::update()
+{
+    if (playing) {
+        movePlayer();
+        moveEnemies();
+        handleHand();
+        getPlayerInput();
+        handleCountDownTimer();
+    }
+    evenFrame = !evenFrame;
+}
+
+void GLGame::drawFrame()
+{
+    GLRenderer *r = renderer_;
+    r->clear();
     drawBackground();
     drawTorches();
-    
-    // Draw hand
     if (playing) {
         drawPlatforms();
         drawHand();
         drawPlayer();
-        checkPlayerWrapAround();
         drawEnemies();
         drawObelisks();
-
-        movePlayer();
-        moveEnemies();
-        handleHand();
-
-        updateLivesNumbers();
-        updateScoreNumbers();
-        updateLevelNumbers();
-        getPlayerInput();
-        handleCountDownTimer();
-    } else {
-        drawLightning();
-        drawObelisks();
+        drawLivesNumbers();
+        drawScoreNumbers();
+        drawLevelNumbers();
     }
-    
     drawLightning();
-    
-    evenFrame = !evenFrame;
+    drawObelisks();
 }
 
 void GLGame::handleMouseDownEvent(const GLPoint& point)
@@ -423,8 +425,6 @@ void GLGame::setUpLevel()
     
     newGameLightning = 6;
     lastNewGameLightning = 0;
-    
-	updateLevelNumbers();
 }
 
 void GLGame::resetPlayer(bool initialPlace)
@@ -491,30 +491,27 @@ void GLGame::offAMortal()
 
     if (livesLeft > 0) {
         resetPlayer(false);
-        updateLivesNumbers();
     } else {
         endGame();
     }
 }
 
-void GLGame::drawBackground()
+void GLGame::drawBackground() const
 {
     bgImg.draw(0, 0);
 }
 
-void GLGame::drawTorches()
+void GLGame::drawTorches() const
 {
-    if (((now - lastFlameAni) >= (1.0f/25.0f)) || (whichFlame1 == -1)) {
-        whichFlame1 = utils.randomInt(4);
-        whichFlame2 = utils.randomInt(4);
-        lastFlameAni = now;
+    int who = utils.randomInt(4);
+    if (evenFrame) {
+        torchesImg.draw(flameDestRects[0], flameRects[who]);
+    } else {
+        torchesImg.draw(flameDestRects[1], flameRects[who]);
     }
-    torchesImg.draw(flameDestRects[0], flameRects[whichFlame1]);
-    torchesImg.draw(flameDestRects[1], flameRects[whichFlame2]);
-    
 }
 
-void GLGame::drawHand()
+void GLGame::drawHand() const
 {
     if (theHand.mode == kOutGrabeth) {
         handImg.draw(theHand.dest, handRects[0]);
@@ -541,9 +538,11 @@ void GLGame::drawPlayer()
 	thePlayer.wasH = thePlayer.h;
 	thePlayer.wasV = thePlayer.v;
 	thePlayer.wasDest = thePlayer.dest;
+    
+    checkPlayerWrapAround();
 }
 
-void GLGame::drawPlatforms()
+void GLGame::drawPlatforms() const
 {
 	if (numLedges > 3) {
         platformImg.draw(platformCopyRects[7], platformCopyRects[2]);
@@ -1108,7 +1107,7 @@ void GLGame::handleKeyUpEvent(GLGameKey key)
     theKeys &= ~key;
 }
 
-void GLGame::updateLivesNumbers()
+void GLGame::drawLivesNumbers() const
 {
 	short digit;
 	
@@ -1123,7 +1122,16 @@ void GLGame::updateLivesNumbers()
     numbersImg.draw(numbersDest[1], numbersSrc[digit]);
 }
 
-void GLGame::updateScoreNumbers()
+void GLGame::addToScore(int value)
+{
+    long oldDigit, newDigit;
+    oldDigit = theScore / 10000L;
+    theScore += value;
+    newDigit = theScore / 10000L;
+    livesLeft += (newDigit - oldDigit);
+}
+
+void GLGame::drawScoreNumbers() const
 {
 	long digit;
 	
@@ -1135,12 +1143,6 @@ void GLGame::updateScoreNumbers()
     numbersImg.draw(numbersDest[2], numbersSrc[digit]);
 	
 	digit = theScore / 10000L;
-	if (digit > wasTensOfThousands) {
-		livesLeft++;
-		updateLivesNumbers();
-		wasTensOfThousands = digit;
-	}
-	
 	digit = digit % 10L;
 	if ((digit == 0) && (theScore < 100000L)) {
 		digit = 10;
@@ -1172,7 +1174,7 @@ void GLGame::updateScoreNumbers()
     numbersImg.draw(numbersDest[7], numbersSrc[digit]);
 }
 
-void GLGame::updateLevelNumbers()
+void GLGame::drawLevelNumbers() const
 {
 	short digit;
 	
@@ -1336,7 +1338,7 @@ void GLGame::checkPlayerWrapAround()
     }
 }
 
-void GLGame::drawObelisks()
+void GLGame::drawObelisks() const
 {
     if (flashObelisks) {
         obelisksImg.draw(obeliskRects[2], obeliskRects[0]);
@@ -1376,7 +1378,6 @@ void GLGame::handleCountDownTimer()
 		if (countDownTimer == 0) {
 			countDownTimer = 0;
 			levelOn++;
-			updateLevelNumbers();
 			setUpLevel();
 			generateEnemies();
 		}
@@ -2249,8 +2250,7 @@ void GLGame::resolveEnemyPlayerHit(int i)
 		deadEnemies++;
 		
 		theEnemies[i].mode = kDeadAndGone;
-		theScore += 500L;
-		updateScoreNumbers();
+        addToScore(500);
 		sounds.play(kBonusSound);
 		initEnemy(i, true);
 	}
@@ -2302,18 +2302,17 @@ void GLGame::resolveEnemyPlayerHit(int i)
 			switch (theEnemies[i].kind)
 			{
 				case kOwl:
-                    theScore += 500L;
+                    addToScore(500);
                     break;
                     
 				case kWolf:
-                    theScore += 1000L;
+                    addToScore(1000);
                     break;
                     
 				case kJackal:
-                    theScore += 1500L;
+                    addToScore(1500);
                     break;
 			}
-			updateScoreNumbers();
 			sounds.play(kBoom2Sound);
 		}
 		else		// neither player nor enemy killed

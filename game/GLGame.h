@@ -64,9 +64,7 @@ public:
     
     GLRenderer* renderer();
     
-    double updateFrequency();
-    
-    void draw();
+    void run();
     
     void handleMouseDownEvent(const GLPoint& point);
     void handleKeyDownEvent(GLGameKey key);
@@ -82,18 +80,20 @@ private:
     GLRenderer *renderer_;
     GLCursor cursor;
     GLUtils utils;
+    
     double now;
     void loadImages();
     bool playing, evenFrame, flapKeyDown;
     
+    void update();
+    void drawFrame();
+    
     GLImage bgImg;
-    void drawBackground();
+    void drawBackground() const;
 
     GLImage torchesImg;
     GLRect flameDestRects[2], flameRects[4];
-    double lastFlameAni;
-    int whichFlame1, whichFlame2;
-    void drawTorches();
+    void drawTorches() const;
 
     void drawLightning();
     void generateLightning(short h, short v);
@@ -109,7 +109,7 @@ private:
     GLRect obeliskRects[4];
     GLImage obelisksImg;
     bool flashObelisks;
-    void drawObelisks();
+    void drawObelisks() const;
     
     int numLedges, levelOn, livesLeft;
     
@@ -139,17 +139,18 @@ private:
     GLRect platformRects[6], touchDownRects[6], enemyRects[24];
     
     GLRect platformCopyRects[9];
-    void drawPlatforms();
+    void drawPlatforms() const;
     GLImage platformImg;
     
     GLSounds sounds;
     
-    long theScore, wasTensOfThousands;
+    long theScore;
     GLImage numbersImg;
     GLRect numbersSrc[11], numbersDest[11];
-    void updateLivesNumbers();
-    void updateScoreNumbers();
-    void updateLevelNumbers();
+    void drawLivesNumbers() const;
+    void drawScoreNumbers() const;
+    void drawLevelNumbers() const;
+    void addToScore(int value);
     
     typedef struct {
         GLRect dest;
@@ -180,7 +181,7 @@ private:
     GLImage egg;
     void moveEnemies();
     void checkEnemyWrapAround(int who);
-    void drawHand();
+    void drawHand() const;
     void drawEnemies();
     void generateEnemies();
     bool setEnemyInitialLocation(GLRect *theRect);
