@@ -781,7 +781,7 @@ void GL::Game::checkTouchDownCollision()
             testRect.offsetBy(0, 11);
         }
 		
-        if (thePlayer.dest.sect(&testRect)) {
+        if (thePlayer.dest.sect(testRect)) {
 			if (thePlayer.mode == kFlying) {
 				thePlayer.mode = kWalking;
 				if (thePlayer.facingRight)
@@ -857,7 +857,7 @@ void GL::Game::handlePlayerBones()
 void GL::Game::keepPlayerOnPlatform()
 {
     for (int i = 0; i < numLedges; i++) {
-        if ((thePlayer.dest.sect(&platformRects[i])) && (thePlayer.vVel > 0)) {
+        if ((thePlayer.dest.sect(platformRects[i])) && (thePlayer.vVel > 0)) {
             int offset = thePlayer.dest.bottom - platformRects[i].top - 1;
             thePlayer.dest.top -= offset;
             thePlayer.dest.bottom -= offset;
@@ -927,14 +927,14 @@ void GL::Game::checkPlatformCollision()
 	
 	for (int i = 0; i < numLedges; i++)
 	{
-		if (thePlayer.dest.sect(&platformRects[i]))
+		if (thePlayer.dest.sect(platformRects[i]))
 		{
 			hRect.left = thePlayer.dest.left;
 			hRect.right = thePlayer.dest.right;
 			hRect.top = thePlayer.wasDest.top;
 			hRect.bottom = thePlayer.wasDest.bottom;
 			
-			if (hRect.sect(&platformRects[i]))
+			if (hRect.sect(platformRects[i]))
 			{
 				if (thePlayer.h > thePlayer.wasH)			// heading right
 				{
@@ -967,7 +967,7 @@ void GL::Game::checkPlatformCollision()
 				vRect.top = thePlayer.dest.top;
 				vRect.bottom = thePlayer.dest.bottom;
 				
-				if (vRect.sect(&platformRects[i]))
+				if (vRect.sect(platformRects[i]))
 				{
 					if (thePlayer.wasV < thePlayer.v)		// heading down
 					{
@@ -1232,7 +1232,7 @@ void GL::Game::handleHand()
 
     switch (theHand.mode) {
         case kLurking:
-            if (thePlayer.mode == kFlying && thePlayer.dest.sect(&grabZone)) {
+            if (thePlayer.mode == kFlying && thePlayer.dest.sect(grabZone)) {
                 theHand.mode = kOutGrabeth;
                 initHandLocation();
             }
@@ -1240,7 +1240,7 @@ void GL::Game::handleHand()
             
         case kOutGrabeth:
         case kClutching:
-            if (thePlayer.dest.sect(&grabZone)) {
+            if (thePlayer.dest.sect(grabZone)) {
                 hDiff = theHand.dest.left - thePlayer.dest.left;
                 vDiff = theHand.dest.top - thePlayer.dest.top;
                 
@@ -1538,14 +1538,14 @@ void GL::Game::generateEnemies()
 		initEnemy(i, false);
 }
 
-bool GL::Game::setEnemyInitialLocation(GL::Rect *theRect)
+bool GL::Game::setEnemyInitialLocation(GL::Rect& theRect)
 {
 	int where, possibilities;
 	bool facing;
 	
 	possibilities = numLedges - 1;
 	where = utils.randomInt(possibilities);
-	*theRect = enemyInitRects[where];
+	theRect = enemyInitRects[where];
 	
 	switch (where)
 	{
@@ -1568,9 +1568,9 @@ bool GL::Game::setEnemyInitialLocation(GL::Rect *theRect)
 	
 	if ((levelOn % 5) == 4)			// Egg Wave
 	{
-		theRect->left += 12 + utils.randomInt(48) - 24;
-		theRect->right = theRect->left + 24;
-		theRect->top = theRect->bottom - 24;
+		theRect.left += 12 + utils.randomInt(48) - 24;
+		theRect.right = theRect.left + 24;
+		theRect.top = theRect.bottom - 24;
 	}
 	
 	return (facing);
@@ -1582,7 +1582,7 @@ void GL::Game::initEnemy(int i, bool reincarnated)
 	
 	if (spawnedEnemies < numEnemiesThisLevel)
 	{
-		facing = setEnemyInitialLocation(&theEnemies[i].dest);
+		facing = setEnemyInitialLocation(theEnemies[i].dest);
 		theEnemies[i].wasDest = theEnemies[i].dest;
 		theEnemies[i].h = theEnemies[i].dest.left << 4;
 		theEnemies[i].v = theEnemies[i].dest.top << 4;
@@ -1697,14 +1697,14 @@ void GL::Game::checkEnemyPlatformHit(int h)
 	
 	for (i = 0; i < numLedges; i++)
 	{
-		if (theEnemies[h].dest.sect(&platformRects[i]))
+		if (theEnemies[h].dest.sect(platformRects[i]))
 		{
 			hRect.left = theEnemies[h].dest.left;
 			hRect.right = theEnemies[h].dest.right;
 			hRect.top = theEnemies[h].wasDest.top;
 			hRect.bottom = theEnemies[h].wasDest.bottom;
 			
-			if (hRect.sect(&platformRects[i]))
+			if (hRect.sect(platformRects[i]))
 			{
 				if (theEnemies[h].h > theEnemies[h].wasH)	// moving to right
 				{
@@ -1740,7 +1740,7 @@ void GL::Game::checkEnemyPlatformHit(int h)
 				vRect.top = theEnemies[h].dest.top;
 				vRect.bottom = theEnemies[h].dest.bottom;
 				
-				if (vRect.sect(&platformRects[i]))
+				if (vRect.sect(platformRects[i]))
 				{
 					if (theEnemies[h].mode == kFalling)
 					{
@@ -2307,10 +2307,10 @@ void GL::Game::checkPlayerEnemyCollision()
 	
 	for (i = 0; i < numEnemies; i++) {
 		if ((theEnemies[i].mode != kIdle) && (theEnemies[i].mode != kDeadAndGone)) {
-			if (playTest.sect(&theEnemies[i].dest)) {
+			if (playTest.sect(theEnemies[i].dest)) {
 				resolveEnemyPlayerHit(i);
 			} else if (thePlayer.wrapping) {
-				if (wrapTest.sect(&theEnemies[i].dest)) {
+				if (wrapTest.sect(theEnemies[i].dest)) {
 					resolveEnemyPlayerHit(i);
                 }
 			}

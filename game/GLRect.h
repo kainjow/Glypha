@@ -21,7 +21,7 @@ public:
     
     void zeroCorner();
     
-    bool sect(const Rect *r2) const;
+    bool sect(const Rect& r2) const;
     
     void inset(int dh, int dv);
 

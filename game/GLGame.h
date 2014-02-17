@@ -180,7 +180,7 @@ private:
     void drawHand() const;
     void drawEnemies() const;
     void generateEnemies();
-    bool setEnemyInitialLocation(Rect *theRect);
+    bool setEnemyInitialLocation(Rect& theRect);
     void initEnemy(int i, bool reincarnated);
     void setEnemyAttributes(int i);
     int assignNewAltitude();

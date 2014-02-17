@@ -60,10 +60,9 @@ void GL::Rect::zeroCorner()		// Offset rect to (0, 0)
 	top = 0;
 }
 
-bool GL::Rect::sect(const GL::Rect *r2) const
+bool GL::Rect::sect(const GL::Rect& r2) const
 {
-    const Rect *r1 = this;
-    return (r1->left < r2->right && r1->right > r2->left && r1->top < r2->bottom && r1->bottom > r2->top);
+    return (left < r2.right && right > r2.left && top < r2.bottom && bottom > r2.top);
 }
 
 void GL::Rect::inset(int dh, int dv)
