@@ -59,9 +59,9 @@
         window_ = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 640, 460) styleMask:style backing:NSBackingStoreBuffered defer:NO];
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
         [[window_ contentView] addSubview:gameView_];
+        [self setupMenuBar];
         game_ = new GLGame;
         [gameView_ setGame:game_];
-        [self setupMenuBar];
     }
     return self;
 }
@@ -135,9 +135,7 @@
 - (void)mouseDown:(NSEvent *)event
 {
     NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
-    GLPoint point;
-    point.h = mouseLoc.x;
-    point.v = game_->renderer()->bounds().height() - mouseLoc.y;
+    GLPoint point(mouseLoc.x, game_->renderer()->bounds().height() - mouseLoc.y);
     game_->handleMouseDownEvent(point);
 }
 
