@@ -7,11 +7,11 @@
 @interface GameView : NSOpenGLView
 {
     CVDisplayLinkRef displayLink_;
-    NSTimer *renderTimer_;
     GL::Game *game_;
 }
 
 - (void)setGame:(GL::Game *)game;
+- (void)render;
 
 @end
 
@@ -118,6 +118,12 @@ static void callback(GL::Game::Event event, void *context)
 
 @end
 
+static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const CVTimeStamp* now __unused, const CVTimeStamp* outputTime __unused, CVOptionFlags flagsIn __unused, CVOptionFlags* flagsOut __unused, void* displayLinkContext)
+{
+    [(GameView*)displayLinkContext render];
+    return kCVReturnSuccess;
+}
+
 @implementation GameView
 
 - (id)initWithFrame:(NSRect)frameRect
@@ -138,24 +144,17 @@ static void callback(GL::Game::Event event, void *context)
     game_ = game;
 }
 
-static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink __unused, const CVTimeStamp* now __unused, const CVTimeStamp* outputTime __unused, CVOptionFlags flagsIn __unused, CVOptionFlags* flagsOut __unused, void* displayLinkContext)
-{
-    [(GameView*)displayLinkContext render];
-    return kCVReturnSuccess;
-}
-
 - (void)prepareOpenGL
 {
     // Synchronize buffer swaps with vertical refresh rate
     GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval]; 
 
-#if 1
     // Create a display link capable of being used with all active displays
     CVDisplayLinkCreateWithActiveCGDisplays(&displayLink_);
     
     // Set the renderer output callback function
-    CVDisplayLinkSetOutputCallback(displayLink_, &MyDisplayLinkCallback, self);
+    CVDisplayLinkSetOutputCallback(displayLink_, &displayLinkCallback, self);
     
     // Set the display link for the current renderer
     CGLContextObj cglContext = (CGLContextObj)[[self openGLContext] CGLContextObj];
@@ -164,17 +163,6 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink __unused, con
     
     // Activate the display link
     CVDisplayLinkStart(displayLink_);
-#else
-    // Start the timer, and add it to other run loop modes so it redraws when a modal dialog is up or during event loops.
-    renderTimer_ = [[NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(renderTimer) userInfo:nil repeats:YES] retain];
-    [[NSRunLoop currentRunLoop] addTimer:renderTimer_ forMode:NSEventTrackingRunLoopMode];
-    [[NSRunLoop currentRunLoop] addTimer:renderTimer_ forMode:NSModalPanelRunLoopMode];
-#endif
-}
-
-- (void)renderTimer
-{
-	[self setNeedsDisplay:YES];
 }
 
 - (void)reshape
