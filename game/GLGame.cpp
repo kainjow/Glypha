@@ -70,6 +70,7 @@ GL::Game::Game(Callback callback, void *context)
     , newGameLightning(-1)
     , flashObelisks(false)
     , keys_(KeyNone)
+    , helpState(kHelpClosed)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -183,6 +184,8 @@ GL::Game::Game(Callback callback, void *context)
         eyeRects[i].set(0, 0, 48, 31);
         eyeRects[i].offsetBy(0, i * 31);
     }
+    
+    helpSrcRect.set(0, 0, 231, 398);
 }
 
 GL::Game::~Game()
@@ -209,6 +212,7 @@ void GL::Game::loadImages()
     enemyWalk.load(enemyWalk_png, enemyWalk_png_len);
     egg.load(egg_png, egg_png_len);
     eyeImg.load(eye_png, eye_png_len);
+    helpImg.load(help_png, help_png_len);
 }
 
 void GL::Game::run()
@@ -249,6 +253,7 @@ void GL::Game::update()
         getPlayerInput();
         handleCountDownTimer();
     }
+    handleHelp();
     handleLightning();
     evenFrame = !evenFrame;
 }
@@ -270,6 +275,7 @@ void GL::Game::drawFrame() const
         drawScoreNumbers();
         drawLevelNumbers();
     }
+    drawHelp();
     drawObelisks();
     drawLightning();
 }
@@ -393,6 +399,7 @@ void GL::Game::newGame()
     score_ = 0L;
     playing = true;
     numOwls = 4;
+    helpState = kHelpClosed;
     
     initHandLocation();
 	theHand.mode = kLurking;
@@ -412,6 +419,13 @@ void GL::Game::endGame()
     //CheckHighScore();
     cursor.show();
     callback_(EventEnded, callbackContext_);
+}
+
+void GL::Game::showHelp()
+{
+    if (!playing) {
+        openHelp();
+    }
 }
 
 void GL::Game::setUpLevel()
@@ -1150,6 +1164,18 @@ void GL::Game::handleKeyDownEvent(Key key)
 {
     Locker locker(lock_);
     keys_ |= key;
+    
+    if (helpState == kHelpOpen) {
+        if (key == KeyUpArrow) {
+            scrollHelp(-3);
+        } else if (key == KeyDownArrow) {
+            scrollHelp(3);
+        } else if (key == KeyPageDown) {
+            scrollHelp(199);
+        } else if (key == KeyPageUp) {
+            scrollHelp(-199);
+        }
+    }
 }
 
 void GL::Game::handleKeyUpEvent(Key key)
@@ -2498,5 +2524,56 @@ void GL::Game::drawEye() const
 {
     if (theEye.mode == kStalking) {
         eyeImg.draw(theEye.dest, eyeRects[theEye.srcNum]);
+    }
+}
+
+void GL::Game::openHelp()
+{
+    helpSrc.set(0, 0, 231, 0);
+    helpDest = helpSrc;
+    helpDest.offsetBy(204, 171);
+
+    wallSrc.set(0, 0, 231, 199);
+    wallSrc.offsetBy(204, 171);
+    wallDest = wallSrc;
+
+    helpPos = 0;
+    helpState = kHelpOpening;
+}
+
+void GL::Game::handleHelp()
+{
+    if (helpState == kHelpOpening && helpPos == 199) {
+        helpState = kHelpOpen;
+        return;
+    }
+    
+    if (helpState == kHelpOpening) {
+        helpSrc.bottom++;
+        helpDest.bottom++;
+        wallSrc.bottom--;
+        wallDest.top++;
+        helpPos++;
+    }
+}
+
+void GL::Game::drawHelp() const
+{
+    if (helpState != kHelpClosed) {
+        helpImg.draw(helpDest, helpSrc);
+        bgImg.draw(wallDest, wallSrc);
+    }
+}
+
+void GL::Game::scrollHelp(short scrollDown)
+{
+    helpSrc.offsetBy(0, scrollDown);
+
+    if (helpSrc.bottom > 398) {
+        helpSrc.bottom = 398;
+        helpSrc.top = helpSrc.bottom - 199;
+    } else if (helpSrc.top < 0) {
+        helpSrc.top = 0;
+        helpSrc.bottom = helpSrc.top + 199;
     }
 }

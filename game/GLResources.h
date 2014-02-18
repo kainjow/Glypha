@@ -29,6 +29,8 @@ extern unsigned char egg_png[];
 extern unsigned int egg_png_len;
 extern unsigned char eye_png[];
 extern unsigned int eye_png_len;
+extern unsigned char help_png[];
+extern unsigned int help_png_len;
 
 extern unsigned char flap_aif[];
 extern unsigned int flap_aif_len;

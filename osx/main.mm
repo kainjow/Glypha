@@ -21,6 +21,7 @@
     NSWindow *window_;
     NSMenuItem *newGame_;
     NSMenuItem *endGame_;
+    NSMenuItem *helpMenuItem_;
     GameView *gameView_;
 }
 
@@ -47,10 +48,15 @@ static void callback(GL::Game::Event event, void *context)
     NSMenu *gameMenu = [[[NSMenu alloc] initWithTitle:@"Game"] autorelease];
     [gameMenu setAutoenablesItems:NO];
     NSMenuItem *gameMenuItem = [[[NSMenuItem alloc] init] autorelease];
+    NSMenu *helpMenu = [[[NSMenu alloc] initWithTitle:@"Help"] autorelease];
+    [helpMenu setAutoenablesItems:NO];
+    NSMenuItem *helpMenuItem = [[[NSMenuItem alloc] init] autorelease];
     [appMenuItem setSubmenu:appMenu];
     [gameMenuItem setSubmenu:gameMenu];
+    [helpMenuItem setSubmenu:helpMenu];
     [menubar addItem:appMenuItem];
     [menubar addItem:gameMenuItem];
+    [menubar addItem:helpMenuItem];
     
     item = [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
     [item setTarget:NSApp];
@@ -63,6 +69,8 @@ static void callback(GL::Game::Event event, void *context)
     endGame_ = [gameMenu addItemWithTitle:@"End Game" action:@selector(endGame:) keyEquivalent:@"e"];
     [endGame_ setTarget:self];
     [endGame_ setEnabled:NO];
+    helpMenuItem_ = [helpMenu addItemWithTitle:@"Help" action:@selector(showHelp:) keyEquivalent:@"?"];
+    [helpMenuItem_ setTarget:self];
 }
 
 - (id)init
@@ -92,14 +100,19 @@ static void callback(GL::Game::Event event, void *context)
     [window_ makeKeyAndOrderFront:nil];
 }
 
-- (IBAction)newGame:(__unused id)sender
+- (void)newGame:(__unused id)sender
 {
     game_->newGame();
 }
 
-- (IBAction)endGame:(__unused id)sender
+- (void)endGame:(__unused id)sender
 {
     game_->endGame();
+}
+
+- (void)showHelp:(__unused id)sender
+{
+    game_->showHelp();
 }
 
 - (void)handleGameEvent:(GL::Game::Event)event
@@ -108,10 +121,12 @@ static void callback(GL::Game::Event event, void *context)
         case GL::Game::EventStarted:
             [newGame_ setEnabled:NO];
             [endGame_ setEnabled:YES];
+            [helpMenuItem_ setEnabled:NO];
             break;
         case GL::Game::EventEnded:
             [newGame_ setEnabled:YES];
             [endGame_ setEnabled:NO];
+            [helpMenuItem_ setEnabled:YES];
             break;
     }
 }
@@ -206,6 +221,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
             case ' ':
                 key = GL::Game::KeySpacebar;
                 break;
+            case NSUpArrowFunctionKey:
+                key = GL::Game::KeyUpArrow;
+                break;
             case NSDownArrowFunctionKey:
                 key = GL::Game::KeyDownArrow;
                 break;
@@ -226,6 +244,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
                 break;
             case '"':
                 key = GL::Game::KeyQuote;
+                break;
+            case NSPageUpFunctionKey:
+                key = GL::Game::KeyPageUp;
+                break;
+            case NSPageDownFunctionKey:
+                key = GL::Game::KeyPageDown;
                 break;
             default:
                 key = GL::Game::KeyNone;

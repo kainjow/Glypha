@@ -56,15 +56,18 @@ private:
 class Game {
 public:
     enum Key {
-        KeyNone = 0,
-        KeySpacebar = 1,
-        KeyDownArrow = 2,
-        KeyLeftArrow = 4,
-        KeyRightArrow = 8,
-        KeyA = 16,
-        KeyS = 32,
-        KeyColon = 64,
-        KeyQuote = 128,
+        KeyNone        = (1 << 0),
+        KeySpacebar    = (1 << 1),
+        KeyUpArrow     = (1 << 2),
+        KeyDownArrow   = (1 << 3),
+        KeyLeftArrow   = (1 << 4),
+        KeyRightArrow  = (1 << 5),
+        KeyA           = (1 << 6),
+        KeyS           = (1 << 7),
+        KeyColon       = (1 << 8),
+        KeyQuote       = (1 << 9),
+        KeyPageUp      = (1 << 10),
+        KeyPageDown    = (1 << 11),
     };
     
     enum Event {
@@ -87,6 +90,7 @@ public:
     
     void newGame();
     void endGame();
+    void showHelp();
     
 private:
     Callback callback_;
@@ -249,6 +253,24 @@ private:
     void killOffEye();
     void handleEye();
     void drawEye() const;
+    
+    Rect helpSrcRect;
+    Rect helpSrc;
+    Rect helpDest;
+    Rect wallSrc;
+    Rect wallDest;
+    Image helpImg;
+    enum HelpState {
+        kHelpClosed = 0,
+        kHelpOpening = 1,
+        kHelpOpen = 2,
+    };
+    HelpState helpState;
+    int helpPos;
+    void openHelp();
+    void handleHelp();
+    void drawHelp() const;
+    void scrollHelp(short scrollDown);
 };
 
 }
