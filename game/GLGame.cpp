@@ -2543,17 +2543,24 @@ void GL::Game::openHelp()
 
 void GL::Game::handleHelp()
 {
-    if (helpState == kHelpOpening && helpPos == 199) {
+    if (helpState == kHelpOpening && helpPos >= 199) {
         helpState = kHelpOpen;
         return;
     }
     
     if (helpState == kHelpOpening) {
-        helpSrc.bottom++;
-        helpDest.bottom++;
-        wallSrc.bottom--;
-        wallDest.top++;
-        helpPos++;
+        int offsetBy = 3;
+        helpSrc.bottom += offsetBy;
+        helpDest.bottom += offsetBy;
+        wallSrc.bottom -= offsetBy;
+        wallDest.top += offsetBy;
+        helpPos += offsetBy;
+        
+        if (helpPos > 199) {
+            helpSrc.bottom = 199;
+            wallSrc.bottom = 171;
+            helpDest.bottom = wallDest.top = 370;
+        }
     }
 }
 
