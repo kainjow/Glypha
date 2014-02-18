@@ -69,7 +69,7 @@ static void callback(GL::Game::Event event, void *context)
     endGame_ = [gameMenu addItemWithTitle:@"End Game" action:@selector(endGame:) keyEquivalent:@"e"];
     [endGame_ setTarget:self];
     [endGame_ setEnabled:NO];
-    helpMenuItem_ = [helpMenu addItemWithTitle:@"Help" action:@selector(showHelp:) keyEquivalent:@"?"];
+    helpMenuItem_ = [helpMenu addItemWithTitle:@"Help" action:@selector(showHelp:) keyEquivalent:@"h"];
     [helpMenuItem_ setTarget:self];
 }
 
