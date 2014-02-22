@@ -10,6 +10,7 @@ public:
     ~AppController();
     bool init(HINSTANCE hInstance);
     void run();
+    void handleGameEvent(GL::Game::Event event);
 private:
     HINSTANCE hInstance;
     HWND win;
@@ -27,8 +28,15 @@ private:
     void onMouseDown(UINT x, UINT y);
 };
 
+namespace {
+void gameCallback(GL::Game::Event event, void *context)
+{
+    static_cast<AppController*>(context)->handleGameEvent(event);
+}
+}
+
 AppController::AppController()
-    : game(nullptr, nullptr)
+    : game(gameCallback, this)
 {
 }
 
@@ -117,6 +125,22 @@ void AppController::run()
             break;
         }
         (void)InvalidateRect(win, NULL, FALSE);
+    }
+}
+
+void AppController::handleGameEvent(GL::Game::Event event)
+{
+    switch (event) {
+    case GL::Game::EventStarted:
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_NEW_GAME, MF_DISABLED | MF_GRAYED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_END_GAME, MF_ENABLED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HELP, MF_DISABLED | MF_GRAYED);
+        break;
+    case GL::Game::EventEnded:
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_NEW_GAME, MF_ENABLED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_END_GAME, MF_DISABLED | MF_GRAYED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HELP, MF_ENABLED);
+        break;
     }
 }
 
@@ -233,6 +257,12 @@ void AppController::onMenu(WORD cmd)
         break;
     case ID_MENU_EXIT:
         PostMessage(win, WM_CLOSE, 0, 0);
+        break;
+    case ID_MENU_END_GAME:
+        game.endGame();
+        break;
+    case ID_MENU_HELP:
+        game.showHelp();
         break;
     }
 }
