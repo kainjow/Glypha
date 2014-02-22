@@ -166,12 +166,15 @@ void AppController::onKey(WPARAM key, bool down)
     switch (key) {
     case VK_SPACE: gameKey = GL::Game::KeySpacebar; break;
     case VK_DOWN: gameKey = GL::Game::KeyDownArrow; break;
+    case VK_UP: gameKey = GL::Game::KeyUpArrow; break;
     case VK_LEFT: gameKey = GL::Game::KeyLeftArrow; break;
     case VK_RIGHT: gameKey = GL::Game::KeyRightArrow; break;
     case 'A': gameKey = GL::Game::KeyA; break;
     case 'S': gameKey = GL::Game::KeyS; break;
     case VK_OEM_1: gameKey = GL::Game::KeyColon; break;
     case VK_OEM_7: gameKey = GL::Game::KeyQuote; break;
+    case VK_PRIOR: gameKey = GL::Game::KeyPageUp; break;
+    case VK_NEXT: gameKey = GL::Game::KeyPageDown; break;
     default:
 	    return;
     }
