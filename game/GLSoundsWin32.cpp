@@ -211,7 +211,7 @@ void WaveOut::doneCallback()
 struct Context {
     WaveData wavs[kMaxSounds];
     std::vector<WaveOut> outs;
-    Context() : outs(3) {} // up to 3 simultaneous sounds
+    Context() : outs(10) {}
 };
 
 void GL::Sounds::initContext()
