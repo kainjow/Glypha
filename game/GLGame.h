@@ -17,6 +17,21 @@ namespace GL {
 
 class Lock {
 #if _WIN32
+public:
+    Lock() {
+        InitializeCriticalSection(&lock_);
+    }
+    ~Lock() {
+        DeleteCriticalSection(&lock_);
+    }
+    void lock() {
+        EnterCriticalSection(&lock_);
+    }
+    void unlock() {
+        LeaveCriticalSection(&lock_);
+    }
+private:
+    CRITICAL_SECTION lock_;
 #else
 public:
     Lock() {

@@ -2,7 +2,7 @@
 #include <wincodec.h>
 #include <shlwapi.h>
 
-void GLImage::load(const unsigned char *buf, size_t bufSize)
+void GL::Image::load(const unsigned char *buf, size_t bufSize)
 {
     IStream *stream = SHCreateMemStream((const BYTE*)buf, (UINT)bufSize);
     if (stream != NULL) {

@@ -52,7 +52,7 @@ double GL::Utils::now() const
 #if _WIN32
 // Handy function for logging. Works like printf() but outputs
 // to the debugger window since we have no console in a Win32 GUI.
-void GL::Utils::log(LPCWSTR format, ...) const
+void GL::Utils::log(LPCWSTR format, ...)
 {
     WCHAR buf[200];
     va_list ap;
@@ -61,7 +61,8 @@ void GL::Utils::log(LPCWSTR format, ...) const
     va_end(ap);
     OutputDebugStringW(buf);
 }
-void GL::Utils::log(LPCSTR format, ...) const
+
+void GL::Utils::log(LPCSTR format, ...)
 {
     CHAR buf[200];
     va_list ap;

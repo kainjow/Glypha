@@ -14,7 +14,7 @@ private:
     HINSTANCE hInstance;
     HWND win;
     HACCEL accelerators;
-    GLGame game;
+    GL::Game game;
 
     HGLRC hRC;
     HDC hDC;
@@ -28,6 +28,7 @@ private:
 };
 
 AppController::AppController()
+    : game(nullptr, nullptr)
 {
 }
 
@@ -104,10 +105,6 @@ bool AppController::init(HINSTANCE hInstance)
 void AppController::run()
 {
     MSG msg;
-    GLUtils utils;
-    const double fps = game.updateFrequency();
-    double curr;
-    double last = utils.now();
     for (;;) {
         while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
             // Check for keystrokes for the menus
@@ -119,28 +116,22 @@ void AppController::run()
         if (msg.message == WM_QUIT) {
             break;
         }
-
-        // force FPS. probably should be done in GLGame eventually
-        curr = utils.now();
-        if ((curr - last) > fps) {
-            (void)InvalidateRect(win, NULL, FALSE);
-            last = curr;
-        }
+        (void)InvalidateRect(win, NULL, FALSE);
     }
 }
 
 void AppController::onKey(WPARAM key, bool down)
 {
-    GLGameKey gameKey;
+    GL::Game::Key gameKey;
     switch (key) {
-    case VK_SPACE: gameKey = kGLGameKeySpacebar; break;
-    case VK_DOWN: gameKey = kGLGameKeyDownArrow; break;
-    case VK_LEFT: gameKey = kGLGameKeyLeftArrow; break;
-    case VK_RIGHT: gameKey = kGLGameKeyRightArrow; break;
-    case 'A': gameKey = kGLGameKeyA; break;
-    case 'S': gameKey = kGLGameKeyS; break;
-    case VK_OEM_1: gameKey = kGLGameKeyColon; break;
-    case VK_OEM_7: gameKey = kGLGameKeyQuote; break;
+    case VK_SPACE: gameKey = GL::Game::KeySpacebar; break;
+    case VK_DOWN: gameKey = GL::Game::KeyDownArrow; break;
+    case VK_LEFT: gameKey = GL::Game::KeyLeftArrow; break;
+    case VK_RIGHT: gameKey = GL::Game::KeyRightArrow; break;
+    case 'A': gameKey = GL::Game::KeyA; break;
+    case 'S': gameKey = GL::Game::KeyS; break;
+    case VK_OEM_1: gameKey = GL::Game::KeyColon; break;
+    case VK_OEM_7: gameKey = GL::Game::KeyQuote; break;
     default:
 	    return;
     }
@@ -153,7 +144,7 @@ void AppController::onKey(WPARAM key, bool down)
 
 void AppController::onMouseDown(UINT x, UINT y)
 {
-    game.handleMouseDownEvent(GLPoint(x, y));
+    game.handleMouseDownEvent(GL::Point(x, y));
 }
 
 LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -225,7 +216,7 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
 void AppController::onRender()
 {
-    game.draw();
+    game.run();
     (void)SwapBuffers(hDC);
 }
 

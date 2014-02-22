@@ -409,7 +409,9 @@ void GL::Game::newGame()
     resetPlayer(true);
     
     cursor.obscure();
-    callback_(EventStarted, callbackContext_);
+    if (callback_) {
+        callback_(EventStarted, callbackContext_);
+    }
 }
 
 void GL::Game::endGame()
@@ -418,7 +420,9 @@ void GL::Game::endGame()
     sounds.play(kMusicSound);
     //CheckHighScore();
     cursor.show();
-    callback_(EventEnded, callbackContext_);
+    if (callback_) {
+        callback_(EventEnded, callbackContext_);
+    }
 }
 
 void GL::Game::showHelp()

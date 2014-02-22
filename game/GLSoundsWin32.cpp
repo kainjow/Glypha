@@ -177,7 +177,7 @@ bool WaveOut::play(const WaveData &wave)
     if (!open_) {
         res = waveOutOpen(&handle_, WAVE_MAPPER, &wave.format, (DWORD_PTR)waveOutCallback, (DWORD_PTR)this, CALLBACK_FUNCTION);
         if (res != MMSYSERR_NOERROR) {
-            GLUtils::log(L"waveOutOpen failed: %u\n", res);
+            GL::Utils::log(L"waveOutOpen failed: %u\n", res);
             return false;
         }
         open_ = true;
@@ -187,12 +187,12 @@ bool WaveOut::play(const WaveData &wave)
     header_.dwBufferLength = (DWORD)wave.dataLen;
     res = waveOutPrepareHeader(handle_, &header_, sizeof(header_));
     if (res != MMSYSERR_NOERROR) {
-        GLUtils::log(L"waveOutPrepareHeader failed: %u\n", res);
+        GL::Utils::log(L"waveOutPrepareHeader failed: %u\n", res);
         return false;
     }
     res = waveOutWrite(handle_, &header_, sizeof(header_));
     if (res != MMSYSERR_NOERROR) {
-        GLUtils::log(L"waveOutWrite failed: %u\n", res);
+        GL::Utils::log(L"waveOutWrite failed: %u\n", res);
         return false;
     }
     playing_ = true;
@@ -203,38 +203,39 @@ void WaveOut::doneCallback()
 {
     MMRESULT res = waveOutUnprepareHeader(handle_, &header_, sizeof(header_));
     if (res != MMSYSERR_NOERROR) {
-        GLUtils::log(L"waveOutUnprepareHeader failed: %u\n", res);
+        GL::Utils::log(L"waveOutUnprepareHeader failed: %u\n", res);
     }
     playing_ = false;
 }
 
-class GLSounds::Imp {
-public:
-    Imp()
-        : outs_(3) // up to 3 simultaneous sounds
-    {
-    }
-
-    void play(int which) {
-        bool didPlay = false;
-        for (auto &out : outs_) {
-            if (out.play(wavs_[which])) {
-                didPlay = true;
-                break;
-            }
-        }
-        if (!didPlay) {
-            GLUtils::log(L"Didn't play %d\n", which);
-        }
-    }
-
-    void loadSound(int which, const unsigned char *buf, unsigned bufLen) {
-        if (!aiffDataToWave(buf, bufLen, wavs_[which])) {
-            GLUtils::log(L"Can't load sound %d\n", which);
-        }
-    }
-
-private:
-    WaveData wavs_[kMaxSounds];
-    std::vector<WaveOut> outs_;
+struct Context {
+    WaveData wavs[kMaxSounds];
+    std::vector<WaveOut> outs;
+    Context() : outs(3) {} // up to 3 simultaneous sounds
 };
+
+void GL::Sounds::initContext()
+{
+    context = new Context;
+}
+
+void GL::Sounds::play(int which) {
+    Context *ctx = static_cast<Context*>(context);
+    bool didPlay = false;
+    for (auto &out : ctx->outs) {
+        if (out.play(ctx->wavs[which])) {
+            didPlay = true;
+            break;
+        }
+    }
+    if (!didPlay) {
+        GL::Utils::log(L"Didn't play %d\n", which);
+    }
+}
+
+void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen) {
+    Context *ctx = static_cast<Context*>(context);
+    if (!aiffDataToWave(buf, bufLen, ctx->wavs[which])) {
+        GL::Utils::log(L"Can't load sound %d\n", which);
+    }
+}
