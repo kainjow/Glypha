@@ -4,6 +4,10 @@
 
 void GL::Image::load(const unsigned char *buf, size_t bufSize)
 {
+    if (CoInitializeEx(NULL, COINIT_MULTITHREADED) != S_OK) {
+        // bad!
+        return;
+    }
     IStream *stream = SHCreateMemStream((const BYTE*)buf, (UINT)bufSize);
     if (stream != NULL) {
         IWICImagingFactory *pFactory;
@@ -35,4 +39,5 @@ void GL::Image::load(const unsigned char *buf, size_t bufSize)
         }
         stream->Release();
     }
+    CoUninitialize();
 }

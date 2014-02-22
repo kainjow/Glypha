@@ -7,22 +7,21 @@
 class AppController {
 public:
     AppController();
-    ~AppController();
     bool init(HINSTANCE hInstance);
     void run();
     void handleGameEvent(GL::Game::Event event);
+    void onRender();
+    void gameThread();
 private:
     HINSTANCE hInstance;
     HWND win;
     HACCEL accelerators;
-    GL::Game game;
+    GL::Game *game;
 
     HGLRC hRC;
     HDC hDC;
 
     static LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-    void onRender();
-    void onResize(UINT width, UINT height);
     void onMenu(WORD cmd);
     void onKey(WPARAM key, bool down);
     void onMouseDown(UINT x, UINT y);
@@ -36,11 +35,7 @@ void gameCallback(GL::Game::Event event, void *context)
 }
 
 AppController::AppController()
-    : game(gameCallback, this)
-{
-}
-
-AppController::~AppController()
+    : game(nullptr)
 {
 }
 
@@ -90,7 +85,7 @@ bool AppController::init(HINSTANCE hInstance)
         return false;
     }
     hRC = wglCreateContext(hDC);
-    if (hRC == NULL || wglMakeCurrent(hDC, hRC) == FALSE) {
+    if (hRC == NULL) {
         return false;
     }
 
@@ -110,21 +105,42 @@ bool AppController::init(HINSTANCE hInstance)
     return true;
 }
 
+namespace {
+DWORD WINAPI gameThreadMain(LPVOID param)
+{
+    AppController *app = static_cast<AppController*>(param);
+    app->gameThread();
+    return 0;
+}
+}
+
+void AppController::gameThread()
+{
+    (void)wglMakeCurrent(GetDC(win), hRC);
+
+    game = new GL::Game(gameCallback, this);
+
+    RECT r;
+    (void)GetClientRect(win, &r);
+    game->renderer()->resize(r.right - r.left, r.bottom - r.top);
+
+    for (;;) {
+        onRender();
+    }
+}
+
 void AppController::run()
 {
+    DWORD threadID;
+    HANDLE threadHandle = CreateThread(nullptr, 0, gameThreadMain, this, 0, &threadID);
+
     MSG msg;
-    for (;;) {
-        while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
-            // Check for keystrokes for the menus
-            if (!TranslateAcceleratorW(win, accelerators, &msg)) {
-                (void)TranslateMessage(&msg);
-                (void)DispatchMessageW(&msg);
-            }
+    while (GetMessage(&msg, 0, 0, 0) > 0) {
+        // Check for keystrokes for the menus
+        if (!TranslateAcceleratorW(win, accelerators, &msg)) {
+            (void)TranslateMessage(&msg);
+            (void)DispatchMessageW(&msg);
         }
-        if (msg.message == WM_QUIT) {
-            break;
-        }
-        (void)InvalidateRect(win, NULL, FALSE);
     }
 }
 
@@ -160,15 +176,15 @@ void AppController::onKey(WPARAM key, bool down)
 	    return;
     }
     if (down) {
-	    game.handleKeyDownEvent(gameKey);
+	    game->handleKeyDownEvent(gameKey);
     } else {
-	    game.handleKeyUpEvent(gameKey);
+	    game->handleKeyUpEvent(gameKey);
     }
 }
 
 void AppController::onMouseDown(UINT x, UINT y)
 {
-    game.handleMouseDownEvent(GL::Point(x, y));
+    game->handleMouseDownEvent(GL::Point(x, y));
 }
 
 LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -186,25 +202,6 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
         if (appController != NULL) {
             switch (message) {
-            case WM_SIZE:
-                appController->onResize(LOWORD(lParam), HIWORD(lParam));
-                result = 0;
-                wasHandled = true;
-                break;
-
-            case WM_DISPLAYCHANGE:
-                (void)InvalidateRect(hwnd, NULL, FALSE);
-                result = 0;
-                wasHandled = true;
-                break;
-
-            case WM_PAINT:
-                appController->onRender();
-                (void)ValidateRect(hwnd, NULL);
-                result = 0;
-                wasHandled = true;
-                break;
-
             case WM_DESTROY:
                 PostQuitMessage(0);
                 result = 1;
@@ -240,29 +237,24 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
 
 void AppController::onRender()
 {
-    game.run();
+    game->run();
     (void)SwapBuffers(hDC);
-}
-
-void AppController::onResize(UINT width, UINT height)
-{
-    game.renderer()->resize(width, height);
 }
 
 void AppController::onMenu(WORD cmd)
 {
     switch(cmd) {
     case ID_MENU_NEW_GAME:
-        game.newGame();
+        game->newGame();
         break;
     case ID_MENU_EXIT:
         PostMessage(win, WM_CLOSE, 0, 0);
         break;
     case ID_MENU_END_GAME:
-        game.endGame();
+        game->endGame();
         break;
     case ID_MENU_HELP:
-        game.showHelp();
+        game->showHelp();
         break;
     }
 }
