@@ -3,10 +3,10 @@
 
 void GL::Cursor::obscure()
 {
-    (void)ShowCursor(FALSE);
+    //(void)ShowCursor(FALSE);
 }
 
 void GL::Cursor::show()
 {
-    (void)ShowCursor(TRUE);
+    //(void)ShowCursor(TRUE);
 }
