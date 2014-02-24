@@ -1,8 +1,8 @@
-This is an in-progress (and very slow) port of Glypha III from its OS X Carbon/QuickDraw version (~1995) to OpenGL/cross platform.
+This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (1995) to cross platform and OpenGL.
 
-In early 2009 I sloppily ported the game to Cocoa/OpenGL in about a week, but this is a do-over to help me learn OpenGL and cross platform development.
+I did a sloppy Cocoa port several years ago, but this is a do-over to help me learn OpenGL and cross platform development.
 
-Current targets are Cocoa and Win32, but long term goals are Linux, Haiku (BeOS), iOS (iPad only, iPhone version already exists), Windows RT, and Android.
+Current targets are OS X (Cocoa), Windows (Win32), Linux (Qt), and Haiku (Be), but eventually I'd like to do mobile versions for tablets (iOS, Android, Windows RT) and also a web port via emscripten.
 
 Description from MacUpdate:
 
