@@ -24,6 +24,7 @@ public:
 
 private:
 	void loadTextureData_(const void *texData, bool hasAlpha = true);
+	void loadTextureData_(const void *texData, GLenum format, bool hasAlpha = true);
     
     GLuint texture_;
     int width_, height_;

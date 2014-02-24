@@ -33,7 +33,7 @@ int GL::Utils::randomInt(int end) const
 #endif
 }
 
-// Returns the time in seconds with millisecond precision
+// Returns the time in seconds
 double GL::Utils::now() const
 {
 #if _WIN32
@@ -45,7 +45,7 @@ double GL::Utils::now() const
 #else
 	struct timespec t;
 	(void)clock_gettime(CLOCK_MONOTONIC, &t);
-	return (double)t.tv_sec + (t.tv_nsec * 1000000000.0);
+	return (double)t.tv_sec + ((double)t.tv_nsec / 1000000000.0);
 #endif
 }
 

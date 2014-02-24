@@ -15,6 +15,11 @@ bool GL::Image::isLoaded() const
 
 void GL::Image::loadTextureData_(const void *texData, bool hasAlpha)
 {
+    loadTextureData_(texData, hasAlpha ? GL_BGRA_EXT : GL_BGR_EXT, hasAlpha);
+}
+
+void GL::Image::loadTextureData_(const void *texData, GLenum format, bool hasAlpha)
+{
     alpha_ = hasAlpha;
     
 	// set pixel modes
@@ -31,9 +36,8 @@ void GL::Image::loadTextureData_(const void *texData, bool hasAlpha)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
 	// set texture data
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, hasAlpha ? GL_BGRA_EXT : GL_BGR_EXT, GL_UNSIGNED_BYTE, texData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, format, GL_UNSIGNED_BYTE, texData);
 }
-
 
 void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src, size_t numSrc) const
 {
