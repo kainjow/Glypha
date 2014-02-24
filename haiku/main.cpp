@@ -22,7 +22,7 @@ public:
 	
 	virtual void AttachedToWindow(void) {
 		BGLView::AttachedToWindow();
-		game_ = new GLGame();
+		game_ = new GL::Game(NULL, NULL);
 		gReshape(Frame().Width(), Frame().Height());
 		Render();
 	}
@@ -36,7 +36,7 @@ public:
 	virtual void Render() {
 		printf("Render\n");
 		LockGL();
-		game_->draw();
+		//game_->run();
 		SwapBuffers(true);
 		UnlockGL();
 	}
@@ -48,7 +48,7 @@ public:
 	}
 		
 private:
-	GLGame *game_;
+	GL::Game *game_;
 };
 
 App::App() :
@@ -56,7 +56,7 @@ App::App() :
 {
 	BRect frame(0, 0, 640, 460);
 	BWindow *win = new BWindow(frame, "Glypha III",
-		B_TITLED_WINDOW, B_NOT_ZOOMABLE /*| B_NOT_RESIZABLE*/);
+		B_TITLED_WINDOW, B_NOT_ZOOMABLE);
 	
 	BMenuBar *menuBar = new BMenuBar(BRect(0,0,0,0), NULL);
 	BMenu *menu = new BMenu("File");

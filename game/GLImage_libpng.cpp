@@ -12,7 +12,7 @@ void pngReader(png_structp png_ptr, png_bytep bytes, png_size_t size)
 }
 }
 
-void GLImage::load(const unsigned char *buf, size_t bufSize)
+void GL::Image::load(const unsigned char *buf, size_t bufSize)
 {
     GLBufferReader reader((const uint8_t*)buf, bufSize);
     png_byte sig[8];
