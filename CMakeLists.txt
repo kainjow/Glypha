@@ -23,7 +23,7 @@ if (BEOS)
 	)
 elseif (WIN32)
 	list(APPEND SOURCES
-		win/Glypha/main.cpp
+		win/main.cpp
 		win/resources.rc
 		game/GLBufferReader.cpp
 		game/GLCursorWin32.cpp
