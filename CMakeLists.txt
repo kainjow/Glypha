@@ -8,7 +8,6 @@ set(SOURCES
     game/GLRect.cpp
     game/GLRenderer.cpp
     game/GLResources.cpp
-    game/GLSounds.cpp
     game/GLUtils.cpp
 )
 
@@ -20,10 +19,22 @@ if (BEOS)
 		game/GLBufferReader.cpp
 		game/GLCursor.cpp
 		game/GLImage_libpng.cpp
+		game/GLSounds.cpp
 	)
+elseif (WIN32)
+	list(APPEND SOURCES
+		win/Glypha/main.cpp
+		win/resources.rc
+		game/GLBufferReader.cpp
+		game/GLCursorWin32.cpp
+		game/GLImage_Win32.cpp
+		game/GLSoundsWin32.cpp
+	)
+	include_directories(win)
+	add_definitions(-DUNICODE)
 endif()
 
-add_executable(Glypha ${SOURCES})
+add_executable(Glypha WIN32 ${SOURCES})
 
 set_target_properties(Glypha PROPERTIES OUTPUT_NAME "Glypha III")
 
@@ -40,4 +51,6 @@ target_link_libraries(Glypha ${OPENGL_LIBRARIES})
 if (BEOS)
     find_library(BE be)
     target_link_libraries(Glypha ${BE})
+elseif (WIN32)
+	target_link_libraries(Glypha shlwapi windowscodecs winmm)
 endif()
