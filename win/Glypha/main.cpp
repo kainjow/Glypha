@@ -66,7 +66,7 @@ bool AppController::init(HINSTANCE hInstance)
     int w = 640, h = 460;
     int x = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
     int y = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
-    win = CreateWindowW(winClass.lpszClassName, L"Glypha III", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX, x, y, w, h, NULL, NULL, hInstance, this);
+    win = CreateWindowW(winClass.lpszClassName, L"Glypha III", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, w, h, NULL, NULL, hInstance, this);
     if (win == NULL) {
         return false;
     }
