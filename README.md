@@ -9,12 +9,15 @@ This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (199
 - Haiku (BeOS) port
 - Mobile: iOS, Android, Windows RT
 
-For screenshots and more info on Glypha, see http://boredzo.org/glypha/
+For screenshots and more info on Glypha, see /
 
-###Credits###
+### Links ###
 
-Ported To Mac OS X by Mark Pazolli:  
+- Originally developed by John Calhoun:  
+http://www.softdorothy.com
+
+- Mac OS X port by Mark Pazolli:  
 http://sourceforge.net/projects/vitality/files/glypha-iii
 
-Originally Developed By John Calhoun:  
-http://www.softdorothy.com
+- Glypha - Then and Now  
+http://boredzo.org/glypha
