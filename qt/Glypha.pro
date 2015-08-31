@@ -1,5 +1,5 @@
 TARGET = Glypha
-QT += opengl
+QT += opengl multimedia
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += . ../game
@@ -13,7 +13,21 @@ SOURCES += main.cpp \
     ../game/GLRect.cpp \
     ../game/GLRenderer.cpp \
     ../game/GLResources.cpp \
-    ../game/GLSounds.cpp \
+    ../game/GLSoundsQt.cpp \
+    ../game/GLSoundsQtImp.cpp \
+    ../game/GLBufferReader.cpp \
     ../game/GLUtils.cpp
-    
-HEADERS += main.hpp
+
+HEADERS += main.hpp \
+    ../game/GLCursor.h \
+    ../game/GLGame.h \
+    ../game/GLImage.h \
+    ../game/GLRect.h \
+    ../game/GLRenderer.h \
+    ../game/GLResources.h \
+    ../game/GLSounds.h \
+    ../game/GLSoundsQtImp.h \
+    ../game/GLBufferReader.h \
+    ../game/GLUtils.h
+
+CONFIG += c++11
