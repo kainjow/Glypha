@@ -2108,7 +2108,7 @@ void GL::Game::handleWalkingEnemy(int i)
                 theEnemies[i].srcNum = 21 - theEnemies[i].srcNum;
                 break;
 		}
-		theEnemies[i].hVel = -6 << 4;
+		theEnemies[i].hVel = -(6 << 4);
 	}
 	theEnemies[i].frame++;
 	if (theEnemies[i].frame >= 8)
