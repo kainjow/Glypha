@@ -6,4 +6,4 @@ game:
 	cd build && cmake --build . --config Release
 
 clean:
-	rm -rf builds
+	rm -rf build
