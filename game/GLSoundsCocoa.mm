@@ -1,9 +1,9 @@
 #include "GLSounds.h"
 #include <AVFoundation/AVFoundation.h>
-#include <list>
+#include <vector>
 
 struct Context {
-    std::list<AVAudioPlayer*> sounds[kMaxSounds];
+    std::vector<AVAudioPlayer*> sounds[kMaxSounds];
 };
 
 void GL::Sounds::initContext()
@@ -15,7 +15,7 @@ void GL::Sounds::play(int which)
 {
     Context *ctx = static_cast<Context*>(context);
     bool found = false;
-    for (std::list<AVAudioPlayer*>::const_iterator it = ctx->sounds[which].begin(); it != ctx->sounds[which].end(); ++it) {
+    for (std::vector<AVAudioPlayer*>::const_iterator it = ctx->sounds[which].begin(); it != ctx->sounds[which].end(); ++it) {
         AVAudioPlayer *player = *it;
         if (!player.isPlaying) {
             [player play];
