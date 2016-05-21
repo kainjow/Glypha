@@ -8,12 +8,21 @@ project(Glypha)
 
 set(SOURCES
   game/GLGame.cpp
+  game/GLGame.h
   game/GLImage.cpp
+  game/GLImage.h
   game/GLRect.cpp
+  game/GLRect.h
   game/GLRenderer.cpp
+  game/GLRenderer.h
   game/GLResources.cpp
+  game/GLResources.h
   game/GLUtils.cpp
+  game/GLUtils.h
   game/GLBufferReader.cpp
+  game/GLBufferReader.h
+  game/GLCursor.h
+  game/GLSounds.h
 )
 
 include_directories(game)
