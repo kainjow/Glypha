@@ -1,6 +1,7 @@
-TARGET = Glypha
+TARGET = "Glypha III"
 QT += opengl
 TEMPLATE = app
+CONFIG += debug_and_release
 DEPENDPATH += .
 INCLUDEPATH += . ../game
 DEFINES += GLYPHA_QT
