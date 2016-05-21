@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 
+if (APPLE)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7")
+endif()
+
 project(Glypha)
 
 set(SOURCES
@@ -9,6 +13,7 @@ set(SOURCES
     game/GLRenderer.cpp
     game/GLResources.cpp
     game/GLUtils.cpp
+		game/GLBufferReader.cpp
 )
 
 include_directories(game)
@@ -16,7 +21,6 @@ include_directories(game)
 if (BEOS)
 	list(APPEND SOURCES
 		haiku/main.cpp
-		game/GLBufferReader.cpp
 		game/GLCursor.cpp
 		game/GLImage_libpng.cpp
 		game/GLSounds.cpp
@@ -25,16 +29,30 @@ elseif (WIN32)
 	list(APPEND SOURCES
 		win/main.cpp
 		win/resources.rc
-		game/GLBufferReader.cpp
 		game/GLCursorWin32.cpp
 		game/GLImage_Win32.cpp
 		game/GLSoundsWin32.cpp
 	)
 	include_directories(win)
 	add_definitions(-DUNICODE)
+elseif (APPLE)
+  list(APPEND SOURCES
+    osx/main.mm
+    game/GLCursorCocoa.mm
+    game/GLImage_CoreImage.cpp
+    game/GLSoundsCocoa.mm
+  )
 endif()
 
-add_executable(Glypha WIN32 ${SOURCES})
+if (UNIX)
+  add_definitions(
+    -Wall
+    -Wextra
+    -Werror
+  )
+endif()
+
+add_executable(Glypha WIN32 MACOSX_BUNDLE ${SOURCES})
 
 set_target_properties(Glypha PROPERTIES OUTPUT_NAME "Glypha III")
 
@@ -53,4 +71,11 @@ if (BEOS)
     target_link_libraries(Glypha ${BE})
 elseif (WIN32)
 	target_link_libraries(Glypha shlwapi windowscodecs winmm)
+elseif (APPLE)
+  set_target_properties(Glypha PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/Info.plist)
+  target_link_libraries(Glypha
+    "-framework Cocoa"
+    "-framework CoreVideo"
+    "-framework AVFoundation"
+  )
 endif()
