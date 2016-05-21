@@ -6,6 +6,7 @@ This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (199
 
 - Implement high score list
 - Finish Linux/Qt port
+- About box
 
 ### Links ###
 
