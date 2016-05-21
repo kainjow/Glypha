@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
+set(EXE_NAME "Glypha III")
+set(EXE_IDENTIFIER "com.kainjow.GlyphaIII")
+
 if(APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7")
 endif()
@@ -63,7 +66,7 @@ endif()
 
 add_executable(Glypha WIN32 MACOSX_BUNDLE ${SOURCES})
 
-set_target_properties(Glypha PROPERTIES OUTPUT_NAME "Glypha III")
+set_target_properties(Glypha PROPERTIES OUTPUT_NAME ${EXE_NAME})
 
 list(FIND SOURCES game/GLImage_libpng.cpp HAVE_IMAGE_LIBPNG)
 if(NOT HAVE_IMAGE_LIBPNG EQUAL -1)
@@ -81,7 +84,11 @@ if(BEOS)
 elseif(WIN32)
   target_link_libraries(Glypha shlwapi windowscodecs winmm)
 elseif(APPLE)
-  set_target_properties(Glypha PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/Info.plist)
+  set_target_properties(Glypha PROPERTIES
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/Info.plist
+    MACOSX_BUNDLE_BUNDLE_NAME ${EXE_NAME}
+    MACOSX_BUNDLE_GUI_IDENTIFIER ${EXE_IDENTIFIER}
+  )
   target_link_libraries(Glypha
     "-framework Cocoa"
     "-framework CoreVideo"
