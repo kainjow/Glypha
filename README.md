@@ -2,6 +2,25 @@ This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (199
 
 > Glypha III is a classic arcade game originally created by John Calhoun in which you are placed inside an Egyptian temple with only your lance and a winged steed to aid you. Here you are forced to do battle with Sphinxes in order to gain the honour of a place on the High Scores list. The game is based on Joust and features sound and the original animated graphics.
 
+###Build###
+
+([CMake](https://cmake.org) 2.8+ is required)
+
+OS X:
+
+1. `make`
+
+Windows:
+
+1. `mkdir build`
+2. `cd build`
+3. `cmake -DCMAKE_BUILD_TYPE=Release ..`
+4. `cmake --build . --config Release`
+
+Linux:
+
+1. `make qt`
+
 ###TODO###
 
 - Implement high score list
