@@ -44,6 +44,7 @@ void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen)
             continue;
         }
         if (![player prepareToPlay]) {
+            [player release];
             printf("Failed to prepare sound %d\n", which);
             continue;
         }
