@@ -78,7 +78,11 @@ static void callback(GL::Game::Event event, void *context)
     self = [super init];
     if (self != nil) {
         NSString *appName = [NSString stringWithUTF8String:GL::kGameName];
+#if defined(MAC_OS_X_VERSION_10_12) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_12
+        NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable;
+#else
         NSUInteger style = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
+#endif
         window_ = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 640, 460) styleMask:style backing:NSBackingStoreBuffered defer:NO];
         [window_ setTitle:appName];
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
