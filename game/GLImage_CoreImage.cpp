@@ -10,18 +10,18 @@ void GL::Image::load(const unsigned char *buf, size_t bufSize)
         static_cast<CFIndex>(bufSize),
         kCFAllocatorNull
     );
-    if (data != NULL) {
-        CGImageSourceRef imageSource = CGImageSourceCreateWithData(data, NULL);
-        if (imageSource != NULL) {
-            CGImageRef img = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
-            if (img != NULL) {
+    if (data != nullptr) {
+        CGImageSourceRef imageSource = CGImageSourceCreateWithData(data, nullptr);
+        if (imageSource != nullptr) {
+            CGImageRef img = CGImageSourceCreateImageAtIndex(imageSource, 0, nullptr);
+            if (img != nullptr) {
                 width_ = static_cast<int>(CGImageGetWidth(img));
                 height_ = static_cast<int>(CGImageGetHeight(img));
                 CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-                if (colorSpace != NULL) {
+                if (colorSpace != nullptr) {
                     std::vector<char> texData(static_cast<std::vector<char>::size_type>(width_ * height_ * 4));
                     CGContextRef ctx = CGBitmapContextCreate(
-                        &texData[0],
+                        texData.data(),
                         static_cast<size_t>(width_),
                         static_cast<size_t>(height_),
                         8,
@@ -29,10 +29,10 @@ void GL::Image::load(const unsigned char *buf, size_t bufSize)
                         colorSpace,
                         kCGBitmapByteOrder32Host | kCGImageAlphaPremultipliedFirst
                     );
-                    if (ctx != NULL) {
+                    if (ctx != nullptr) {
                         CGContextDrawImage(ctx, CGRectMake(0.0, 0.0, width_, height_), img);
                         CGContextRelease(ctx);
-                        loadTextureData_(&texData[0]);
+                        loadTextureData_(texData.data());
                     }
                     CGColorSpaceRelease(colorSpace);
                 }

@@ -17,9 +17,9 @@ GL::Utils::Utils()
 #endif
     
 #if _WIN32
-    srand(unsigned(time(NULL)));
+    srand(unsigned(time(nullptr)));
 #else
-    srandom((unsigned)time(NULL));
+    srandom((unsigned)time(nullptr));
 #endif
 }
 

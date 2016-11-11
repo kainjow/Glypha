@@ -66,6 +66,7 @@ if(UNIX)
     -Wextra
     -Werror
     -Wconversion
+    -std=c++11
   )
 endif()
 
