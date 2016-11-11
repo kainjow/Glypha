@@ -224,16 +224,15 @@ void GL::Game::run()
     
     // See http://gafferongames.com/game-physics/fix-your-timestep/
     // and http://sacredsoftware.net/tutorials/Animation/TimeBasedAnimation.xhtml
-    static double freq = kUpdateFreq;
     double n0 = utils.now();
     double frameTime = n0 - lastTime;
     lastTime = n0;
     accumulator += frameTime;
     unsigned count = 0;
-    while (accumulator >= freq) {
+    while (accumulator >= kUpdateFreq) {
         update();
-        now += freq;
-        accumulator -= freq;
+        now += kUpdateFreq;
+        accumulator -= kUpdateFreq;
         ++count;
     }
     if (count > 2) {
