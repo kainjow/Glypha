@@ -1,4 +1,4 @@
-.PHONY: game qt
+.PHONY: game xcode mac_release qt clean
 
 game:
 	mkdir -p build
@@ -22,4 +22,4 @@ qt:
 	cd build && make release
 
 clean:
-	rm -rf build
+	rm -rf build*
