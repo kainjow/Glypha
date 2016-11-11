@@ -99,6 +99,7 @@ elseif(APPLE)
   if("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
     set_target_properties(Glypha PROPERTIES
       XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Developer ID Application: Kevin Wojniak"
+      XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "osx/Glypha.entitlements"
     )
   endif()
   target_link_libraries(Glypha
