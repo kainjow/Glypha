@@ -9,6 +9,10 @@ endif()
 
 project(Glypha)
 
+set(CPACK_PACKAGE_VERSION_MAJOR "2")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+
 set(SOURCES
   game/GLGame.cpp
   game/GLGame.h
@@ -103,3 +107,9 @@ elseif(APPLE)
     "-framework AVFoundation"
   )
 endif()
+
+install(TARGETS Glypha DESTINATION .)
+if(APPLE)
+  set(CPACK_GENERATOR "DragNDrop")
+endif()
+include(CPack)

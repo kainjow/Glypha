@@ -14,7 +14,8 @@ mac_release:
 	mkdir -p build_release
 	cd build_release && \
 		cmake -GXcode -DCMAKE_BUILD_TYPE=RelWithDebInfo .. && \
-		cmake --build . --config RelWithDebInfo
+		cmake --build . --config RelWithDebInfo && \
+		cpack -C RelWithDebInfo
 
 qt:
 	mkdir -p build
