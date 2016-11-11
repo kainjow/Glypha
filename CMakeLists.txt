@@ -76,6 +76,9 @@ if(NOT HAVE_IMAGE_LIBPNG EQUAL -1)
 endif()
 
 include(FindOpenGL)
+if(NOT OPENGL_FOUND)
+  message(FATAL_ERROR "OpenGL not found!")
+endif()
 target_link_libraries(Glypha ${OPENGL_LIBRARIES})
 
 if(BEOS)
