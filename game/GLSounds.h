@@ -47,12 +47,14 @@ public:
     int preloadCount(int which) {
         switch (which) {
             case kBonusSound:
+            case kBoom2Sound:
+            case kSplashSound:
             case kFlapSound:
-            case kGrateSound:
             case kLightningSound:
-            case kSpawnSound:
             case kWalkSound:
                 return 3;
+            case kSpawnSound:
+            case kGrateSound:
             case kFlap2Sound:
             case kScrape2Sound:
             case kScreechSound:
