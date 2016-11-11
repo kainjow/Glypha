@@ -25,10 +25,7 @@ void GL::Sounds::play(int which)
         }
     }
     if (!found) {
-        NSLog(@"Preloaded sound not available for %d", which);
-        AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:ctx->sounds[which].front().data error:nil];
-        ctx->sounds[which].push_back(player);
-        [player play];
+        printf("Preloaded sound not available for %d (maybe increase preload count?)\n", which);
     }
 }
 
