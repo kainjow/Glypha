@@ -1,8 +1,10 @@
+<img src="/screenshot_mac.png?raw=true" alt="Mac screenshot" style="float: right;">
+
 This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (1995) to cross platform and OpenGL.
 
 > Glypha III is a classic arcade game originally created by John Calhoun in which you are placed inside an Egyptian temple with only your lance and a winged steed to aid you. Here you are forced to do battle with Sphinxes in order to gain the honour of a place on the High Scores list. The game is based on Joust and features sound and the original animated graphics.
 
-###Build###
+### Build
 
 ([CMake](https://cmake.org) 2.8+ is required)
 
@@ -21,13 +23,13 @@ Linux:
 
 1. `make qt`
 
-###TODO###
+### TODO
 
 - Implement high score list
 - Finish Linux/Qt port
 - About box
 
-### Links ###
+### Links
 
 - Originally developed by John Calhoun:  
 http://www.softdorothy.com
