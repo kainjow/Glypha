@@ -65,6 +65,7 @@ if(UNIX)
     -Wall
     -Wextra
     -Werror
+    -Wconversion
   )
 endif()
 

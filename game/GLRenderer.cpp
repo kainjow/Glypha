@@ -39,7 +39,7 @@ void GL::Renderer::fillRect(const GL::Rect& rect)
 
 void GL::Renderer::setFillColor(int red, int green, int blue)
 {
-    glColor3f((GLfloat)red, (GLfloat)green, (GLfloat)blue);
+    glColor3f(static_cast<GLfloat>(red), static_cast<GLfloat>(green), static_cast<GLfloat>(blue));
 }
 
 GL::Rect GL::Renderer::bounds()

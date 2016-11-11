@@ -61,7 +61,7 @@ void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src
     for (size_t i = 0; i < numDest; ++i) {
         const GL::Point destPt = dest[i];
         const GL::Point srcPt = src[i];
-        glTexCoord2f((float)srcPt.h / width_, (float)srcPt.v / height_);
+        glTexCoord2f(static_cast<float>(srcPt.h) / width_, static_cast<float>(srcPt.v) / height_);
         glVertex2i(destPt.h, destPt.v);
     }
 	glEnd();

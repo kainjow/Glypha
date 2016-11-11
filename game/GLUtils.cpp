@@ -29,7 +29,7 @@ int GL::Utils::randomInt(int end) const
 #ifdef _WIN32
     return ((int)rand() % end);
 #else
-	return ((int)random() % end);
+	return static_cast<int>(random()) % end;
 #endif
 }
 

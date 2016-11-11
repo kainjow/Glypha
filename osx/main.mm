@@ -187,7 +187,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 - (void)reshape
 {
 	NSRect bounds = [self bounds];
-    game_->renderer()->resize(bounds.size.width, bounds.size.height);
+    game_->renderer()->resize(static_cast<int>(bounds.size.width), static_cast<int>(bounds.size.height));
 	[[self openGLContext] update];
 }
 
@@ -211,7 +211,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 - (void)mouseDown:(NSEvent *)event
 {
     NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
-    GL::Point point(mouseLoc.x, game_->renderer()->bounds().height() - mouseLoc.y);
+    GL::Point point(static_cast<int>(mouseLoc.x), static_cast<int>(game_->renderer()->bounds().height() - mouseLoc.y));
     game_->handleMouseDownEvent(point);
 }
 
