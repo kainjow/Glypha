@@ -8,7 +8,7 @@
 #include "GLSounds.h"
 #include "GLCursor.h"
 #include "GLUtils.h"
-#if _WIN32
+#ifdef _WIN32
 #else
 #include <pthread.h>
 #endif
@@ -16,7 +16,7 @@
 namespace GL {
 
 class Lock {
-#if _WIN32
+#ifdef _WIN32
 public:
     Lock() {
         InitializeCriticalSection(&lock_);

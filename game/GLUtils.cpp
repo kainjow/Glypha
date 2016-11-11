@@ -2,13 +2,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <time.h>
-#if _WIN32
+#ifdef _WIN32
 #include <strsafe.h>
 #endif
 
 GL::Utils::Utils()
 {
-#if __APPLE__
+#ifdef __APPLE__
     mach_timebase_info_data_t timebaseInfo;
     (void)mach_timebase_info(&timebaseInfo);
     mach_convert = ((double)timebaseInfo.numer / (double)timebaseInfo.denom) / NSEC_PER_SEC;
@@ -26,7 +26,7 @@ GL::Utils::Utils()
 // Returns a random number from 0 - end
 int GL::Utils::randomInt(int end) const
 {
-#if _WIN32
+#ifdef _WIN32
     return ((int)rand() % end);
 #else
 	return ((int)random() % end);
@@ -36,7 +36,7 @@ int GL::Utils::randomInt(int end) const
 // Returns the time in seconds
 double GL::Utils::now() const
 {
-#if _WIN32
+#ifdef _WIN32
     LARGE_INTEGER t;
     (void)QueryPerformanceCounter(&t);
     return (double)t.QuadPart / (double)freq.QuadPart;
@@ -49,7 +49,7 @@ double GL::Utils::now() const
 #endif
 }
 
-#if _WIN32
+#ifdef _WIN32
 // Handy function for logging. Works like printf() but outputs
 // to the debugger window since we have no console in a Win32 GUI.
 void GL::Utils::log(LPCWSTR format, ...)

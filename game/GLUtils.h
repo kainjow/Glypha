@@ -1,9 +1,9 @@
 #ifndef GLUTILS_H
 #define GLUTILS_H
 
-#if __APPLE__
+#ifdef __APPLE__
 #include <mach/mach_time.h>
-#elif _WIN32
+#elif defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -17,15 +17,15 @@ public:
     
     double now() const;
 
-#if _WIN32
+#ifdef _WIN32
     static void log(LPCWSTR format, ...);
     static void log(LPCSTR format, ...);
 #endif
     
 private:
-#if __APPLE__
+#ifdef __APPLE__
     double mach_convert;
-#elif _WIN32
+#elif defined(_WIN32)
     LARGE_INTEGER freq;
 #endif
 };
