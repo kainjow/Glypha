@@ -91,6 +91,7 @@ elseif(APPLE)
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/Info.plist
     MACOSX_BUNDLE_BUNDLE_NAME ${EXE_NAME}
     MACOSX_BUNDLE_GUI_IDENTIFIER ${EXE_IDENTIFIER}
+    XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Developer ID Application: Kevin Wojniak"
   )
   target_link_libraries(Glypha
     "-framework Cocoa"
