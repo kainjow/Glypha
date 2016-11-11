@@ -35,8 +35,16 @@ void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen)
     NSData *data = [NSData dataWithBytesNoCopy:(void*)buf length:bufLen freeWhenDone:NO];
     int count = preloadCount(which);
     for (int i = 0; i < count; ++i) {
-        AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:data error:nil];
-        [player prepareToPlay];
+        NSError *err = nil;
+        AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:data error:&err];
+        if (!player) {
+            printf("Can't load sound %d: %s\n", which, err.localizedDescription.UTF8String);
+            continue;
+        }
+        if (![player prepareToPlay]) {
+            printf("Failed to prepare sound %d\n", which);
+            continue;
+        }
         ctx->sounds[which].push_back(player);
     }
 }
