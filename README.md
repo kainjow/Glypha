@@ -1,4 +1,4 @@
-<img src="/screenshot_mac.png?raw=true" alt="Mac screenshot" style="float: right;">
+<img src="/screenshot_mac.png?raw=true" alt="Mac screenshot" align="right">
 
 This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (1995) to cross platform and OpenGL.
 
