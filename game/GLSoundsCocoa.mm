@@ -15,7 +15,8 @@ void GL::Sounds::play(int which)
 {
     Context *ctx = static_cast<Context*>(context);
     bool found = false;
-    for (std::vector<AVAudioPlayer*>::const_iterator it = ctx->sounds[which].begin(); it != ctx->sounds[which].end(); ++it) {
+    const std::vector<AVAudioPlayer*>::const_iterator end = ctx->sounds[which].end();
+    for (std::vector<AVAudioPlayer*>::const_iterator it = ctx->sounds[which].begin(); it != end; ++it) {
         AVAudioPlayer *player = *it;
         if (!player.isPlaying) {
             [player play];
