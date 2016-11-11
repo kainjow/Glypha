@@ -72,6 +72,6 @@ void GL::Renderer::moveTo(int h, int v)
 
 void GL::Renderer::lineTo(int h, int v)
 {
-	glVertex2s(lineStart_.h, lineStart_.v);
-	glVertex2s(h, v);
+	glVertex2i(lineStart_.h, lineStart_.v);
+	glVertex2i(h, v);
 }
