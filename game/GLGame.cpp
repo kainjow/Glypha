@@ -2575,7 +2575,7 @@ void GL::Game::drawHelp() const
     }
 }
 
-void GL::Game::scrollHelp(short scrollDown)
+void GL::Game::scrollHelp(int scrollDown)
 {
     helpSrc.offsetBy(0, scrollDown);
 

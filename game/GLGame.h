@@ -285,7 +285,7 @@ private:
     void openHelp();
     void handleHelp();
     void drawHelp() const;
-    void scrollHelp(short scrollDown);
+    void scrollHelp(int scrollDown);
 };
 
 }
