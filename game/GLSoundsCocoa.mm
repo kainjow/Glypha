@@ -19,7 +19,9 @@ void GL::Sounds::play(int which)
     for (std::vector<AVAudioPlayer*>::const_iterator it = ctx->sounds[which].begin(); it != end; ++it) {
         AVAudioPlayer *player = *it;
         if (!player.isPlaying) {
-            [player play];
+            if (![player play]) {
+                printf("Can't play sound %d\n", which);
+            }
             found = true;
             break;
         }
