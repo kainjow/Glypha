@@ -27,7 +27,7 @@ bool GLBufferReader::seek(size_t offset)
     return true;
 }
 
-size_t GLBufferReader::offset()
+size_t GLBufferReader::offset() const
 {
     return offset_;
 }
