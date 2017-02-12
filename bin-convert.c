@@ -36,7 +36,7 @@ int main(int argc, const char *argv[]) {
 	if (filename) {
         memcpy(variable, filename + 1, strlen(filename + 1) + 1);
 	} else {
-        memcpy(variable, in_path, strlen(in_path));
+        memcpy(variable, in_path, strlen(in_path) + 1);
 	}
 	for (i = 0; i < strlen(variable); ++i) {
 		if (variable[i] == '.') {
