@@ -7,24 +7,23 @@
 
 class Context {
 public:
+    void addToQueue(int which);
+    void load(int which, const unsigned char *buf, unsigned bufLen, int count);
+    
+    Context()
+        : thread{&Context::thread_main, this}
+    {
+    }
+    
+private:
+    void play(int which);
+    void thread_main();
+
     std::vector<AVAudioPlayer*> sounds[kMaxSounds];
     std::thread thread;
     std::mutex mutex;
     std::condition_variable cond;
     std::vector<int> play_queue;
-    
-    void addToQueue(int which);
-    
-    static void thread_main(Context* ctx);
-    void run();
-    
-    Context()
-        : thread{thread_main, this}
-    {
-    }
-
-private:
-    void play(int which);
 };
 
 void GL::Sounds::initContext()
@@ -45,12 +44,7 @@ void Context::addToQueue(int which)
     cond.notify_one();
 }
 
-void Context::thread_main(Context* ctx)
-{
-    ctx->run();
-}
-
-void Context::run()
+void Context::thread_main()
 {
     std::vector<int> play_now;
     for (;;) {
@@ -86,11 +80,9 @@ void Context::play(int which)
     }
 }
 
-void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen)
+void Context::load(int which, const unsigned char *buf, unsigned bufLen, int count)
 {
-    Context *ctx = static_cast<Context*>(context);
     NSData *data = [NSData dataWithBytesNoCopy:(void*)buf length:bufLen freeWhenDone:NO];
-    int count = preloadCount(which);
     for (int i = 0; i < count; ++i) {
         NSError *err = nil;
         AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithData:data error:&err];
@@ -103,6 +95,13 @@ void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen)
             printf("Failed to prepare sound %d\n", which);
             continue;
         }
-        ctx->sounds[which].push_back(player);
+        sounds[which].push_back(player);
     }
+}
+
+void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen)
+{
+    Context *ctx = static_cast<Context*>(context);
+    int count = preloadCount(which);
+    ctx->load(which, buf, bufLen, count);
 }
