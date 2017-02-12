@@ -2,9 +2,9 @@
 #include <string.h>
 
 GLBufferReader::GLBufferReader(const uint8_t *data, size_t dataLen)
-: data_(data)
-, dataLen_(dataLen)
-, offset_(0)
+    : data_(data)
+    , dataLen_(dataLen)
+    , offset_(0)
 {
 }
 
