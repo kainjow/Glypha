@@ -178,3 +178,5 @@ foreach(rsrc ${RESOURCES})
     COMMAND $<TARGET_FILE:bin-convert> ${input_path} ${output_path}
   )
 endforeach()
+
+source_group(rsrcs REGULAR_EXPRESSION "/resources/.*.cpp$")
