@@ -180,3 +180,4 @@ foreach(rsrc ${RESOURCES})
 endforeach()
 
 source_group(rsrcs REGULAR_EXPRESSION "/resources/.*.cpp$")
+source_group(game REGULAR_EXPRESSION "/game/")
