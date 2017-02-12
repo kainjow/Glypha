@@ -21,6 +21,8 @@ public:
     
     int width() const;
     int height() const;
+    
+    void setAllowColorBlending(bool colorBlending);
 
 private:
 	void loadTextureData_(const void *texData, bool hasAlpha = true);
@@ -29,6 +31,7 @@ private:
     GLuint texture_;
     int width_, height_;
     bool alpha_;
+    bool colorBlending_;
 };
     
 }

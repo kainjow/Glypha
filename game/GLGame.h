@@ -8,6 +8,7 @@
 #include "GLSounds.h"
 #include "GLCursor.h"
 #include "GLUtils.h"
+#include "GLFont.h"
 #ifdef _WIN32
 #else
 #include <pthread.h>
@@ -83,6 +84,7 @@ public:
         KeyQuote       = (1 << 9),
         KeyPageUp      = (1 << 10),
         KeyPageDown    = (1 << 11),
+        KeyF           = (1 << 12),
     };
     
     enum Event {
@@ -108,6 +110,9 @@ public:
     void endGame();
     void showHelp();
     
+    void setShowFPS(bool show);
+    bool showFPS() const;
+    
 private:
     Callback callback_;
     void *callbackContext_;
@@ -123,7 +128,12 @@ private:
     double accumulator;
     void loadImages();
     bool playing, pausing, evenFrame, flapKeyDown;
-    
+
+    bool showFPS_;
+    double fps_time;
+    unsigned fps;
+    char fps_buf[100];
+
     void update();
     void drawFrame() const;
     
@@ -287,6 +297,9 @@ private:
     void handleHelp();
     void drawHelp() const;
     void scrollHelp(int scrollDown);
+  
+    GL::Font font11;
+    Image font11Img;
 };
 
 }

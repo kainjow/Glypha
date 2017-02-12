@@ -68,11 +68,16 @@ GL::Game::Game(Callback callback, void *context)
     , playing(false)
     , pausing(false)
     , evenFrame(true)
+    , flapKeyDown(false)
+    , showFPS_(false)
+    , fps_time(utils.now())
+    , fps(0)
     , lightningCount(0)
     , newGameLightning(-1)
     , flashObelisks(false)
     , keys_(KeyNone)
     , helpState(kHelpClosed)
+    , font11(font11_fnt, font11_fnt_len)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -188,6 +193,9 @@ GL::Game::Game(Callback callback, void *context)
     }
     
     helpSrcRect.set(0, 0, 231, 398);
+    
+    font11Img.setAllowColorBlending(true);
+    memset(fps_buf, 0, sizeof(fps_buf));
 }
 
 GL::Game::~Game()
@@ -215,6 +223,7 @@ void GL::Game::loadImages()
     egg.load(egg_png, egg_png_len);
     eyeImg.load(eye_png, eye_png_len);
     helpImg.load(help_png, help_png_len);
+    font11Img.load(font11_png, font11_png_len);
 }
 
 void GL::Game::run()
@@ -242,6 +251,17 @@ void GL::Game::run()
     }
 
     drawFrame();
+    
+    if (showFPS_) {
+        double t = utils.now();
+        if ((t - fps_time) > 1.0) {
+            snprintf(fps_buf, sizeof(fps_buf), "%d", fps);
+            fps_time = t;
+            fps = 0;
+        } else {
+            ++fps;
+        }
+    }
 }
 
 void GL::Game::update()
@@ -279,6 +299,11 @@ void GL::Game::drawFrame() const
     drawHelp();
     drawObelisks();
     drawLightning();
+    
+    if (showFPS_) {
+        r->setFillColor(255, 0, 255);
+        font11.drawText(fps_buf, 0, 0, font11Img);
+    }
 }
 
 void GL::Game::handleMouseDownEvent(const GL::Point& point)
@@ -1186,6 +1211,10 @@ void GL::Game::handleKeyDownEvent(Key key)
         } else if (key == KeyPageUp) {
             scrollHelp(-199);
         }
+    }
+
+    if (key == KeyF) {
+        setShowFPS(!showFPS());
     }
 }
 
@@ -2594,4 +2623,14 @@ void GL::Game::scrollHelp(int scrollDown)
         helpSrc.top = 0;
         helpSrc.bottom = helpSrc.top + 199;
     }
+}
+
+void GL::Game::setShowFPS(bool show)
+{
+    showFPS_ = show;
+}
+
+bool GL::Game::showFPS() const
+{
+    return showFPS_;
 }

@@ -5,6 +5,7 @@ GL::Image::Image()
     , width_(0)
     , height_(0)
     , alpha_(false)
+    , colorBlending_(false)
 {
 }
 
@@ -30,11 +31,6 @@ void GL::Image::loadTextureData_(const void *texData, GLenum format, bool hasAlp
     glGenTextures(1, &texture_);
 	glBindTexture(GL_TEXTURE_2D, texture_);
 	
-	// GL_REPLACE prevents colors from seeping into a texture
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	// GL_NEAREST affects drawing the texture at different sizes
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
 	// set texture data
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, format, GL_UNSIGNED_BYTE, texData);
 }
@@ -55,6 +51,12 @@ void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
+    
+    // GL_REPLACE prevents colors from seeping into a texture
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, colorBlending_ ? GL_BLEND : GL_REPLACE);
+
+    // GL_NEAREST affects drawing the texture at different sizes
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
 	// draw the texture
 	glBegin(numDest == 4 ? GL_QUADS : GL_POLYGON);
@@ -105,4 +107,9 @@ int GL::Image::width() const
 int GL::Image::height() const
 {
     return height_;
+}
+
+void GL::Image::setAllowColorBlending(bool colorBlending)
+{
+    colorBlending_ = colorBlending;
 }

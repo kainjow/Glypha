@@ -277,6 +277,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
             case NSPageDownFunctionKey:
                 key = GL::Game::KeyPageDown;
                 break;
+            case 'f':
+                key = GL::Game::KeyF;
+                break;
             default:
                 key = GL::Game::KeyNone;
                 break;

@@ -29,6 +29,8 @@ set(SOURCES
   game/GLBufferReader.h
   game/GLCursor.h
   game/GLSounds.h
+  game/GLFont.cpp
+  game/GLFont.h
 )
 
 if(BEOS)
@@ -161,6 +163,9 @@ set(RESOURCES
   resources/sounds/scrape2.aif
   resources/sounds/screech.aif
   resources/sounds/walk.aif
+  
+  resources/fonts/font11.png
+  resources/fonts/font11.fnt
 )
 
 foreach(rsrc ${RESOURCES})

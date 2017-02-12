@@ -58,6 +58,11 @@ extern unsigned char boom2_aif[];
 extern unsigned int boom2_aif_len;
 extern unsigned char music_aif[];
 extern unsigned int music_aif_len;
+    
+extern unsigned char font11_png[];
+extern unsigned int font11_png_len;
+extern unsigned char font11_fnt[];
+extern unsigned int font11_fnt_len;
 
 }
 
