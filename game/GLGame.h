@@ -104,6 +104,7 @@ public:
     void handleKeyUpEvent(Key key);
     
     void newGame();
+    void pauseResumeGame();
     void endGame();
     void showHelp();
     
@@ -121,7 +122,7 @@ private:
     double lastTime;
     double accumulator;
     void loadImages();
-    bool playing, evenFrame, flapKeyDown;
+    bool playing, pausing, evenFrame, flapKeyDown;
     
     void update();
     void drawFrame() const;

@@ -65,7 +65,9 @@ GL::Game::Game(Callback callback, void *context)
     , now(utils.now())
     , lastTime(now)
     , accumulator(0)
-    , playing(false), evenFrame(true)
+    , playing(false)
+    , pausing(false)
+    , evenFrame(true)
     , lightningCount(0)
     , newGameLightning(-1)
     , flashObelisks(false)
@@ -244,7 +246,7 @@ void GL::Game::run()
 
 void GL::Game::update()
 {
-    if (playing) {
+    if (playing && !pausing) {
         movePlayer();
         moveEnemies();
         handleHand();
@@ -397,6 +399,7 @@ void GL::Game::newGame()
     livesLeft = kInitNumLives;
     score_ = 0L;
     playing = true;
+    pausing = false;
     numOwls = 4;
     helpState = kHelpClosed;
     
@@ -411,6 +414,11 @@ void GL::Game::newGame()
     if (callback_) {
         callback_(EventStarted, callbackContext_);
     }
+}
+
+void GL::Game::pauseResumeGame()
+{
+    pausing = !pausing;
 }
 
 void GL::Game::endGame()
