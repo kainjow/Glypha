@@ -77,7 +77,7 @@ static void callback(GL::Game::Event event, void *context)
 {
     self = [super init];
     if (self != nil) {
-        NSString *appName = [NSString stringWithUTF8String:GL::kGameName];
+        NSString *appName = [NSString stringWithUTF8String:GL_GAME_NAME];
 #if defined(MAC_OS_X_VERSION_10_12) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_12
         NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable;
 #else

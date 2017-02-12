@@ -3,8 +3,6 @@
 
 namespace GL {
 
-extern const char *kGameName;
-
 extern unsigned char background_png[];
 extern unsigned int background_png_len;
 extern unsigned char torches_png[];
