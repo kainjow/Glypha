@@ -25,7 +25,8 @@ Linux:
 
 ### TODO
 
-- Implement high score list
+- Pause/Resume Game
+- High Scores
 - Implement sounds for Qt/Linux version
 - About box
 
