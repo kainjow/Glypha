@@ -32,7 +32,9 @@
 
 static void callback(GL::Game::Event event, void *context)
 {
-    [(AppController*)context handleGameEvent:event];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [(AppController*)context handleGameEvent:event];
+    });
 }
 
 @implementation AppController
