@@ -126,7 +126,7 @@ if(APPLE)
 endif()
 include(CPack)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE "GL_GAME_NAME=\"Glypha III\"")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "GL_GAME_NAME=\"${EXE_NAME}\"")
 
 add_executable(bin-convert bin-convert.c)
 
