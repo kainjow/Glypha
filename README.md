@@ -6,7 +6,7 @@ This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (199
 
 ### Build
 
-([CMake](https://cmake.org) 2.8+ is required)
+([CMake](https://cmake.org) 3.1+ is required)
 
 macOS:
 
