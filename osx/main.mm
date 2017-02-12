@@ -20,6 +20,7 @@
     GL::Game *game_;
     NSWindow *window_;
     NSMenuItem *newGame_;
+    NSMenuItem *pauseGame_;
     NSMenuItem *endGame_;
     NSMenuItem *helpMenuItem_;
     GameView *gameView_;
@@ -68,6 +69,9 @@ static void callback(GL::Game::Event event, void *context)
     [item setTarget:NSApp];
     newGame_ = [gameMenu addItemWithTitle:@"New Game" action:@selector(newGame:) keyEquivalent:@"n"];
     [newGame_ setTarget:self];
+    pauseGame_ = [gameMenu addItemWithTitle:@"Pause Game" action:@selector(pauseResumeGame:) keyEquivalent:@"p"];
+    [pauseGame_ setTarget:self];
+    [pauseGame_ setEnabled:NO];
     endGame_ = [gameMenu addItemWithTitle:@"End Game" action:@selector(endGame:) keyEquivalent:@"e"];
     [endGame_ setTarget:self];
     [endGame_ setEnabled:NO];
@@ -111,6 +115,18 @@ static void callback(GL::Game::Event event, void *context)
     game_->newGame();
 }
 
+- (void)pauseResumeGame:(__unused id)sender
+{
+    game_->pauseResumeGame();
+    if ([[pauseGame_ keyEquivalent] isEqualToString:@"p"]) {
+        [pauseGame_ setTitle:@"Resume Game"];
+        [pauseGame_ setKeyEquivalent:@"r"];
+    } else {
+        [pauseGame_ setTitle:@"Pause Game"];
+        [pauseGame_ setKeyEquivalent:@"p"];
+    }
+}
+
 - (void)endGame:(__unused id)sender
 {
     game_->endGame();
@@ -126,11 +142,15 @@ static void callback(GL::Game::Event event, void *context)
     switch (event) {
         case GL::Game::EventStarted:
             [newGame_ setEnabled:NO];
+            [pauseGame_ setEnabled:YES];
             [endGame_ setEnabled:YES];
             [helpMenuItem_ setEnabled:NO];
             break;
         case GL::Game::EventEnded:
             [newGame_ setEnabled:YES];
+            [pauseGame_ setEnabled:NO];
+            [pauseGame_ setTitle:@"Pause Game"];
+            [pauseGame_ setKeyEquivalent:@"p"];
             [endGame_ setEnabled:NO];
             [helpMenuItem_ setEnabled:YES];
             break;
