@@ -55,14 +55,14 @@ elseif(APPLE)
   )
 endif()
 
-add_executable(Glypha WIN32 MACOSX_BUNDLE ${SOURCES})
+add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCES})
 
-set_target_properties(Glypha PROPERTIES OUTPUT_NAME ${EXE_NAME})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${EXE_NAME})
 
-target_include_directories(Glypha PRIVATE game)
+target_include_directories(${PROJECT_NAME} PRIVATE game)
 
 if(UNIX)
-  target_compile_options(Glypha PRIVATE
+  target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall
     -Wextra
     -Werror
@@ -72,47 +72,47 @@ if(UNIX)
 endif()
 
 if(APPLE)
-  target_compile_options(Glypha PRIVATE
+  target_compile_options(${PROJECT_NAME} PRIVATE
     -stdlib=libc++
   )
 endif()
 
 if(WIN32)
-  target_include_directories(Glypha PRIVATE win)
-  target_compile_definitions(Glypha PRIVATE UNICODE)
+  target_include_directories(${PROJECT_NAME} PRIVATE win)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE)
 endif()
 
 list(FIND SOURCES game/GLImage_libpng.cpp HAVE_IMAGE_LIBPNG)
 if(NOT HAVE_IMAGE_LIBPNG EQUAL -1)
   include(FindPNG)
-  target_link_libraries(Glypha ${PNG_LIBRARIES})
-  target_include_directories(Glypha PRIVATE ${PNG_INCLUDE_DIRS})
+  target_link_libraries(${PROJECT_NAME} ${PNG_LIBRARIES})
+  target_include_directories(${PROJECT_NAME} PRIVATE ${PNG_INCLUDE_DIRS})
 endif()
 
 include(FindOpenGL)
 if(NOT OPENGL_FOUND)
   message(FATAL_ERROR "OpenGL not found!")
 endif()
-target_link_libraries(Glypha ${OPENGL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
 if(BEOS)
   find_library(BE be)
-  target_link_libraries(Glypha ${BE})
+  target_link_libraries(${PROJECT_NAME} ${BE})
 elseif(WIN32)
-  target_link_libraries(Glypha shlwapi windowscodecs winmm)
+  target_link_libraries(${PROJECT_NAME} shlwapi windowscodecs winmm)
 elseif(APPLE)
-  set_target_properties(Glypha PROPERTIES
+  set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/Info.plist
     MACOSX_BUNDLE_BUNDLE_NAME ${EXE_NAME}
     MACOSX_BUNDLE_GUI_IDENTIFIER ${EXE_IDENTIFIER}
   )
   if("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
-    set_target_properties(Glypha PROPERTIES
+    set_target_properties(${PROJECT_NAME} PROPERTIES
       XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Developer ID Application: Kevin Wojniak"
       XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "osx/Glypha.entitlements"
     )
   endif()
-  target_link_libraries(Glypha
+  target_link_libraries(${PROJECT_NAME}
     "-framework Cocoa"
     "-framework CoreVideo"
     "-framework AVFoundation"
@@ -120,7 +120,7 @@ elseif(APPLE)
   )
 endif()
 
-install(TARGETS Glypha DESTINATION .)
+install(TARGETS ${PROJECT_NAME} DESTINATION .)
 if(APPLE)
   set(CPACK_GENERATOR "DragNDrop")
 endif()
@@ -130,7 +130,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE "GL_GAME_NAME=\"${EXE_NAME}\"
 
 add_executable(bin-convert bin-convert.c)
 
-add_dependencies(Glypha bin-convert)
+add_dependencies(${PROJECT_NAME} bin-convert)
 
 set(RESOURCES
   resources/images/help.png
