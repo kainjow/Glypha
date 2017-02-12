@@ -8,7 +8,7 @@ This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (199
 
 ([CMake](https://cmake.org) 2.8+ is required)
 
-OS X:
+macOS:
 
 1. `make`
 
@@ -26,16 +26,17 @@ Linux:
 ### TODO
 
 - Implement high score list
-- Finish Linux/Qt port
+- Implement sounds for Qt/Linux version
 - About box
 
 ### Links
 
 - Originally developed by John Calhoun:  
-http://www.softdorothy.com
+<http://www.softdorothy.com>  
+<https://github.com/softdorothy/glypha_III>
 
 - Mac OS X port by Mark Pazolli:  
-http://sourceforge.net/projects/vitality/files/glypha-iii
+<http://sourceforge.net/projects/vitality/files/glypha-iii>
 
 - Glypha - Then and Now  
-http://boredzo.org/glypha
+<http://boredzo.org/glypha>
