@@ -1,9 +1,30 @@
 #include "GLSounds.h"
 #include <AVFoundation/AVFoundation.h>
+#include <condition_variable>
+#include <mutex>
 #include <vector>
+#include <thread>
 
-struct Context {
+class Context {
+public:
     std::vector<AVAudioPlayer*> sounds[kMaxSounds];
+    std::thread thread;
+    std::mutex mutex;
+    std::condition_variable cond;
+    std::vector<int> play_queue;
+    
+    void addToQueue(int which);
+    
+    static void thread_main(Context* ctx);
+    void run();
+    
+    Context()
+        : thread{thread_main, this}
+    {
+    }
+
+private:
+    void play(int which);
 };
 
 void GL::Sounds::initContext()
@@ -14,8 +35,44 @@ void GL::Sounds::initContext()
 void GL::Sounds::play(int which)
 {
     Context *ctx = static_cast<Context*>(context);
+    ctx->addToQueue(which);
+}
+
+void Context::addToQueue(int which)
+{
+    std::unique_lock<std::mutex> locker{mutex};
+    play_queue.push_back(which);
+    cond.notify_one();
+}
+
+void Context::thread_main(Context* ctx)
+{
+    ctx->run();
+}
+
+void Context::run()
+{
+    std::vector<int> play_now;
+    for (;;) {
+        {
+            std::unique_lock<std::mutex> locker{mutex};
+            cond.wait(locker, [this]{
+                return !play_queue.empty();
+            });
+            play_now = play_queue;
+            play_queue.clear();
+        }
+        
+        for (const auto& which : play_now) {
+            play(which);
+        }
+    }
+}
+
+void Context::play(int which)
+{
     bool found = false;
-    for (const auto& player : ctx->sounds[which]) {
+    for (const auto& player : sounds[which]) {
         if (!player.isPlaying) {
             if (![player play]) {
                 printf("Can't play sound %d\n", which);
