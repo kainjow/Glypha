@@ -70,6 +70,12 @@ if(UNIX)
   )
 endif()
 
+if(APPLE)
+  add_definitions(
+    -stdlib=libc++
+  )
+endif()
+
 add_executable(Glypha WIN32 MACOSX_BUNDLE ${SOURCES})
 
 set_target_properties(Glypha PROPERTIES OUTPUT_NAME ${EXE_NAME})
@@ -108,6 +114,7 @@ elseif(APPLE)
     "-framework Cocoa"
     "-framework CoreVideo"
     "-framework AVFoundation"
+    -stdlib=libc++
   )
 endif()
 
