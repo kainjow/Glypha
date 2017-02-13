@@ -1,9 +1,10 @@
 #include "GLResetDialog.h"
 #include "GLRenderer.h"
 
-GL::ResetDialog::ResetDialog(const Font& font, const Image& fontImage)
+GL::ResetDialog::ResetDialog(const Font& font, const Image& fontImage, Callback callback)
     : font_(font)
     , fontImage_(fontImage)
+    , callback_(callback)
     , resetDialogVisible(false)
     , resetTitle("Are you sure you want to reset " GL_GAME_NAME "'s scores?")
     , titleWidth(font_.measureText(resetTitle))
@@ -14,6 +15,10 @@ GL::ResetDialog::ResetDialog(const Font& font, const Image& fontImage)
     , margin(8)
     , buttonYPadding(margin)
     , buttonXPadding(margin * 2)
+    , mouseDownInYes(false)
+    , mouseDownInNo(false)
+    , mouseInYes(false)
+    , mouseInNo(false)
 {
 }
 
@@ -63,12 +68,20 @@ void GL::ResetDialog::draw(Renderer *renderer) const
     r->setFillColor(0, 0, 0);
     font_.drawText(resetTitle, titlePoint.v, titlePoint.h, fontImage_);
     
-    r->setFillColor(46/255.0f, 64/255.0f, 1.0);
+    if (mouseInYes) {
+        r->setFillColor(28/255.0f, 87/255.0f, 232/255.0f);
+    } else {
+        r->setFillColor(46/255.0f, 64/255.0f, 1.0);
+    }
     r->fillRect(resetYesRect);
     r->setFillColor(1, 1, 1);
     font_.drawText(yes, resetYesRect.left + (buttonXPadding / 2), resetYesRect.top + (buttonYPadding / 2), fontImage_);
     
-    r->setFillColor(1.0, 1.0, 1.0);
+    if (mouseInNo) {
+        r->setFillColor(0.9f, 0.9f, 0.9f);
+    } else {
+        r->setFillColor(1.0, 1.0, 1.0);
+    }
     r->fillRect(resetNoRect);
     r->setFillColor(0.0, 0.0, 0.0);
     font_.drawText(no, resetNoRect.left + (buttonXPadding / 2), resetNoRect.top + (buttonYPadding / 2), fontImage_);
@@ -83,4 +96,39 @@ void GL::ResetDialog::draw(Renderer *renderer) const
     r->moveTo(resetNoRect.left, resetNoRect.bottom);
     r->lineTo(resetNoRect.left, resetNoRect.top - 1);
     r->endLines();
+}
+
+void GL::ResetDialog::handleMouseDownEvent(const Point& point)
+{
+    mouseDownInYes = mouseInYes = resetYesRect.containsPoint(point);
+    mouseDownInNo = mouseInNo = resetNoRect.containsPoint(point);
+}
+
+void GL::ResetDialog::handleMouseMovedEvent(const Point& point)
+{
+    if (mouseDownInYes) {
+        mouseInYes = resetYesRect.containsPoint(point);
+    }
+    if (mouseDownInNo) {
+        mouseInNo = resetNoRect.containsPoint(point);
+    }
+}
+
+void GL::ResetDialog::handleMouseUpEvent(const Point& point)
+{
+    bool clickedYes = false;
+    bool clickedNo = false;
+    if (mouseDownInYes && resetYesRect.containsPoint(point)) {
+        clickedYes = true;
+    } else if (mouseDownInNo && resetNoRect.containsPoint(point)) {
+        clickedNo = true;
+    }
+    mouseDownInYes = mouseInYes = false;
+    mouseDownInNo = mouseInNo = false;
+    if (clickedNo) {
+        close();
+    } else if (clickedYes) {
+        close();
+        callback_();
+    }
 }

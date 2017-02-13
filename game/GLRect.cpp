@@ -1,4 +1,5 @@
 #include "GLRect.h"
+#include "GLPoint.h"
 
 GL::Rect::Rect()
     : top(0), left(0), bottom(0), right(0)
@@ -73,3 +74,7 @@ void GL::Rect::inset(int dh, int dv)
     bottom -= (dv * 2);
 }
 
+bool GL::Rect::containsPoint(const Point& point) const
+{
+    return point.h >= left && point.h <= right && point.v >= top & point.v <= bottom;
+}

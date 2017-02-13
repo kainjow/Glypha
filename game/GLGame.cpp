@@ -81,7 +81,9 @@ GL::Game::Game(Callback callback, void *context)
     , font11(font11_fnt, font11_fnt_len)
     , highScoresTitle(GL_GAME_NAME " High Scores")
     , highScoresTitleWidth(font11.measureText(highScoresTitle))
-    , resetDialog(font11, font11Img)
+    , resetDialog(font11, font11Img, [this]{
+        resetHighScores();
+    })
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -315,10 +317,26 @@ void GL::Game::drawFrame() const
     }
 }
 
-void GL::Game::handleMouseDownEvent(const GL::Point& point)
+void GL::Game::handleMouseDownEvent(const Point& point)
 {
-    if (!playing && !resetDialog.isVisible()) {
+    if (resetDialog.isVisible()) {
+        resetDialog.handleMouseDownEvent(point);
+    } else if (!playing) {
         doLightning(point, kNumLightningStrikes);
+    }
+}
+
+void GL::Game::handleMouseMovedEvent(const Point& point)
+{
+    if (resetDialog.isVisible()) {
+        resetDialog.handleMouseMovedEvent(point);
+    }
+}
+
+void GL::Game::handleMouseUpEvent(const Point& point)
+{
+    if (resetDialog.isVisible()) {
+        resetDialog.handleMouseUpEvent(point);
     }
 }
 
@@ -485,7 +503,7 @@ void GL::Game::showHighScores()
     }
 }
 
-void GL::Game::resetHighScores()
+void GL::Game::promptResetHighScores()
 {
     resetDialog.show(renderer_);
 }
@@ -2753,6 +2771,12 @@ void GL::Game::resetHighScores_()
         highScores[i].score = 0;
         highScores[i].level = 0;
     }
+}
+
+void GL::Game::resetHighScores()
+{
+    resetHighScores_();
+    showHighScores();
 }
 
 void GL::Game::setShowFPS(bool show)

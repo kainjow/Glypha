@@ -3,6 +3,8 @@
 
 namespace GL {
 
+class Point;
+
 class Rect {
 public:
     Rect();
@@ -24,6 +26,8 @@ public:
     bool sect(const Rect& r2) const;
     
     void inset(int dh, int dv);
+    
+    bool containsPoint(const Point& point) const;
 
     int top, left, bottom, right;
 };

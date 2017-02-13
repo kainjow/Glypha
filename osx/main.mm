@@ -156,14 +156,7 @@ static void callback(GL::Game::Event event, void *context)
 
 - (void)resetHighScores:(__unused id)sender
 {
-    NSAlert *alert = [[[NSAlert alloc] init] autorelease];
-    [[alert addButtonWithTitle:@"No"] setKeyEquivalent:@"\033"];
-    [[alert addButtonWithTitle:@"Yes"] setKeyEquivalent:@"\r"];
-    [alert setMessageText:@"Are you sure you want to reset " GL_GAME_NAME "'s scores?"];
-    [alert setAlertStyle:NSCriticalAlertStyle];
-    if ([alert runModal] == NSAlertSecondButtonReturn) {
-        game_->resetHighScores();
-    }
+    game_->promptResetHighScores();
 }
 
 - (void)handleGameEvent:(GL::Game::Event)event
@@ -204,7 +197,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 {
     NSOpenGLPixelFormatAttribute attr[] = {NSOpenGLPFAAccelerated, NSOpenGLPFADoubleBuffer, NSOpenGLPFADepthSize, 24, 0};
     NSOpenGLPixelFormat *format = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attr] autorelease];
-    return [super initWithFrame:frameRect pixelFormat:format];
+    if ((self = [super initWithFrame:frameRect pixelFormat:format]) != nil) {
+        NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingActiveInActiveApp | NSTrackingInVisibleRect;
+        NSTrackingArea *trackingArea = [[[NSTrackingArea alloc] initWithRect:NSZeroRect options:options owner:self userInfo:nil] autorelease];
+        [self addTrackingArea:trackingArea];
+    }
+    return self;
 }
 
 - (void)dealloc
@@ -263,11 +261,30 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
     [self render];
 }
 
+- (GL::Point)pointForEvent:(NSEvent *)event
+{
+    const NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
+    return GL::Point(static_cast<int>(mouseLoc.x), static_cast<int>(game_->renderer()->bounds().height() - mouseLoc.y));
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
-    NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
-    GL::Point point(static_cast<int>(mouseLoc.x), static_cast<int>(game_->renderer()->bounds().height() - mouseLoc.y));
-    game_->handleMouseDownEvent(point);
+    game_->handleMouseDownEvent([self pointForEvent:event]);
+}
+
+- (void)mouseMoved:(NSEvent *)event
+{
+    game_->handleMouseMovedEvent([self pointForEvent:event]);
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+    game_->handleMouseMovedEvent([self pointForEvent:event]);
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+    game_->handleMouseUpEvent([self pointForEvent:event]);
 }
 
 - (void)doKey:(NSEvent *)event up:(BOOL)up

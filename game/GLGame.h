@@ -103,6 +103,9 @@ public:
     void run();
     
     void handleMouseDownEvent(const Point& point);
+    void handleMouseMovedEvent(const Point& point);
+    void handleMouseUpEvent(const Point& point);
+
     void handleKeyDownEvent(Key key);
     void handleKeyUpEvent(Key key);
     
@@ -111,7 +114,7 @@ public:
     void endGame();
     void showHelp();
     void showHighScores();
-    void resetHighScores();
+    void promptResetHighScores();
     
     void setShowFPS(bool show);
     bool showFPS() const;
@@ -335,6 +338,7 @@ private:
     void readInPrefs();
 
     ResetDialog resetDialog;
+    void resetHighScores();
 };
 
 }
