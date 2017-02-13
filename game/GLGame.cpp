@@ -81,6 +81,7 @@ GL::Game::Game(Callback callback, void *context)
     , font11(font11_fnt, font11_fnt_len)
     , highScoresTitle(GL_GAME_NAME " High Scores")
     , highScoresTitleWidth(font11.measureText(highScoresTitle))
+    , resetDialog(font11, font11Img)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -306,6 +307,7 @@ void GL::Game::drawFrame() const
     drawHighScores();
     drawObelisks();
     drawLightning();
+    resetDialog.draw(r);
     
     if (showFPS_) {
         r->setFillColor(1.0, 0, 1.0);
@@ -315,7 +317,7 @@ void GL::Game::drawFrame() const
 
 void GL::Game::handleMouseDownEvent(const GL::Point& point)
 {
-    if (!playing) {
+    if (!playing && !resetDialog.isVisible()) {
         doLightning(point, kNumLightningStrikes);
     }
 }
@@ -434,6 +436,7 @@ void GL::Game::newGame()
     pausing = false;
     numOwls = 4;
     closeWall();
+    resetDialog.close();
     
     initHandLocation();
 	theHand.mode = kLurking;
@@ -484,8 +487,7 @@ void GL::Game::showHighScores()
 
 void GL::Game::resetHighScores()
 {
-    resetHighScores_();
-    showHighScores();
+    resetDialog.show(renderer_);
 }
 
 void GL::Game::setUpLevel()

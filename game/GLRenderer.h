@@ -25,7 +25,7 @@ public:
     void fillRect(const Rect& rect);
     void setFillColor(float red, float green, float blue);
 
-    void beginLines(float lineWidth);
+    void beginLines(float lineWidth, bool smooth = true);
     void endLines();
     void moveTo(int h, int v);
     void lineTo(int h, int v);

@@ -47,12 +47,14 @@ GL::Rect GL::Renderer::bounds()
     return bounds_;
 }
 
-void GL::Renderer::beginLines(float lineWidth)
+void GL::Renderer::beginLines(float lineWidth, bool smooth)
 {
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_LINE_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    if (smooth) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    }
 	glLineWidth(lineWidth);
 	glBegin(GL_LINES);
 }

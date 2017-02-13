@@ -9,6 +9,7 @@
 #include "GLCursor.h"
 #include "GLUtils.h"
 #include "GLFont.h"
+#include "GLResetDialog.h"
 #ifdef _WIN32
 #else
 #include <pthread.h>
@@ -332,6 +333,8 @@ private:
     HighScore highScores[10];
     
     void readInPrefs();
+
+    ResetDialog resetDialog;
 };
 
 }
