@@ -151,7 +151,14 @@ static void callback(GL::Game::Event event, void *context)
 
 - (void)resetHighScores:(__unused id)sender
 {
-    game_->resetHighScores();
+    NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+    [[alert addButtonWithTitle:@"No"] setKeyEquivalent:@"\033"];
+    [[alert addButtonWithTitle:@"Yes"] setKeyEquivalent:@"\r"];
+    [alert setMessageText:@"Are you sure you want to reset " GL_GAME_NAME "'s scores?"];
+    [alert setAlertStyle:NSCriticalAlertStyle];
+    if ([alert runModal] == NSAlertSecondButtonReturn) {
+        game_->resetHighScores();
+    }
 }
 
 - (void)handleGameEvent:(GL::Game::Event)event
