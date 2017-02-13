@@ -37,6 +37,10 @@ void GL::ResetDialog::show(Renderer *renderer)
     resetYesRect = Rect(dialogRect.left + margin, buttonY, yesWidth + buttonXPadding, font_.lineHeight() + buttonYPadding);
     resetNoRect = Rect(resetYesRect.left + resetYesRect.width() + margin, buttonY, noWidth + buttonXPadding, font_.lineHeight() + buttonYPadding);
     
+    const int centerXOffset = ((bounds.width() - (resetYesRect.width() + margin + resetNoRect.width())) / 2) - resetYesRect.left;
+    resetYesRect.offsetBy(centerXOffset, 0);
+    resetNoRect.offsetBy(centerXOffset, 0);
+    
     resetDialogVisible = true;
 }
 
