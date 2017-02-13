@@ -429,8 +429,7 @@ void GL::Game::newGame()
     playing = true;
     pausing = false;
     numOwls = 4;
-    wallState = kWallClosed;
-    wallMode = kWallModeNone;
+    closeWall();
     
     initHandLocation();
 	theHand.mode = kLurking;
