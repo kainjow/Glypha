@@ -117,6 +117,11 @@ static void callback(GL::Game::Event event, void *context)
     [window_ makeKeyAndOrderFront:nil];
 }
 
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(__unused NSApplication *)sender
+{
+    return YES;
+}
+
 - (void)newGame:(__unused id)sender
 {
     game_->newGame();
