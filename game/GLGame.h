@@ -306,6 +306,9 @@ private:
     void closeWall();
     void drawWall() const;
     
+    Rect scoreSrc;
+    Rect scoreDest;
+    
     void openHelp();
     void handleHelp();
     void drawHelp() const;

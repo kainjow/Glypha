@@ -23,7 +23,7 @@ public:
     void clear();
     
     void fillRect(const Rect& rect);
-    void setFillColor(int red, int green, int blue);
+    void setFillColor(float red, float green, float blue);
 
     void beginLines(float lineWidth);
     void endLines();

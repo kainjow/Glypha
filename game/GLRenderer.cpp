@@ -37,7 +37,7 @@ void GL::Renderer::fillRect(const GL::Rect& rect)
 	glEnd();
 }
 
-void GL::Renderer::setFillColor(int red, int green, int blue)
+void GL::Renderer::setFillColor(float red, float green, float blue)
 {
     glColor3f(static_cast<GLfloat>(red), static_cast<GLfloat>(green), static_cast<GLfloat>(blue));
 }

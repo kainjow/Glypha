@@ -304,7 +304,7 @@ void GL::Game::drawFrame() const
     drawLightning();
     
     if (showFPS_) {
-        r->setFillColor(255, 0, 255);
+        r->setFillColor(1.0, 0, 1.0);
         font11.drawText(fps_buf, 0, 0, font11Img);
     }
 }
@@ -404,7 +404,7 @@ void GL::Game::drawLightning() const
     }
     
     Renderer *r = renderer_;
-    r->setFillColor(255, 255, 0);
+    r->setFillColor(1.0, 1.0, 0);
     r->beginLines(2.0f);
     r->moveTo(leftLightningPts[0].h, leftLightningPts[0].v);
     for (int i = 0; i < kNumLightningPts - 1; i++) {
@@ -2669,6 +2669,10 @@ void GL::Game::openHighScores()
 {
     resetWall();
 
+    scoreSrc.set(0, 0, 231, 0);
+    scoreSrc.offsetBy(204, 171);
+    scoreDest = scoreSrc;
+
     wallState = kWallOpening;
     wallMode = kWallModeHighScores;
 }
@@ -2688,6 +2692,8 @@ void GL::Game::handleHighScores()
     
     if (wallState == kWallOpening) {
         int offsetBy = 3;
+        scoreSrc.bottom += offsetBy;
+        scoreDest.bottom += offsetBy;
         wallSrc.bottom -= offsetBy;
         wallDest.top += offsetBy;
     }
@@ -2696,6 +2702,14 @@ void GL::Game::handleHighScores()
 void GL::Game::drawHighScores() const
 {
     if (wallState != kWallClosed && wallMode == kWallModeHighScores) {
+        Renderer *r = renderer_;
+        
+        r->setFillColor(0, 0, 0);
+        r->fillRect(scoreDest);
+        
+        r->setFillColor(2/255.0f, 29/255.0f, 143/255.0f);
+        font11.drawText(GL_GAME_NAME " High Scores", scoreSrc.left + 64, scoreSrc.top + 20, font11Img);
+        
         drawWall();
     }
 }
