@@ -462,6 +462,7 @@ void GL::Game::newGame()
     numOwls = 4;
     closeWall();
     resetDialog.close();
+    aboutVisible = false;
     
     initHandLocation();
 	theHand.mode = kLurking;
@@ -512,6 +513,7 @@ void GL::Game::showHighScores()
 
 void GL::Game::promptResetHighScores()
 {
+    aboutVisible = false;
     resetDialog.show(renderer_);
 }
 
@@ -2651,6 +2653,8 @@ void GL::Game::openHelp()
     helpPos = 0;
     wallState = kWallOpening;
     wallMode = kWallModeHelp;
+    
+    aboutVisible = false;
 }
 
 void GL::Game::handleHelp()
@@ -2711,6 +2715,8 @@ void GL::Game::openHighScores()
 
     wallState = kWallOpening;
     wallMode = kWallModeHighScores;
+
+    aboutVisible = false;
 }
 
 void GL::Game::handleHighScores()
