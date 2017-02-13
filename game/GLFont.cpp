@@ -97,13 +97,30 @@ void GL::Font::drawText(const char *text, int x, int y, const Image& img) const
     int pos_x = x;
     int pos_y = y;
     for (size_t i = 0; i < len; ++i) {
-        int char_id = text[i];
-        size_t index = static_cast<size_t>(char_id - first_char_);
-        const Char& ch = chars_.at(index);
+        const int char_id = text[i];
+        const int index = static_cast<int>(char_id - first_char_);
+        const Char& ch = chars_.at(static_cast<size_t>(index));
         GL::Rect dest(pos_x + ch.xoffset, pos_y + /*base_ +*/ ch.yoffset, ch.width, ch.height);
         img.draw(dest, Rect(ch.x, ch.y, ch.width, ch.height));
         pos_x += ch.xadvance;
     }
+}
+
+int GL::Font::measureText(const char *text) const
+{
+    int width = 0;
+    const size_t len = strlen(text);
+    for (size_t i = 0; i < len; ++i) {
+        const int char_id = text[i];
+        const int index = static_cast<int>(char_id - first_char_);
+        if (index < 0 || index >= static_cast<int>(chars_.size())) {
+            printf("Unsupported character %d\n", char_id);
+            continue;
+        }
+        const Char& ch = chars_.at(static_cast<size_t>(index));
+        width += ch.xadvance;
+    }
+    return width;
 }
 
 int GL::Font::lineHeight() const

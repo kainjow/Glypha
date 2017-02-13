@@ -306,9 +306,6 @@ private:
     void closeWall();
     void drawWall() const;
     
-    Rect scoreSrc;
-    Rect scoreDest;
-    
     void openHelp();
     void handleHelp();
     void drawHelp() const;
@@ -320,6 +317,11 @@ private:
   
     GL::Font font11;
     Image font11Img;
+
+    Rect scoreSrc;
+    Rect scoreDest;
+    const char *highScoresTitle;
+    int highScoresTitleWidth;    
 };
 
 }

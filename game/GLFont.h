@@ -15,6 +15,8 @@ public:
     
     void drawText(const char *text, int x, int y, const Image& img) const;
     
+    int measureText(const char *text) const;
+    
     int lineHeight() const;
     
 private:

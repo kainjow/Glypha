@@ -79,6 +79,8 @@ GL::Game::Game(Callback callback, void *context)
     , wallState(kWallClosed)
     , wallMode(kWallModeNone)
     , font11(font11_fnt, font11_fnt_len)
+    , highScoresTitle(GL_GAME_NAME " High Scores")
+    , highScoresTitleWidth(font11.measureText(highScoresTitle))
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -2708,7 +2710,7 @@ void GL::Game::drawHighScores() const
         r->fillRect(scoreDest);
         
         r->setFillColor(2/255.0f, 29/255.0f, 143/255.0f);
-        font11.drawText(GL_GAME_NAME " High Scores", scoreSrc.left + 64, scoreSrc.top + 20, font11Img);
+        font11.drawText(highScoresTitle, scoreSrc.left + ((scoreSrc.width() - highScoresTitleWidth) / 2), scoreSrc.top + 20, font11Img);
         
         drawWall();
     }
