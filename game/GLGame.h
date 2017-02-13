@@ -314,6 +314,7 @@ private:
     void openHighScores();
     void handleHighScores();
     void drawHighScores() const;
+    void resetHighScores_();
   
     GL::Font font11;
     Image font11Img;

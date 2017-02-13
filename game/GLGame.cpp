@@ -484,7 +484,8 @@ void GL::Game::showHighScores()
 
 void GL::Game::resetHighScores()
 {
-    
+    resetHighScores_();
+    showHighScores();
 }
 
 void GL::Game::setUpLevel()
@@ -2739,11 +2740,16 @@ void GL::Game::readInPrefs()
 {
     //if (!LoadPrefs(&thePrefs, kPrefsVersion))
     {
-        for (int i = 0; i < 10; ++i) {
-            snprintf(highScores[i].name, sizeof(highScores[i].name), "Nemo");
-            highScores[i].score = 0;
-            highScores[i].level = 0;
-        }
+        resetHighScores_();
+    }
+}
+
+void GL::Game::resetHighScores_()
+{
+    for (int i = 0; i < 10; ++i) {
+        snprintf(highScores[i].name, sizeof(highScores[i].name), "Nemo");
+        highScores[i].score = 0;
+        highScores[i].level = 0;
     }
 }
 
