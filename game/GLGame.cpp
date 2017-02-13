@@ -199,6 +199,8 @@ GL::Game::Game(Callback callback, void *context)
     
     font11Img.setAllowColorBlending(true);
     memset(fps_buf, 0, sizeof(fps_buf));
+    
+    readInPrefs();
 }
 
 GL::Game::~Game()
@@ -2710,9 +2712,38 @@ void GL::Game::drawHighScores() const
         r->fillRect(scoreDest);
         
         r->setFillColor(2/255.0f, 29/255.0f, 143/255.0f);
-        font11.drawText(highScoresTitle, scoreSrc.left + ((scoreSrc.width() - highScoresTitleWidth) / 2), scoreSrc.top + 20, font11Img);
+        font11.drawText(highScoresTitle, scoreSrc.left + ((scoreSrc.width() - highScoresTitleWidth) / 2), scoreSrc.top + 10, font11Img);
+        
+        char scoreStr[100];
+        for (int i = 0; i < 10; ++i) {
+            const int y = scoreSrc.top + 31 + (i * 16);
+            
+            snprintf(scoreStr, sizeof(scoreStr), "%d", i + 1);
+            font11.drawText(scoreStr, scoreSrc.left + 8, scoreSrc.top + 31 + (i * 16), font11Img);
+            font11.drawText(highScores[i].name, scoreSrc.left + 32, y, font11Img);
+            
+            snprintf(scoreStr, sizeof(scoreStr), "%d", highScores[i].score);
+            int scoreWide = font11.measureText(scoreStr);
+            font11.drawText(scoreStr, scoreSrc.left + 191 - scoreWide, y, font11Img);
+            
+            snprintf(scoreStr, sizeof(scoreStr), "%d", highScores[i].level);
+            scoreWide = font11.measureText(scoreStr);
+            font11.drawText(scoreStr, scoreSrc.left + 223 - scoreWide, y, font11Img);
+        }
         
         drawWall();
+    }
+}
+
+void GL::Game::readInPrefs()
+{
+    //if (!LoadPrefs(&thePrefs, kPrefsVersion))
+    {
+        for (int i = 0; i < 10; ++i) {
+            snprintf(highScores[i].name, sizeof(highScores[i].name), "Nemo");
+            highScores[i].score = 0;
+            highScores[i].level = 0;
+        }
     }
 }
 

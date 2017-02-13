@@ -321,7 +321,16 @@ private:
     Rect scoreSrc;
     Rect scoreDest;
     const char *highScoresTitle;
-    int highScoresTitleWidth;    
+    int highScoresTitleWidth;
+    
+    struct HighScore {
+        char name[16];
+        int score;
+        int level;
+    };
+    HighScore highScores[10];
+    
+    void readInPrefs();
 };
 
 }
