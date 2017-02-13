@@ -84,6 +84,7 @@ GL::Game::Game(Callback callback, void *context)
     , resetDialog(font11, font11Img, [this]{
         resetHighScores();
     })
+    , aboutVisible(false)
 {
     flameDestRects[0].setSize(16, 16);
     flameDestRects[1].setSize(16, 16);
@@ -232,6 +233,7 @@ void GL::Game::loadImages()
     eyeImg.load(eye_png, eye_png_len);
     helpImg.load(help_png, help_png_len);
     font11Img.load(font11_png, font11_png_len);
+    aboutImg.load(about_png, about_png_len);
 }
 
 void GL::Game::run()
@@ -310,6 +312,9 @@ void GL::Game::drawFrame() const
     drawObelisks();
     drawLightning();
     resetDialog.draw(r);
+    if (aboutVisible) {
+        aboutImg.draw((r->bounds().width() - aboutImg.width()) / 2, (r->bounds().height() - aboutImg.height()) / 2);
+    }
     
     if (showFPS_) {
         r->setFillColor(1.0, 0, 1.0);
@@ -321,6 +326,8 @@ void GL::Game::handleMouseDownEvent(const Point& point)
 {
     if (resetDialog.isVisible()) {
         resetDialog.handleMouseDownEvent(point);
+    } else if (aboutVisible) {
+        aboutVisible = false;
     } else if (!playing) {
         doLightning(point, kNumLightningStrikes);
     }
@@ -2787,4 +2794,12 @@ void GL::Game::setShowFPS(bool show)
 bool GL::Game::showFPS() const
 {
     return showFPS_;
+}
+
+void GL::Game::showAbout()
+{
+    if (!playing && !resetDialog.isVisible()) {
+        closeWall();
+        aboutVisible = true;
+    }
 }

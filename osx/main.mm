@@ -63,8 +63,8 @@ static void callback(GL::Game::Event event, void *context)
     [menubar addItem:gameMenuItem];
     [menubar addItem:helpMenuItem];
     
-    item = [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
-    [item setTarget:NSApp];
+    item = [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(showAbout:) keyEquivalent:@""];
+    [item setTarget:self];
     [appMenu addItem:[NSMenuItem separatorItem]];
     NSString *quitText = [NSString stringWithFormat:@"Quit %@", appName];
     item = [appMenu addItemWithTitle:quitText action:@selector(terminate:) keyEquivalent:@"q"];
@@ -157,6 +157,11 @@ static void callback(GL::Game::Event event, void *context)
 - (void)resetHighScores:(__unused id)sender
 {
     game_->promptResetHighScores();
+}
+
+- (void)showAbout:(__unused id)sender
+{
+    game_->showAbout();
 }
 
 - (void)handleGameEvent:(GL::Game::Event)event

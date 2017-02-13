@@ -151,6 +151,7 @@ set(RESOURCES
   resources/images/player.png
   resources/images/playerIdle.png
   resources/images/torches.png
+  resources/images/about.png
 
   resources/sounds/boom1.aif
   resources/sounds/music.aif

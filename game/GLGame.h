@@ -115,6 +115,7 @@ public:
     void showHelp();
     void showHighScores();
     void promptResetHighScores();
+    void showAbout();
     
     void setShowFPS(bool show);
     bool showFPS() const;
@@ -339,6 +340,9 @@ private:
 
     ResetDialog resetDialog;
     void resetHighScores();
+    
+    Image aboutImg;
+    bool aboutVisible;
 };
 
 }
