@@ -99,6 +99,10 @@ void GL::Font::drawText(const char *text, int x, int y, const Image& img) const
     for (size_t i = 0; i < len; ++i) {
         const int char_id = text[i];
         const int index = static_cast<int>(char_id - first_char_);
+        if (index < 0 || index >= static_cast<int>(chars_.size())) {
+            printf("Unsupported character %d\n", char_id);
+            continue;
+        }
         const Char& ch = chars_.at(static_cast<size_t>(index));
         GL::Rect dest(pos_x + ch.xoffset, pos_y + /*base_ +*/ ch.yoffset, ch.width, ch.height);
         img.draw(dest, Rect(ch.x, ch.y, ch.width, ch.height));
