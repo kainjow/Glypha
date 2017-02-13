@@ -31,6 +31,7 @@ set(SOURCES
   game/GLSounds.h
   game/GLFont.cpp
   game/GLFont.h
+  game/GLPoint.h
 )
 
 if(BEOS)
