@@ -76,7 +76,8 @@ GL::Game::Game(Callback callback, void *context)
     , newGameLightning(-1)
     , flashObelisks(false)
     , keys_(KeyNone)
-    , helpState(kHelpClosed)
+    , wallState(kWallClosed)
+    , wallMode(kWallModeNone)
     , font11(font11_fnt, font11_fnt_len)
 {
     flameDestRects[0].setSize(16, 16);
@@ -275,6 +276,7 @@ void GL::Game::update()
         handleCountDownTimer();
     }
     handleHelp();
+    handleHighScores();
     handleLightning();
     evenFrame = !evenFrame;
 }
@@ -297,6 +299,7 @@ void GL::Game::drawFrame() const
         drawLevelNumbers();
     }
     drawHelp();
+    drawHighScores();
     drawObelisks();
     drawLightning();
     
@@ -426,7 +429,8 @@ void GL::Game::newGame()
     playing = true;
     pausing = false;
     numOwls = 4;
-    helpState = kHelpClosed;
+    wallState = kWallClosed;
+    wallMode = kWallModeNone;
     
     initHandLocation();
 	theHand.mode = kLurking;
@@ -459,9 +463,25 @@ void GL::Game::endGame()
 
 void GL::Game::showHelp()
 {
-    if (!playing) {
-        openHelp();
+    if (!playing && wallMode != kWallModeHelp) {
+        if (wallState == kWallClosed || wallState == kWallOpen) {
+            openHelp();
+        }
     }
+}
+
+void GL::Game::showHighScores()
+{
+    if (!playing && wallMode != kWallModeHighScores) {
+        if (wallState == kWallClosed || wallState == kWallOpen) {
+            openHighScores();
+        }
+    }
+}
+
+void GL::Game::resetHighScores()
+{
+    
 }
 
 void GL::Game::setUpLevel()
@@ -1201,7 +1221,7 @@ void GL::Game::handleKeyDownEvent(Key key)
     Locker locker(lock_);
     keys_ |= key;
     
-    if (helpState == kHelpOpen) {
+    if (wallState == kWallOpen && wallMode == kWallModeHelp) {
         if (key == KeyUpArrow) {
             scrollHelp(-3);
         } else if (key == KeyDownArrow) {
@@ -2567,28 +2587,49 @@ void GL::Game::drawEye() const
     }
 }
 
+void GL::Game::resetWall()
+{
+    wallSrc.set(0, 0, 231, 199);
+    wallSrc.offsetBy(204, 171);
+    wallDest = wallSrc;
+}
+
+void GL::Game::closeWall()
+{
+    wallState = kWallClosed;
+    wallMode = kWallModeNone;
+}
+
+void GL::Game::drawWall() const
+{
+    bgImg.draw(wallDest, wallSrc);
+}
+
 void GL::Game::openHelp()
 {
+    resetWall();
+    
     helpSrc.set(0, 0, 231, 0);
     helpDest = helpSrc;
     helpDest.offsetBy(204, 171);
 
-    wallSrc.set(0, 0, 231, 199);
-    wallSrc.offsetBy(204, 171);
-    wallDest = wallSrc;
-
     helpPos = 0;
-    helpState = kHelpOpening;
+    wallState = kWallOpening;
+    wallMode = kWallModeHelp;
 }
 
 void GL::Game::handleHelp()
 {
-    if (helpState == kHelpOpening && helpPos >= 199) {
-        helpState = kHelpOpen;
+    if (wallMode != kWallModeHelp) {
+        return;
+    }
+
+    if (wallState == kWallOpening && helpPos >= 199) {
+        wallState = kWallOpen;
         return;
     }
     
-    if (helpState == kHelpOpening) {
+    if (wallState == kWallOpening) {
         int offsetBy = 3;
         helpSrc.bottom += offsetBy;
         helpDest.bottom += offsetBy;
@@ -2606,9 +2647,9 @@ void GL::Game::handleHelp()
 
 void GL::Game::drawHelp() const
 {
-    if (helpState != kHelpClosed) {
+    if (wallState != kWallClosed && wallMode == kWallModeHelp) {
         helpImg.draw(helpDest, helpSrc);
-        bgImg.draw(wallDest, wallSrc);
+        drawWall();
     }
 }
 
@@ -2622,6 +2663,41 @@ void GL::Game::scrollHelp(int scrollDown)
     } else if (helpSrc.top < 0) {
         helpSrc.top = 0;
         helpSrc.bottom = helpSrc.top + 199;
+    }
+}
+
+void GL::Game::openHighScores()
+{
+    resetWall();
+
+    wallState = kWallOpening;
+    wallMode = kWallModeHighScores;
+}
+
+void GL::Game::handleHighScores()
+{
+    if (wallMode != kWallModeHighScores) {
+        return;
+    }
+    
+    if (wallState == kWallOpening && wallDest.top >= 370) {
+        wallDest.top = 370;
+        wallSrc.bottom = 171;
+        wallState = kWallOpen;
+        return;
+    }
+    
+    if (wallState == kWallOpening) {
+        int offsetBy = 3;
+        wallSrc.bottom -= offsetBy;
+        wallDest.top += offsetBy;
+    }
+}
+
+void GL::Game::drawHighScores() const
+{
+    if (wallState != kWallClosed && wallMode == kWallModeHighScores) {
+        drawWall();
     }
 }
 

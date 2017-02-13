@@ -109,6 +109,8 @@ public:
     void pauseResumeGame();
     void endGame();
     void showHelp();
+    void showHighScores();
+    void resetHighScores();
     
     void setShowFPS(bool show);
     bool showFPS() const;
@@ -286,17 +288,32 @@ private:
     Rect wallSrc;
     Rect wallDest;
     Image helpImg;
-    enum HelpState {
-        kHelpClosed = 0,
-        kHelpOpening = 1,
-        kHelpOpen = 2,
+    enum WallState {
+        kWallClosed = 0,
+        kWallOpening = 1,
+        kWallOpen = 2,
     };
-    HelpState helpState;
+    WallState wallState;
+    enum WallMode {
+        kWallModeNone = 0,
+        kWallModeHelp = 1,
+        kWallModeHighScores = 2,
+    };
+    WallMode wallMode;
     int helpPos;
+    
+    void resetWall();
+    void closeWall();
+    void drawWall() const;
+    
     void openHelp();
     void handleHelp();
     void drawHelp() const;
     void scrollHelp(int scrollDown);
+    
+    void openHighScores();
+    void handleHighScores();
+    void drawHighScores() const;
   
     GL::Font font11;
     Image font11Img;

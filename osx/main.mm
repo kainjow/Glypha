@@ -23,6 +23,8 @@
     NSMenuItem *pauseGame_;
     NSMenuItem *endGame_;
     NSMenuItem *helpMenuItem_;
+    NSMenuItem *highScores_;
+    NSMenuItem *resetHighScores_;
     GameView *gameView_;
 }
 
@@ -77,6 +79,11 @@ static void callback(GL::Game::Event event, void *context)
     [endGame_ setEnabled:NO];
     helpMenuItem_ = [helpMenu addItemWithTitle:@"Help" action:@selector(showHelp:) keyEquivalent:@"h"];
     [helpMenuItem_ setTarget:self];
+    [helpMenu addItem:[NSMenuItem separatorItem]];
+    highScores_ = [helpMenu addItemWithTitle:@"High Scores" action:@selector(showHighScores:) keyEquivalent:@"s"];
+    [highScores_ setTarget:self];
+    resetHighScores_ = [helpMenu addItemWithTitle:@"Reset Scores..." action:@selector(resetHighScores:) keyEquivalent:@""];
+    [resetHighScores_ setTarget:self];
 }
 
 - (id)init
@@ -137,6 +144,16 @@ static void callback(GL::Game::Event event, void *context)
     game_->showHelp();
 }
 
+- (void)showHighScores:(__unused id)sender
+{
+    game_->showHighScores();
+}
+
+- (void)resetHighScores:(__unused id)sender
+{
+    game_->resetHighScores();
+}
+
 - (void)handleGameEvent:(GL::Game::Event)event
 {
     switch (event) {
@@ -145,6 +162,8 @@ static void callback(GL::Game::Event event, void *context)
             [pauseGame_ setEnabled:YES];
             [endGame_ setEnabled:YES];
             [helpMenuItem_ setEnabled:NO];
+            [highScores_ setEnabled:NO];
+            [resetHighScores_ setEnabled:NO];
             break;
         case GL::Game::EventEnded:
             [newGame_ setEnabled:YES];
@@ -153,6 +172,8 @@ static void callback(GL::Game::Event event, void *context)
             [pauseGame_ setKeyEquivalent:@"p"];
             [endGame_ setEnabled:NO];
             [helpMenuItem_ setEnabled:YES];
+            [highScores_ setEnabled:YES];
+            [resetHighScores_ setEnabled:YES];
             break;
     }
 }
