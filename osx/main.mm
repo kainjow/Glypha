@@ -335,6 +335,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
             case 'f':
                 key = GL::Game::KeyF;
                 break;
+            case 27:
+                key = GL::Game::KeyEsc;
+                break;
             default:
                 key = GL::Game::KeyNone;
                 break;

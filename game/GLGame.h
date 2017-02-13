@@ -86,6 +86,7 @@ public:
         KeyPageUp      = (1 << 10),
         KeyPageDown    = (1 << 11),
         KeyF           = (1 << 12),
+        KeyEsc         = (1 << 13),
     };
     
     enum Event {

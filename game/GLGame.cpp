@@ -1267,6 +1267,10 @@ void GL::Game::handleKeyDownEvent(Key key)
     if (key == KeyF) {
         setShowFPS(!showFPS());
     }
+    
+    if (key == KeyEsc && resetDialog.isVisible()) {
+        resetDialog.close();
+    }
 }
 
 void GL::Game::handleKeyUpEvent(Key key)
