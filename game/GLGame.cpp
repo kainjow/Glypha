@@ -507,7 +507,7 @@ void GL::Game::processHighScoreName(const char *name, int place)
     if (slen > 15) {
         slen = 15;
     }
-    memcpy(thePrefs.highScores[i].name, name, slen);
+    memcpy(thePrefs.highScores[i].name, name, (size_t)slen);
     thePrefs.highScores[i].name[slen] = 0;
     memcpy(thePrefs.highName, thePrefs.highScores[i].name, sizeof(thePrefs.highScores[i].name));
     prefs_.save(thePrefs);
