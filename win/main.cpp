@@ -224,6 +224,7 @@ void AppController::onKey(WPARAM key, bool down)
     case VK_RIGHT: gameKey = GL::Game::KeyRightArrow; break;
     case 'A': gameKey = GL::Game::KeyA; break;
     case 'S': gameKey = GL::Game::KeyS; break;
+    case 'F': gameKey = GL::Game::KeyF; break;
     case VK_OEM_1: gameKey = GL::Game::KeyColon; break;
     case VK_OEM_7: gameKey = GL::Game::KeyQuote; break;
     case VK_PRIOR: gameKey = GL::Game::KeyPageUp; break;
