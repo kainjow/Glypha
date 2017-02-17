@@ -24,6 +24,7 @@ private:
     void onMenu(WORD cmd);
     void onKey(WPARAM key, bool down);
     void onMouseDown(UINT x, UINT y);
+    void resetScores();
 };
 
 namespace {
@@ -101,6 +102,9 @@ bool AppController::init(HINSTANCE hInstance)
     (void)ShowWindow(win, SW_SHOWNORMAL);
     (void)UpdateWindow(win);
 
+    // Setup default menus
+    handleGameEvent(GL::Game::EventEnded);
+
     return true;
 }
 
@@ -150,11 +154,15 @@ void AppController::handleGameEvent(GL::Game::Event event)
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_NEW_GAME, MF_DISABLED | MF_GRAYED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_END_GAME, MF_ENABLED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HELP, MF_DISABLED | MF_GRAYED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HIGH_SCORES, MF_DISABLED | MF_GRAYED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_RESET_SCORES, MF_DISABLED | MF_GRAYED);
         break;
     case GL::Game::EventEnded:
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_NEW_GAME, MF_ENABLED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_END_GAME, MF_DISABLED | MF_GRAYED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HELP, MF_ENABLED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HIGH_SCORES, MF_ENABLED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_RESET_SCORES, MF_ENABLED);
         break;
     }
 }
@@ -258,6 +266,20 @@ void AppController::onMenu(WORD cmd)
     case ID_MENU_HELP:
         game->showHelp();
         break;
+    case ID_MENU_HIGH_SCORES:
+        game->showHighScores();
+        break;
+    case ID_MENU_RESET_SCORES:
+        resetScores();
+        break;
+    }
+}
+
+void AppController::resetScores()
+{
+    const int result = MessageBoxW(nullptr, L"Are you sure you want to reset " GL_GAME_NAME_W "'s scores?", L"Reset Scores", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2);
+    if (result == IDYES) {
+        game->resetHighScores();
     }
 }
 
