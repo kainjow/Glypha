@@ -4,6 +4,8 @@
 #include <gl/gL.h>
 #include "GLGame.h"
 #include "resources.h"
+#include "resource.h"
+#include <string>
 
 class AppController {
 public:
@@ -11,8 +13,10 @@ public:
     bool init(HINSTANCE hInstance);
     void run();
     void handleGameEvent(GL::Game::Event event);
+    void handleHighScoreNameCallback(const char *name, int place);
     void onRender();
     void gameThread();
+    LRESULT dlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 private:
     HWND win;
     HACCEL accelerators;
@@ -28,12 +32,18 @@ private:
     void resetScores();
     std::wstring getMenuText(UINT item);
     bool setMenuText(UINT item, const std::wstring& text);
+    std::string name_;
+    int place_;
 };
 
 namespace {
 void gameCallback(GL::Game::Event event, void *context)
 {
     static_cast<AppController*>(context)->handleGameEvent(event);
+}
+
+void highScoreNameCallback(const char *name, int place, void *context) {
+    static_cast<AppController*>(context)->handleHighScoreNameCallback(name, place);
 }
 }
 
@@ -156,13 +166,25 @@ DWORD WINAPI gameThreadMain(LPVOID param)
     app->gameThread();
     return 0;
 }
+
+LRESULT CALLBACK DlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+    AppController *app;
+    if (Msg == WM_INITDIALOG) {
+        app = (AppController*)lParam;
+        SetWindowLongPtr(hWndDlg, GWLP_USERDATA, lParam);
+    } else {
+        app = (AppController*)GetWindowLongPtr(hWndDlg, GWLP_USERDATA);
+    }
+    return app->dlgProc(hWndDlg, Msg, wParam, lParam);
+}
 }
 
 void AppController::gameThread()
 {
     (void)wglMakeCurrent(GetDC(win), hRC);
 
-    game = new GL::Game(gameCallback, nullptr, this);
+    game = new GL::Game(gameCallback, highScoreNameCallback, this);
 
     RECT r;
     (void)GetClientRect(win, &r);
@@ -211,6 +233,45 @@ void AppController::handleGameEvent(GL::Game::Event event)
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_ABOUT, MF_ENABLED);
         break;
     }
+}
+
+void AppController::handleHighScoreNameCallback(const char *name, int place)
+{
+    (void)name; (void)place;
+    name_ = name;
+    place_ = place;
+    DialogBoxParamW(nullptr, MAKEINTRESOURCE(IDD_DLGHIGHSCORE), win, reinterpret_cast<DLGPROC>(DlgProc), (LPARAM)this);
+    game->processHighScoreName(name_.c_str(), place);
+}
+
+LRESULT AppController::dlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (Msg) {
+    case WM_INITDIALOG:
+    {
+        std::string text;
+        text.resize(100);
+        GetDlgItemTextA(hWndDlg, IDC_SCORE_STATIC, (LPSTR)text.data(), text.size());
+        const std::string token = "%1";
+        text.replace(text.find(token), token.size(), std::to_string(place_));
+        SetDlgItemTextA(hWndDlg, IDC_SCORE_STATIC, text.c_str());
+        SetDlgItemTextA(hWndDlg, IDC_NAME_EDIT, name_.c_str());
+        return TRUE;
+    }
+
+    case WM_COMMAND:
+        switch (wParam) {
+        case IDOK:
+            name_.resize(100);
+            GetDlgItemTextA(hWndDlg, IDC_NAME_EDIT, (LPSTR)name_.c_str(), name_.size());
+            EndDialog(hWndDlg, 0);
+            return TRUE;
+        }
+        break;
+    }
+
+    (void)lParam;
+    return DefWindowProc(hWndDlg, Msg, wParam, lParam);
 }
 
 void AppController::onKey(WPARAM key, bool down)

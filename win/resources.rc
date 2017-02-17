@@ -1,32 +1,139 @@
-#include "resources.h"
+// Microsoft Visual C++ generated resource script.
+//
+#include <windows.h>
+//#include "resources.h"
+#include "resource.h"
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
 
 IDR_MAINMENU MENU
 BEGIN
-POPUP "&Game"
-BEGIN
-MENUITEM "&New Game\tCtrl+N", ID_MENU_NEW_GAME
-MENUITEM "&Pause Game\tCtrl+P", ID_MENU_PAUSE, GRAYED
-MENUITEM "&End Game\tCtrl+E", ID_MENU_END_GAME, GRAYED
-MENUITEM SEPARATOR
-MENUITEM "E&xit\tAlt+F4", ID_MENU_EXIT
+    POPUP "&Game"
+    BEGIN
+        MENUITEM "&New Game\tCtrl+N",           ID_MENU_NEW_GAME
+        MENUITEM "&Pause Game\tCtrl+P",         ID_MENU_PAUSE, GRAYED
+        MENUITEM "&End Game\tCtrl+E",           ID_MENU_END_GAME, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit\tAlt+F4",               ID_MENU_EXIT
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Help",                       ID_MENU_HELP
+        MENUITEM SEPARATOR
+        MENUITEM "High &Scores\tCtrl+S",        ID_MENU_HIGH_SCORES, GRAYED
+        MENUITEM "&Reset Scores...",            ID_MENU_RESET_SCORES, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "&About %1",                   ID_MENU_ABOUT, GRAYED
+    END
 END
 
-POPUP "&Options"
-BEGIN
-MENUITEM "&Help", ID_MENU_HELP
-MENUITEM SEPARATOR
-MENUITEM "High &Scores\tCtrl+S", ID_MENU_HIGH_SCORES, GRAYED
-MENUITEM L"&Reset Scores\x2026", ID_MENU_RESET_SCORES, GRAYED
-MENUITEM SEPARATOR
-MENUITEM "&About %1", ID_MENU_ABOUT, GRAYED
-END
-END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
 
 ID_MENU_ACCELERATORS ACCELERATORS
 BEGIN
-    "N", ID_MENU_NEW_GAME, CONTROL, VIRTKEY
-    "P", ID_MENU_PAUSE, CONTROL, VIRTKEY
-    "R", ID_MENU_PAUSE, CONTROL, VIRTKEY
-    "E", ID_MENU_END_GAME, CONTROL, VIRTKEY
-    "S", ID_MENU_HIGH_SCORES, CONTROL, VIRTKEY
+    "N",            ID_MENU_NEW_GAME,       VIRTKEY, CONTROL
+    "P",            ID_MENU_PAUSE,          VIRTKEY, CONTROL
+    "R",            ID_MENU_PAUSE,          VIRTKEY, CONTROL
+    "E",            ID_MENU_END_GAME,       VIRTKEY, CONTROL
+    "S",            ID_MENU_HIGH_SCORES,    VIRTKEY, CONTROL
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DLGHIGHSCORE DIALOGEX 0, 0, 223, 72
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "High Score"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,166,51,50,14
+    LTEXT           "Your score #%1 of the ten best! Enter your name (15 chars.).",IDC_SCORE_STATIC,7,14,202,8
+    EDITTEXT        IDC_NAME_EDIT,16,30,120,14,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DLGHIGHSCORE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 216
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
     END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DLGHIGHSCORE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
