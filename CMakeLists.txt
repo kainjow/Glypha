@@ -58,6 +58,7 @@ elseif(WIN32)
   list(APPEND SOURCES
     win/main.cpp
     win/resources.rc
+	win/resources.h
     game/GLCursorWin32.cpp
     game/GLImage_Win32.cpp
     game/GLSoundsWin32.cpp
