@@ -168,7 +168,11 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     [[alert addButtonWithTitle:@"No"] setKeyEquivalent:@"\033"];
     [[alert addButtonWithTitle:@"Yes"] setKeyEquivalent:@"\r"];
     [alert setMessageText:@"Are you sure you want to reset " GL_GAME_NAME "'s scores?"];
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12
+    [alert setAlertStyle:NSAlertStyleCritical];
+#else
     [alert setAlertStyle:NSCriticalAlertStyle];
+#endif
     if ([alert runModal] == NSAlertSecondButtonReturn) {
         game_->resetHighScores();
     }
