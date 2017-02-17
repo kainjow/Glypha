@@ -312,10 +312,10 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
     if (message == WM_CREATE) {
         LPCREATESTRUCT pcs = (LPCREATESTRUCT)lParam;
         AppController *appController = (AppController *)pcs->lpCreateParams;
-        (void)SetWindowLongPtrW(hwnd, GWLP_USERDATA, PtrToUlong(appController));
+        (void)SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(appController));
         result = 1;
     } else {
-        AppController *appController = reinterpret_cast<AppController *>(static_cast<LONG_PTR>(GetWindowLongPtrW(hwnd, GWLP_USERDATA)));
+        AppController *appController = reinterpret_cast<AppController *>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
         bool wasHandled = false;
 
         if (appController != NULL) {
