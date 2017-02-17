@@ -462,6 +462,11 @@ void GL::Game::pauseResumeGame()
     pausing = !pausing;
 }
 
+bool GL::Game::paused() const
+{
+    return pausing;
+}
+
 void GL::Game::endGame()
 {
     playing = false;

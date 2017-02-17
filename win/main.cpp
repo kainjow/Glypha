@@ -26,6 +26,8 @@ private:
     void onKey(WPARAM key, bool down);
     void onMouseDown(UINT x, UINT y);
     void resetScores();
+    std::wstring getMenuText(UINT item);
+    bool setMenuText(UINT item, const std::wstring& text);
 };
 
 namespace {
@@ -107,28 +109,44 @@ bool AppController::init(HINSTANCE hInstance)
     handleGameEvent(GL::Game::EventEnded);
 
     // Rename About menu item
+    std::wstring title = getMenuText(ID_MENU_ABOUT);
+    const std::wstring token = L"%1";
+    title.replace(title.find(token), token.size(), GL_GAME_NAME_W);
+    if (!setMenuText(ID_MENU_ABOUT, title)) {
+        return false;
+    }
+
+    return true;
+}
+
+std::wstring AppController::getMenuText(UINT item)
+{
     MENUITEMINFOW info;
     ZeroMemory(&info, sizeof(info));
     info.cbSize = sizeof(MENUITEMINFOW);
     info.fMask = MIIM_STRING;
-    if (!GetMenuItemInfoW(GetMenu(win), ID_MENU_ABOUT, FALSE, &info)) {
-        return false;
+    if (!GetMenuItemInfoW(GetMenu(win), item, FALSE, &info)) {
+        return {};
     }
     ++info.cch;
-    std::wstring title;
-    title.resize(info.cch - 1);
-    info.dwTypeData = (LPWSTR)title.data();
-    if (!GetMenuItemInfoW(GetMenu(win), ID_MENU_ABOUT, FALSE, &info)) {
-        return false;
+    std::wstring text;
+    text.resize(info.cch - 1);
+    info.dwTypeData = (LPWSTR)text.data();
+    if (!GetMenuItemInfoW(GetMenu(win), item, FALSE, &info)) {
+        return {};
     }
-    title.replace(title.find(L"%1"), 2, GL_GAME_NAME_W);
-    info.dwTypeData = (LPWSTR)title.data();
-    if (!SetMenuItemInfoW(GetMenu(win), ID_MENU_ABOUT, FALSE, &info)) {
-        return false;
-    }
+    return text;
+}
 
-
-    return true;
+bool AppController::setMenuText(UINT item, const std::wstring& text)
+{
+    MENUITEMINFOW info;
+    ZeroMemory(&info, sizeof(info));
+    info.cbSize = sizeof(MENUITEMINFOW);
+    info.fMask = MIIM_STRING;
+    info.dwTypeData = (LPWSTR)text.data();
+    info.cch = text.size();
+    return SetMenuItemInfoW(GetMenu(win), item, FALSE, &info) == TRUE;
 }
 
 namespace {
@@ -175,6 +193,7 @@ void AppController::handleGameEvent(GL::Game::Event event)
     switch (event) {
     case GL::Game::EventStarted:
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_NEW_GAME, MF_DISABLED | MF_GRAYED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_PAUSE, MF_ENABLED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_END_GAME, MF_ENABLED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HELP, MF_DISABLED | MF_GRAYED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HIGH_SCORES, MF_DISABLED | MF_GRAYED);
@@ -183,6 +202,8 @@ void AppController::handleGameEvent(GL::Game::Event event)
         break;
     case GL::Game::EventEnded:
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_NEW_GAME, MF_ENABLED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_PAUSE, MF_DISABLED | MF_GRAYED);
+        setMenuText(ID_MENU_PAUSE, L"&Pause Game\tCtrl+P");
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_END_GAME, MF_DISABLED | MF_GRAYED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HELP, MF_ENABLED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HIGH_SCORES, MF_ENABLED);
@@ -281,6 +302,10 @@ void AppController::onMenu(WORD cmd)
     switch(cmd) {
     case ID_MENU_NEW_GAME:
         game->newGame();
+        break;
+    case ID_MENU_PAUSE:
+        game->pauseResumeGame();
+        setMenuText(ID_MENU_PAUSE, game->paused() ? L"&Resume Game\tCtrl+R" : L"&Pause Game\tCtrl+P");
         break;
     case ID_MENU_EXIT:
         PostMessage(win, WM_CLOSE, 0, 0);

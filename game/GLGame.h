@@ -110,6 +110,7 @@ public:
     
     void newGame();
     void pauseResumeGame();
+    bool paused() const;
     void endGame();
     void showHelp();
     void showHighScores();
