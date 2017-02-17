@@ -6,6 +6,8 @@
 #include "resources.h"
 #include "resource.h"
 #include <string>
+#include <mutex>
+#include <condition_variable>
 
 class AppController {
 public:
@@ -17,6 +19,7 @@ public:
     void onRender();
     void gameThread();
     LRESULT dlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
+    void exit();
 private:
     HWND win;
     HACCEL accelerators;
@@ -34,6 +37,11 @@ private:
     bool setMenuText(UINT item, const std::wstring& text);
     std::string name_;
     int place_;
+    HANDLE thread_;
+    bool exit_;
+    bool threadClosed_;
+    std::mutex mutex_;
+    std::condition_variable condition_variable_;
 };
 
 namespace {
@@ -49,6 +57,9 @@ void highScoreNameCallback(const char *name, int place, void *context) {
 
 AppController::AppController()
     : game(nullptr)
+    , thread_(nullptr)
+    , exit_(false)
+    , threadClosed_(false)
 {
 }
 
@@ -94,7 +105,7 @@ bool AppController::init(HINSTANCE hInstance)
         PFD_TYPE_RGBA, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0
     };
     int pixelFormat = ChoosePixelFormat(hDC, &pfd);
-    if (pixelFormat == 0 || SetPixelFormat(hDC, pixelFormat, &pfd) == FALSE) {
+    if (pixelFormat == 0 || !SetPixelFormat(hDC, pixelFormat, &pfd)) {
         return false;
     }
     hRC = wglCreateContext(hDC);
@@ -190,15 +201,19 @@ void AppController::gameThread()
     (void)GetClientRect(win, &r);
     game->renderer()->resize(r.right - r.left, r.bottom - r.top);
 
-    for (;;) {
+    while (!exit_) {
         onRender();
     }
+
+    std::unique_lock<std::mutex> locker(mutex_);
+    threadClosed_ = true;
+    condition_variable_.notify_all();
 }
 
 void AppController::run()
 {
     DWORD threadID;
-    (void)CreateThread(nullptr, 0, gameThreadMain, this, 0, &threadID);
+    thread_ = CreateThread(nullptr, 0, gameThreadMain, this, 0, &threadID);
 
     MSG msg;
     while (GetMessage(&msg, 0, 0, 0) > 0) {
@@ -321,6 +336,7 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
         if (appController != NULL) {
             switch (message) {
             case WM_DESTROY:
+                appController->exit();
                 PostQuitMessage(0);
                 result = 1;
                 wasHandled = true;
@@ -345,12 +361,22 @@ LRESULT CALLBACK AppController::WndProc(HWND hwnd, UINT message, WPARAM wParam, 
             }
         }
 
-        if (wasHandled == false) {
+        if (!wasHandled) {
             result = DefWindowProc(hwnd, message, wParam, lParam);
         }
     }
 
     return result;
+}
+
+void AppController::exit()
+{
+    exit_ = true;
+    std::unique_lock<std::mutex> locker(mutex_);
+    condition_variable_.wait(locker, [this]{
+        return threadClosed_;
+    });
+    CloseHandle(thread_);
 }
 
 void AppController::onRender()
@@ -401,7 +427,7 @@ void AppController::resetScores()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
     AppController appController;
-    if (appController.init(hInstance) == false) {
+    if (!appController.init(hInstance)) {
         (void)MessageBoxW(NULL, L"Failed to initialize.", NULL, MB_OK | MB_ICONERROR);
         return 0;
     }
