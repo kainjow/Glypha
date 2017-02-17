@@ -26,7 +26,7 @@ void GL::Font::parse(const unsigned char* buf, size_t bufLen)
             std::string key_value;
             while (!ss.eof()) {
                 ss >> key_value;
-                const auto equals = key_value.find('=');
+                const std::string::size_type equals = key_value.find('=');
                 if (equals != std::string::npos) {
                     std::string key = key_value.substr(0, equals);
                     std::string value = key_value.substr(equals + 1);
@@ -68,7 +68,7 @@ void GL::Font::parse(const unsigned char* buf, size_t bufLen)
             std::string key_value;
             while (!ss.eof()) {
                 ss >> key_value;
-                const auto equals = key_value.find('=');
+                const std::string::size_type equals = key_value.find('=');
                 if (equals != std::string::npos) {
                     std::string key = key_value.substr(0, equals);
                     std::string value = key_value.substr(equals + 1);
