@@ -30,6 +30,7 @@
 
 - (IBAction)newGame:(id)sender;
 - (void)handleGameEvent:(GL::Game::Event)event;
+- (void)handleHighScoreName:(const char *)name place:(int)place;
 
 @end
 
@@ -37,6 +38,13 @@ static void callback(GL::Game::Event event, void *context)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [(AppController*)context handleGameEvent:event];
+    });
+}
+
+static void highScoreNameCallback(const char *highName, int place, void *context)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [(AppController*)context handleHighScoreName:highName place:place];
     });
 }
 
@@ -101,7 +109,7 @@ static void callback(GL::Game::Event event, void *context)
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
         [[window_ contentView] addSubview:gameView_];
         [self setupMenuBar:appName];
-        game_ = new GL::Game(callback, self);
+        game_ = new GL::Game(callback, highScoreNameCallback, self);
         [gameView_ setGame:game_];
     }
     return self;
@@ -169,6 +177,17 @@ static void callback(GL::Game::Event event, void *context)
 - (void)showAbout:(__unused id)sender
 {
     game_->showAbout();
+}
+
+- (void)handleHighScoreName:(const char *)name place:(int)place
+{
+    NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+    [alert setMessageText:[NSString stringWithFormat:@"Your score #%d of the ten best! Enter your name (15 chars.).", place]];
+    NSTextField *textField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)] autorelease];
+    [textField setStringValue:[NSString stringWithUTF8String:name]];
+    [alert setAccessoryView:textField];
+    (void)[alert runModal];
+    game_->processHighScoreName([[textField stringValue] UTF8String], place);
 }
 
 - (void)handleGameEvent:(GL::Game::Event)event

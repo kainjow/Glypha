@@ -93,8 +93,9 @@ public:
     };
 
     typedef void (*Callback)(Event event, void *context);
+    typedef void (*HighScoreNameCallback)(const char *name, int place, void *context);
 
-    Game(Callback callback, void *context);
+    Game(Callback callback, HighScoreNameCallback highScoreCallback, void *context);
     ~Game();
     
     Renderer* renderer();
@@ -113,12 +114,14 @@ public:
     void showHighScores();
     void resetHighScores();
     void showAbout();
+    void processHighScoreName(const char *name, int place);
     
     void setShowFPS(bool show);
     bool showFPS() const;
     
 private:
     Callback callback_;
+    HighScoreNameCallback highScoreCallback_;
     void *callbackContext_;
     
     Renderer *renderer_;
@@ -206,7 +209,7 @@ private:
     void drawPlatforms() const;
     Image platformImg;
     
-    long score_;
+    int score_;
     Image numbersImg;
     Rect numbersSrc[11], numbersDest[11];
     void drawLivesNumbers() const;
@@ -317,7 +320,8 @@ private:
     void handleHighScores();
     void drawHighScores() const;
     void resetHighScores_();
-  
+    void checkHighScore();
+    
     GL::Font font11;
     Image font11Img;
 
@@ -332,6 +336,7 @@ private:
         int level;
     };
     HighScore highScores[10];
+    char highName[16];
     
     void readInPrefs();
 

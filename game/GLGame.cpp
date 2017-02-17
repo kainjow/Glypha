@@ -58,8 +58,9 @@
 
 #define kUpdateFreq (1.0/30.0)
 
-GL::Game::Game(Callback callback, void *context)
+GL::Game::Game(Callback callback, HighScoreNameCallback highScoreCallback, void *context)
     : callback_(callback)
+    , highScoreCallback_(highScoreCallback)
     , callbackContext_(context)
     , renderer_(new Renderer())
     , now(utils.now())
@@ -465,11 +466,45 @@ void GL::Game::endGame()
 {
     playing = false;
     sounds.play(kMusicSound);
-    //CheckHighScore();
+    checkHighScore();
     cursor.show();
     if (callback_) {
         callback_(EventEnded, callbackContext_);
     }
+}
+
+void GL::Game::checkHighScore()
+{
+    cursor.show();
+    if (score_ > highScores[9].score) {
+        int i = 8;
+        while ((score_ > highScores[i].score) && (i >= 0)) {
+            highScores[i + 1].score = highScores[i].score;
+            highScores[i + 1].level = highScores[i].level;
+            strncpy(highScores[i].name, highScores[i + 1].name, sizeof(highScores[i + 1].name));
+            i--;
+        }
+        
+        i++;
+        highScores[i].score = score_;
+        highScores[i].level = levelOn + 1;
+        
+        highScoreCallback_(highName, i + 1, callbackContext_);
+    }
+}
+
+void GL::Game::processHighScoreName(const char *name, int place)
+{
+    int i = place - 1;
+    int slen = (int)strlen(name);
+    if (slen > 15) {
+        slen = 15;
+    }
+    strncpy(highScores[i].name, name, (size_t)slen + 1);
+    highScores[i].name[15] = 0;
+    strncpy(highName, highScores[i].name, sizeof(highScores[i].name));
+
+    openHighScores();
 }
 
 void GL::Game::showHelp()
@@ -2752,6 +2787,7 @@ void GL::Game::readInPrefs()
 
 void GL::Game::resetHighScores_()
 {
+    snprintf(highName, sizeof(highName), "Your Name");
     for (int i = 0; i < 10; ++i) {
         snprintf(highScores[i].name, sizeof(highScores[i].name), "Nemo");
         highScores[i].score = 0;
