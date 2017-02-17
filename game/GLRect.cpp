@@ -76,5 +76,5 @@ void GL::Rect::inset(int dh, int dv)
 
 bool GL::Rect::containsPoint(const Point& point) const
 {
-    return point.h >= left && point.h <= right && point.v >= top & point.v <= bottom;
+    return point.h >= left && point.h <= right && point.v >= top && point.v <= bottom;
 }
