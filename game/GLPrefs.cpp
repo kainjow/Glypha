@@ -26,8 +26,11 @@ bool GL::Prefs::load(PrefsInfo& thePrefs)
     }
     CFDataGetBytes(data, CFRangeMake(0, CFDataGetLength(data)), (UInt8*)&thePrefs);
     CFRelease(data);
-#endif
     return true;
+#else
+    (void)thePrefs;
+    return false;
+#endif
 }
 
 void GL::Prefs::save(const PrefsInfo& thePrefs)
@@ -43,5 +46,7 @@ void GL::Prefs::save(const PrefsInfo& thePrefs)
         CFPreferencesSetAppValue(CFSTR("prefs"), data, kCFPreferencesCurrentApplication);
         CFRelease(data);
     }
+#else
+    (void)thePrefs;
 #endif
 }
