@@ -159,6 +159,9 @@ endif()
 include(CPack)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "GL_GAME_NAME=\"${EXE_NAME}\"")
+if(WIN32)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE "GL_GAME_NAME_W=L\"${EXE_NAME}\"")
+endif()
 
 add_executable(bin-convert bin-convert.c)
 
