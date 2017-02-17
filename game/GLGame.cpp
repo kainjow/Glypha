@@ -476,20 +476,20 @@ void GL::Game::endGame()
 void GL::Game::checkHighScore()
 {
     cursor.show();
-    if (score_ > highScores[9].score) {
+    if (score_ > thePrefs.highScores[9].score) {
         int i = 8;
-        while ((score_ > highScores[i].score) && (i >= 0)) {
-            highScores[i + 1].score = highScores[i].score;
-            highScores[i + 1].level = highScores[i].level;
-            strncpy(highScores[i].name, highScores[i + 1].name, sizeof(highScores[i + 1].name));
+        while ((score_ > thePrefs.highScores[i].score) && (i >= 0)) {
+            thePrefs.highScores[i + 1].score = thePrefs.highScores[i].score;
+            thePrefs.highScores[i + 1].level = thePrefs.highScores[i].level;
+            strncpy(thePrefs.highScores[i].name, thePrefs.highScores[i + 1].name, sizeof(thePrefs.highScores[i + 1].name));
             i--;
         }
         
         i++;
-        highScores[i].score = score_;
-        highScores[i].level = levelOn + 1;
+        thePrefs.highScores[i].score = score_;
+        thePrefs.highScores[i].level = levelOn + 1;
         
-        highScoreCallback_(highName, i + 1, callbackContext_);
+        highScoreCallback_(thePrefs.highName, i + 1, callbackContext_);
     }
 }
 
@@ -500,10 +500,10 @@ void GL::Game::processHighScoreName(const char *name, int place)
     if (slen > 15) {
         slen = 15;
     }
-    strncpy(highScores[i].name, name, (size_t)slen + 1);
-    highScores[i].name[15] = 0;
-    strncpy(highName, highScores[i].name, sizeof(highScores[i].name));
-
+    strncpy(thePrefs.highScores[i].name, name, (size_t)slen);
+    thePrefs.highScores[i].name[15] = 0;
+    strncpy(thePrefs.highName, thePrefs.highScores[i].name, sizeof(thePrefs.highScores[i].name));
+    prefs_.save(thePrefs);
     openHighScores();
 }
 
@@ -2762,13 +2762,13 @@ void GL::Game::drawHighScores() const
             
             snprintf(scoreStr, sizeof(scoreStr), "%d", i + 1);
             font11.drawText(scoreStr, scoreSrc.left + 8, scoreSrc.top + 31 + (i * 16), font11Img);
-            font11.drawText(highScores[i].name, scoreSrc.left + 32, y, font11Img);
+            font11.drawText(thePrefs.highScores[i].name, scoreSrc.left + 32, y, font11Img);
             
-            snprintf(scoreStr, sizeof(scoreStr), "%d", highScores[i].score);
+            snprintf(scoreStr, sizeof(scoreStr), "%d", thePrefs.highScores[i].score);
             int scoreWide = font11.measureText(scoreStr);
             font11.drawText(scoreStr, scoreSrc.left + 191 - scoreWide, y, font11Img);
             
-            snprintf(scoreStr, sizeof(scoreStr), "%d", highScores[i].level);
+            snprintf(scoreStr, sizeof(scoreStr), "%d", thePrefs.highScores[i].level);
             scoreWide = font11.measureText(scoreStr);
             font11.drawText(scoreStr, scoreSrc.left + 223 - scoreWide, y, font11Img);
         }
@@ -2779,20 +2779,20 @@ void GL::Game::drawHighScores() const
 
 void GL::Game::readInPrefs()
 {
-    //if (!LoadPrefs(&thePrefs, kPrefsVersion))
-    {
+    if (!prefs_.load(thePrefs)) {
         resetHighScores_();
     }
 }
 
 void GL::Game::resetHighScores_()
 {
-    snprintf(highName, sizeof(highName), "Your Name");
+    snprintf(thePrefs.highName, sizeof(thePrefs.highName), "Your Name");
     for (int i = 0; i < 10; ++i) {
-        snprintf(highScores[i].name, sizeof(highScores[i].name), "Nemo");
-        highScores[i].score = 0;
-        highScores[i].level = 0;
+        snprintf(thePrefs.highScores[i].name, sizeof(thePrefs.highScores[i].name), "Nemo");
+        thePrefs.highScores[i].score = 0;
+        thePrefs.highScores[i].level = 0;
     }
+    prefs_.save(thePrefs);
 }
 
 void GL::Game::resetHighScores()

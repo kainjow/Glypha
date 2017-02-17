@@ -9,6 +9,7 @@
 #include "GLCursor.h"
 #include "GLUtils.h"
 #include "GLFont.h"
+#include "GLPrefs.h"
 #ifdef _WIN32
 #else
 #include <pthread.h>
@@ -330,18 +331,14 @@ private:
     const char *highScoresTitle;
     int highScoresTitleWidth;
     
-    struct HighScore {
-        char name[16];
-        int score;
-        int level;
-    };
-    HighScore highScores[10];
-    char highName[16];
+    PrefsInfo thePrefs;
     
     void readInPrefs();
 
     Image aboutImg;
     bool aboutVisible;
+    
+    Prefs prefs_;
 };
 
 }
