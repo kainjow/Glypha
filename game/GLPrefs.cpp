@@ -3,6 +3,8 @@
 #include <QSettings>
 #elif defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>
+#elif defined(_WIN32)
+#include <windows.h>
 #endif
 
 bool GL::Prefs::load(PrefsInfo& thePrefs)
@@ -27,6 +29,14 @@ bool GL::Prefs::load(PrefsInfo& thePrefs)
     CFDataGetBytes(data, CFRangeMake(0, CFDataGetLength(data)), (UInt8*)&thePrefs);
     CFRelease(data);
     return true;
+#elif defined(_WIN32)
+    DWORD size = 0;
+    LPCSTR subkey = "SOFTWARE\\" GL_GAME_NAME;
+    LPCSTR value = "Prefs";
+    if (RegGetValueA(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, nullptr, &size) == ERROR_SUCCESS && size != sizeof(thePrefs)) {
+        return false;
+    }
+    return RegGetValueA(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, (PVOID)&thePrefs, &size) == ERROR_SUCCESS;
 #else
     (void)thePrefs;
     return false;
@@ -45,6 +55,15 @@ void GL::Prefs::save(const PrefsInfo& thePrefs)
     } else {
         CFPreferencesSetAppValue(CFSTR("prefs"), data, kCFPreferencesCurrentApplication);
         CFRelease(data);
+    }
+#elif defined(_WIN32)
+    LPCSTR subkey = "SOFTWARE\\" GL_GAME_NAME;
+    LPCSTR value = "Prefs";
+    HKEY key = nullptr;
+    LSTATUS status = RegCreateKeyExA(HKEY_CURRENT_USER, subkey, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &key, nullptr);
+    if (status == ERROR_SUCCESS) {
+        RegSetValueExA(key, value, 0, REG_BINARY, (const BYTE*)&thePrefs, (DWORD)sizeof(thePrefs));
+        RegCloseKey(key);
     }
 #else
     (void)thePrefs;
