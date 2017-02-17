@@ -170,17 +170,5 @@ void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen) {
     Context *ctx = static_cast<Context*>(context);
     if (!aiffDataToWave(buf, bufLen, ctx->wavs[which])) {
         qWarning("Can't load sound %d", which);
-    } else {
-        char path[1024];
-        snprintf(path, sizeof(path), "/Users/kainjow/Desktop/%d.wav", which);
-        FILE *f = fopen(path, "wb");
-        if (!f) {
-            printf("Can't open file: %s\n", path);
-        } else {
-            if (fwrite(ctx->wavs[which].data, 1, ctx->wavs[which].dataLen, f) != ctx->wavs[which].dataLen) {
-                printf("Can't write file\n");
-            }
-            fclose(f);
-        }
     }
 }
