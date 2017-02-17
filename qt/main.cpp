@@ -9,7 +9,7 @@
 
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
-    , game(NULL, NULL)
+    , game(nullptr, nullptr, nullptr)
 {
     timer.setInterval(1000.0 / 30.0);
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
