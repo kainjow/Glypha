@@ -305,7 +305,7 @@ void AppController::onMenu(WORD cmd)
 
 void AppController::resetScores()
 {
-    const int result = MessageBoxW(nullptr, L"Are you sure you want to reset " GL_GAME_NAME_W "'s scores?", L"Reset Scores", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2);
+    const int result = MessageBoxW(win, L"Are you sure you want to reset " GL_GAME_NAME_W "'s scores?", L"Reset Scores", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2);
     if (result == IDYES) {
         game->resetHighScores();
     }
