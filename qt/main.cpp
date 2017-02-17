@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QMainWindow win;
-    win.setWindowTitle("Glypha III");
+    win.setWindowTitle(GL_GAME_NAME);
     
     QWidget *mainWidget = new QWidget;
     GLWidget *glwid = new GLWidget;
