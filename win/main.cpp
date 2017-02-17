@@ -155,7 +155,7 @@ bool AppController::setMenuText(UINT item, const std::wstring& text)
     info.cbSize = sizeof(MENUITEMINFOW);
     info.fMask = MIIM_STRING;
     info.dwTypeData = (LPWSTR)text.data();
-    info.cch = text.size();
+    info.cch = (UINT)text.size();
     return SetMenuItemInfoW(GetMenu(win), item, FALSE, &info) == TRUE;
 }
 
@@ -251,7 +251,7 @@ LRESULT AppController::dlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lPa
     {
         std::string text;
         text.resize(100);
-        GetDlgItemTextA(hWndDlg, IDC_SCORE_STATIC, (LPSTR)text.data(), text.size());
+        GetDlgItemTextA(hWndDlg, IDC_SCORE_STATIC, (LPSTR)text.data(), (int)text.size());
         const std::string token = "%1";
         text.replace(text.find(token), token.size(), std::to_string(place_));
         SetDlgItemTextA(hWndDlg, IDC_SCORE_STATIC, text.c_str());
@@ -263,7 +263,7 @@ LRESULT AppController::dlgProc(HWND hWndDlg, UINT Msg, WPARAM wParam, LPARAM lPa
         switch (wParam) {
         case IDOK:
             name_.resize(100);
-            GetDlgItemTextA(hWndDlg, IDC_NAME_EDIT, (LPSTR)name_.c_str(), name_.size());
+            GetDlgItemTextA(hWndDlg, IDC_NAME_EDIT, (LPSTR)name_.c_str(), (int)name_.size());
             EndDialog(hWndDlg, 0);
             return TRUE;
         }
