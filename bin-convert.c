@@ -3,8 +3,8 @@
 
 int main(int argc, const char *argv[]) {
     const char *in_path;
-    FILE *in_file;
-    FILE *out_file;
+    FILE *in_file = NULL;
+    FILE *out_file = NULL;
     const char *nmspace = "GL";
     const char *filename;
     char variable[1024];
@@ -19,13 +19,21 @@ int main(int argc, const char *argv[]) {
 	}
 	
     in_path = argv[1];
+#ifdef _WIN32
+    (void)fopen_s(&in_file, in_path, "rb");
+#else
 	in_file = fopen(in_path, "rb");
+#endif
 	if (!in_file) {
 		fprintf(stderr, "Can't open input file %s\n", in_path);
 		return 1;
 	}
 	
-	out_file = fopen(argv[2], "wb");
+#ifdef _WIN32
+    (void)fopen_s(&out_file, argv[2], "wb");
+#else
+    out_file = fopen(argv[2], "wb");
+#endif
 	if (!out_file) {
 		fprintf(stderr, "Can't open output file %s\n", argv[2]);
 		fclose(in_file);

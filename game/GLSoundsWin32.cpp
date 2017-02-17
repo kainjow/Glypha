@@ -154,7 +154,7 @@ private:
     friend void CALLBACK waveOutCallback(HWAVEOUT, UINT, DWORD_PTR, DWORD_PTR, DWORD_PTR);
 };
 
-void CALLBACK waveOutCallback(HWAVEOUT wvHandle, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
+void CALLBACK waveOutCallback(HWAVEOUT /*wvHandle*/, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR /*dwParam1*/, DWORD_PTR /*dwParam2*/)
 {
     if (uMsg == WOM_DONE) {
         ((WaveOut*)dwInstance)->doneCallback();
