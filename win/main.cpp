@@ -13,7 +13,6 @@ public:
     void onRender();
     void gameThread();
 private:
-    HINSTANCE hInstance;
     HWND win;
     HACCEL accelerators;
     GL::Game *game;
@@ -132,7 +131,7 @@ void AppController::gameThread()
 void AppController::run()
 {
     DWORD threadID;
-    HANDLE threadHandle = CreateThread(nullptr, 0, gameThreadMain, this, 0, &threadID);
+    (void)CreateThread(nullptr, 0, gameThreadMain, this, 0, &threadID);
 
     MSG msg;
     while (GetMessage(&msg, 0, 0, 0) > 0) {
@@ -262,7 +261,7 @@ void AppController::onMenu(WORD cmd)
     }
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
     AppController appController;
     if (appController.init(hInstance) == false) {
