@@ -17,16 +17,6 @@ bool GL::SoundsQtImp::play(const WaveData &wave)
     }
     bytes_ = QByteArray(wave.data, wave.dataLen);
     audioOutput_ = new QAudioOutput(wave.format);
-    const int period = audioOutput_->periodSize();
-    printf("PERIOD: %d\n", period);
-    if (period != 0 && (bytes_.size() % period) != 0) {
-        int newSize = bytes_.size() + period;
-        newSize -= newSize % period;
-        printf("RESIZE FROM %d to %d\n", bytes_.size(), newSize);
-        bytes_.resize(newSize);
-    }
-    printf("BYTES: %d\n", (int)bytes_.size());
-    printf("PERIOD: %d\n", audioOutput_->periodSize());
     connect(audioOutput_, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
     buffer_ = new QBuffer(&bytes_);
     if (!buffer_->open(QIODevice::ReadOnly)) {
