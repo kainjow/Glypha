@@ -141,10 +141,7 @@ bool aiffDataToWave(const uint8_t *data, unsigned dataLen, GL::WaveData &output)
 
 struct Context {
     GL::WaveData wavs[kMaxSounds];
-    std::vector<GL::SoundsQtImp> outs;
-    Context()
-        : outs(10)
-    {}
+    std::vector<GL::SoundsQtImp*> outs;
 };
 
 void GL::Sounds::initContext()
@@ -155,14 +152,17 @@ void GL::Sounds::initContext()
 void GL::Sounds::play(int which) {
     Context *ctx = static_cast<Context*>(context);
     bool didPlay = false;
+    const GL::WaveData& data = ctx->wavs[which];
     for (auto& out : ctx->outs) {
-        if (out.play(ctx->wavs[which])) {
+        if (out->play(data)) {
             didPlay = true;
             break;
         }
     }
     if (!didPlay) {
-        qWarning("Didn't play %d", which);
+        GL::SoundsQtImp* imp = new GL::SoundsQtImp;
+        imp->play(data);
+        ctx->outs.push_back(imp);
     }
 }
 
