@@ -43,7 +43,9 @@ if(HAVE_QT)
     qt/main.cpp
     game/GLCursorQt.cpp
     game/GLImage_Qt.cpp
-    game/GLSounds.cpp
+    game/GLSoundsQt.cpp
+    game/GLSoundsQtImp.cpp
+    game/GLSoundsQtImp.h
   )
 elseif(BEOS)
   list(APPEND SOURCES
@@ -76,8 +78,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${EXE_NAME})
 target_include_directories(${PROJECT_NAME} PRIVATE game)
 
 if(HAVE_QT)
-  find_package(Qt5 COMPONENTS Core Widgets OpenGL REQUIRED)
-  target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::OpenGL)
+  find_package(Qt5 COMPONENTS Core Widgets OpenGL Multimedia REQUIRED)
+  target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::OpenGL Qt5::Multimedia)
   target_compile_definitions(${PROJECT_NAME} PRIVATE GLYPHA_QT=)
 elseif(UNIX)
   target_compile_options(${PROJECT_NAME} PRIVATE
