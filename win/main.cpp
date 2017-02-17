@@ -107,6 +107,28 @@ bool AppController::init(HINSTANCE hInstance)
     // Setup default menus
     handleGameEvent(GL::Game::EventEnded);
 
+    // Rename About menu item
+    MENUITEMINFOW info;
+    ZeroMemory(&info, sizeof(info));
+    info.cbSize = sizeof(MENUITEMINFOW);
+    info.fMask = MIIM_STRING;
+    if (!GetMenuItemInfoW(GetMenu(win), ID_MENU_ABOUT, FALSE, &info)) {
+        return false;
+    }
+    ++info.cch;
+    std::wstring title;
+    title.resize(info.cch - 1);
+    info.dwTypeData = (LPWSTR)title.data();
+    if (!GetMenuItemInfoW(GetMenu(win), ID_MENU_ABOUT, FALSE, &info)) {
+        return false;
+    }
+    title.replace(title.find(L"%1"), 2, GL_GAME_NAME_W);
+    info.dwTypeData = (LPWSTR)title.data();
+    if (!SetMenuItemInfoW(GetMenu(win), ID_MENU_ABOUT, FALSE, &info)) {
+        return false;
+    }
+
+
     return true;
 }
 
@@ -158,6 +180,7 @@ void AppController::handleGameEvent(GL::Game::Event event)
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HELP, MF_DISABLED | MF_GRAYED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HIGH_SCORES, MF_DISABLED | MF_GRAYED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_RESET_SCORES, MF_DISABLED | MF_GRAYED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_ABOUT, MF_DISABLED | MF_GRAYED);
         break;
     case GL::Game::EventEnded:
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 0), ID_MENU_NEW_GAME, MF_ENABLED);
@@ -165,6 +188,7 @@ void AppController::handleGameEvent(GL::Game::Event event)
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HELP, MF_ENABLED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_HIGH_SCORES, MF_ENABLED);
         (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_RESET_SCORES, MF_ENABLED);
+        (void)EnableMenuItem(GetSubMenu(GetMenu(win), 1), ID_MENU_ABOUT, MF_ENABLED);
         break;
     }
 }
@@ -273,6 +297,9 @@ void AppController::onMenu(WORD cmd)
         break;
     case ID_MENU_RESET_SCORES:
         resetScores();
+        break;
+    case ID_MENU_ABOUT:
+        game->showAbout();
         break;
     }
 }
