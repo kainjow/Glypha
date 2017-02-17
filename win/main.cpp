@@ -2,8 +2,7 @@
 
 #include <windows.h>
 #include <gl/gL.h>
-#include "../game/GLGame.h"
-#include "../game/GLUtils.h"
+#include "GLGame.h"
 #include "resources.h"
 
 class AppController {
