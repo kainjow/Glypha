@@ -53,7 +53,7 @@ void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src
     }
     
     // GL_REPLACE prevents colors from seeping into a texture
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, colorBlending_ ? GL_BLEND : GL_REPLACE);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, colorBlending_ ? GL_BLEND : GL_REPLACE);
 
     // GL_NEAREST affects drawing the texture at different sizes
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

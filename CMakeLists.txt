@@ -100,6 +100,13 @@ elseif(WIN32)
   target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE)
 endif()
 
+if(MSVC)
+  target_compile_options(${PROJECT_NAME} PRIVATE
+    /WX
+    /W4
+  )
+endif()
+
 list(FIND SOURCES game/GLImage_libpng.cpp HAVE_IMAGE_LIBPNG)
 if(NOT HAVE_IMAGE_LIBPNG EQUAL -1)
   include(FindPNG)

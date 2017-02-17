@@ -118,7 +118,7 @@ void AppController::gameThread()
 {
     (void)wglMakeCurrent(GetDC(win), hRC);
 
-    game = new GL::Game(gameCallback, this);
+    game = new GL::Game(gameCallback, nullptr, this);
 
     RECT r;
     (void)GetClientRect(win, &r);

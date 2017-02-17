@@ -481,7 +481,7 @@ void GL::Game::checkHighScore()
         while ((score_ > thePrefs.highScores[i].score) && (i >= 0)) {
             thePrefs.highScores[i + 1].score = thePrefs.highScores[i].score;
             thePrefs.highScores[i + 1].level = thePrefs.highScores[i].level;
-            strncpy(thePrefs.highScores[i].name, thePrefs.highScores[i + 1].name, sizeof(thePrefs.highScores[i + 1].name));
+            snprintf(thePrefs.highScores[i].name, sizeof(thePrefs.highScores[i].name), "%s", thePrefs.highScores[i + 1].name);
             i--;
         }
         
@@ -502,9 +502,9 @@ void GL::Game::processHighScoreName(const char *name, int place)
     if (slen > 15) {
         slen = 15;
     }
-    strncpy(thePrefs.highScores[i].name, name, (size_t)slen);
-    thePrefs.highScores[i].name[15] = 0;
-    strncpy(thePrefs.highName, thePrefs.highScores[i].name, sizeof(thePrefs.highScores[i].name));
+    memcpy(thePrefs.highScores[i].name, name, slen);
+    thePrefs.highScores[i].name[slen] = 0;
+    memcpy(thePrefs.highName, thePrefs.highScores[i].name, sizeof(thePrefs.highScores[i].name));
     prefs_.save(thePrefs);
     openHighScores();
 }
