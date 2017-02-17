@@ -32,8 +32,6 @@ set(SOURCES
   game/GLFont.cpp
   game/GLFont.h
   game/GLPoint.h
-  game/GLResetDialog.cpp
-  game/GLResetDialog.h
 )
 
 if(BEOS)

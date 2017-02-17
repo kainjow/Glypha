@@ -81,9 +81,6 @@ GL::Game::Game(Callback callback, void *context)
     , font11(font11_fnt, font11_fnt_len)
     , highScoresTitle(GL_GAME_NAME " High Scores")
     , highScoresTitleWidth(font11.measureText(highScoresTitle))
-    , resetDialog(font11, font11Img, [this]{
-        resetHighScores();
-    })
     , aboutVisible(false)
 {
     flameDestRects[0].setSize(16, 16);
@@ -311,7 +308,6 @@ void GL::Game::drawFrame() const
     drawHighScores();
     drawObelisks();
     drawLightning();
-    resetDialog.draw(r);
     if (aboutVisible) {
         aboutImg.draw((r->bounds().width() - aboutImg.width()) / 2, (r->bounds().height() - aboutImg.height()) / 2);
     }
@@ -324,26 +320,10 @@ void GL::Game::drawFrame() const
 
 void GL::Game::handleMouseDownEvent(const Point& point)
 {
-    if (resetDialog.isVisible()) {
-        resetDialog.handleMouseDownEvent(point);
-    } else if (aboutVisible) {
+    if (aboutVisible) {
         aboutVisible = false;
     } else if (!playing) {
         doLightning(point, kNumLightningStrikes);
-    }
-}
-
-void GL::Game::handleMouseMovedEvent(const Point& point)
-{
-    if (resetDialog.isVisible()) {
-        resetDialog.handleMouseMovedEvent(point);
-    }
-}
-
-void GL::Game::handleMouseUpEvent(const Point& point)
-{
-    if (resetDialog.isVisible()) {
-        resetDialog.handleMouseUpEvent(point);
     }
 }
 
@@ -461,7 +441,6 @@ void GL::Game::newGame()
     pausing = false;
     numOwls = 4;
     closeWall();
-    resetDialog.close();
     aboutVisible = false;
     
     initHandLocation();
@@ -509,12 +488,6 @@ void GL::Game::showHighScores()
             openHighScores();
         }
     }
-}
-
-void GL::Game::promptResetHighScores()
-{
-    aboutVisible = false;
-    resetDialog.show(renderer_);
 }
 
 void GL::Game::setUpLevel()
@@ -1268,10 +1241,6 @@ void GL::Game::handleKeyDownEvent(Key key)
 
     if (key == KeyF) {
         setShowFPS(!showFPS());
-    }
-    
-    if (key == KeyEsc && resetDialog.isVisible()) {
-        resetDialog.close();
     }
 }
 
@@ -2808,7 +2777,7 @@ bool GL::Game::showFPS() const
 
 void GL::Game::showAbout()
 {
-    if (!playing && !resetDialog.isVisible()) {
+    if (!playing) {
         closeWall();
         aboutVisible = true;
     }

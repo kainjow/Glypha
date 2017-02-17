@@ -9,7 +9,6 @@
 #include "GLCursor.h"
 #include "GLUtils.h"
 #include "GLFont.h"
-#include "GLResetDialog.h"
 #ifdef _WIN32
 #else
 #include <pthread.h>
@@ -86,7 +85,6 @@ public:
         KeyPageUp      = (1 << 10),
         KeyPageDown    = (1 << 11),
         KeyF           = (1 << 12),
-        KeyEsc         = (1 << 13),
     };
     
     enum Event {
@@ -104,8 +102,6 @@ public:
     void run();
     
     void handleMouseDownEvent(const Point& point);
-    void handleMouseMovedEvent(const Point& point);
-    void handleMouseUpEvent(const Point& point);
 
     void handleKeyDownEvent(Key key);
     void handleKeyUpEvent(Key key);
@@ -115,7 +111,7 @@ public:
     void endGame();
     void showHelp();
     void showHighScores();
-    void promptResetHighScores();
+    void resetHighScores();
     void showAbout();
     
     void setShowFPS(bool show);
@@ -339,9 +335,6 @@ private:
     
     void readInPrefs();
 
-    ResetDialog resetDialog;
-    void resetHighScores();
-    
     Image aboutImg;
     bool aboutVisible;
 };
