@@ -31,12 +31,12 @@ bool GL::Prefs::load(PrefsInfo& thePrefs)
     return true;
 #elif defined(_WIN32)
     DWORD size = 0;
-    LPCSTR subkey = "SOFTWARE\\" GL_GAME_NAME;
-    LPCSTR value = "Prefs";
-    if (RegGetValueA(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, nullptr, &size) == ERROR_SUCCESS && size != sizeof(thePrefs)) {
+    LPCWSTR subkey = L"SOFTWARE\\" GL_GAME_NAME_W;
+    LPCWSTR value = L"Prefs";
+    if (RegGetValueW(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, nullptr, &size) == ERROR_SUCCESS && size != sizeof(thePrefs)) {
         return false;
     }
-    return RegGetValueA(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, (PVOID)&thePrefs, &size) == ERROR_SUCCESS;
+    return RegGetValueW(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, (PVOID)&thePrefs, &size) == ERROR_SUCCESS;
 #else
     (void)thePrefs;
     return false;
@@ -57,12 +57,12 @@ void GL::Prefs::save(const PrefsInfo& thePrefs)
         CFRelease(data);
     }
 #elif defined(_WIN32)
-    LPCSTR subkey = "SOFTWARE\\" GL_GAME_NAME;
-    LPCSTR value = "Prefs";
+    LPCWSTR subkey = L"SOFTWARE\\" GL_GAME_NAME_W;
+    LPCWSTR value = L"Prefs";
     HKEY key = nullptr;
-    LSTATUS status = RegCreateKeyExA(HKEY_CURRENT_USER, subkey, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &key, nullptr);
+    LSTATUS status = RegCreateKeyExW(HKEY_CURRENT_USER, subkey, 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &key, nullptr);
     if (status == ERROR_SUCCESS) {
-        RegSetValueExA(key, value, 0, REG_BINARY, (const BYTE*)&thePrefs, (DWORD)sizeof(thePrefs));
+        RegSetValueExW(key, value, 0, REG_BINARY, (const BYTE*)&thePrefs, (DWORD)sizeof(thePrefs));
         RegCloseKey(key);
     }
 #else
