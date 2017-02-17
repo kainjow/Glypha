@@ -37,7 +37,15 @@ set(SOURCES
   game/GLPrefs.h
 )
 
-if(BEOS)
+if(HAVE_QT)
+  set(CMAKE_AUTOMOC ON)
+  list(APPEND SOURCES
+    qt/main.cpp
+    game/GLCursorQt.cpp
+    game/GLImage_Qt.cpp
+    game/GLSounds.cpp
+  )
+elseif(BEOS)
   list(APPEND SOURCES
     haiku/main.cpp
     game/GLCursor.cpp
@@ -67,7 +75,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${EXE_NAME})
 
 target_include_directories(${PROJECT_NAME} PRIVATE game)
 
-if(UNIX)
+if(HAVE_QT)
+  find_package(Qt5 COMPONENTS Core Widgets OpenGL REQUIRED)
+  target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::OpenGL)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE GLYPHA_QT=)
+elseif(UNIX)
   target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall
     -Wextra
@@ -81,9 +93,7 @@ if(APPLE)
   target_compile_options(${PROJECT_NAME} PRIVATE
     -stdlib=libc++
   )
-endif()
-
-if(WIN32)
+elseif(WIN32)
   target_include_directories(${PROJECT_NAME} PRIVATE win)
   target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE)
 endif()
@@ -101,7 +111,8 @@ if(NOT OPENGL_FOUND)
 endif()
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
-if(BEOS)
+if(HAVE_QT)
+elseif(BEOS)
   find_library(BE be)
   target_link_libraries(${PROJECT_NAME} ${BE})
 elseif(WIN32)
@@ -122,6 +133,11 @@ elseif(APPLE)
     "-framework Cocoa"
     "-framework CoreVideo"
     "-framework AVFoundation"
+  )
+endif()
+
+if(APPLE)
+  target_link_libraries(${PROJECT_NAME}
     -stdlib=libc++
   )
 endif()
