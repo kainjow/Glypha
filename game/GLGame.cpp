@@ -489,7 +489,9 @@ void GL::Game::checkHighScore()
         thePrefs.highScores[i].score = score_;
         thePrefs.highScores[i].level = levelOn + 1;
         
-        highScoreCallback_(thePrefs.highName, i + 1, callbackContext_);
+        if (highScoreCallback_) {
+            highScoreCallback_(thePrefs.highName, i + 1, callbackContext_);
+        }
     }
 }
 
