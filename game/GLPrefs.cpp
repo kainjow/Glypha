@@ -33,7 +33,7 @@ bool GL::Prefs::load(PrefsInfo& thePrefs)
     DWORD size = 0;
     LPCWSTR subkey = L"SOFTWARE\\" GL_GAME_NAME_W;
     LPCWSTR value = L"Prefs";
-    if (RegGetValueW(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, nullptr, &size) == ERROR_SUCCESS && size != sizeof(thePrefs)) {
+    if (RegGetValueW(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, nullptr, &size) != ERROR_SUCCESS || size != sizeof(thePrefs)) {
         return false;
     }
     return RegGetValueW(HKEY_CURRENT_USER, subkey, value, RRF_RT_REG_BINARY, nullptr, (PVOID)&thePrefs, &size) == ERROR_SUCCESS;
