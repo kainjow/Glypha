@@ -1,6 +1,7 @@
 #include "GLImage.h"
 #include "GLBufferReader.h"
 #include <png.h>
+#include <cstring>
 
 namespace {
 void pngReader(png_structp png_ptr, png_bytep bytes, png_size_t size)

@@ -47,7 +47,7 @@ if(HAVE_QT)
     game/GLSoundsQtImp.cpp
     game/GLSoundsQtImp.h
   )
-elseif(BEOS)
+elseif(BEOS OR HAIKU)
   list(APPEND SOURCES
     haiku/main.cpp
     game/GLCursor.cpp
@@ -122,7 +122,7 @@ endif()
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
 if(HAVE_QT)
-elseif(BEOS)
+elseif(BEOS OR HAIKU)
   find_library(BE be)
   target_link_libraries(${PROJECT_NAME} ${BE})
 elseif(WIN32)

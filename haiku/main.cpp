@@ -22,12 +22,12 @@ public:
 	
 	virtual void AttachedToWindow(void) {
 		BGLView::AttachedToWindow();
-		game_ = new GL::Game(NULL, NULL);
-		gReshape(Frame().Width(), Frame().Height());
+		game_ = new GL::Game(NULL, NULL, NULL);
+		gReshape((unsigned int)Frame().Width(), (unsigned int)Frame().Height());
 		Render();
 	}
 	
-	virtual void gReshape(int width, int height) {
+	void gReshape(int width, int height) {
 		LockGL();
 		game_->renderer()->resize(width, height);
 		UnlockGL();
@@ -55,8 +55,8 @@ App::App() :
 	BApplication("application/glyphaiii")
 {
 	BRect frame(0, 0, 640, 460);
-	BWindow *win = new BWindow(frame, "Glypha III",
-		B_TITLED_WINDOW, B_NOT_ZOOMABLE);
+	BWindow *win = new BWindow(frame, GL_GAME_NAME,
+		B_TITLED_WINDOW, B_NOT_ZOOMABLE | B_NOT_RESIZABLE);
 	
 	BMenuBar *menuBar = new BMenuBar(BRect(0,0,0,0), NULL);
 	BMenu *menu = new BMenu("File");

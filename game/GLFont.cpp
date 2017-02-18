@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <cstring>
 
 GL::Font::Font(const unsigned char* buf, size_t bufLen)
     : first_char_(0)

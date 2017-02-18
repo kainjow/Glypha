@@ -3,6 +3,7 @@
 #include "GLResources.h"
 #include "GLUtils.h"
 #include <cstdio>
+#include <cstring>
 
 #define kIdle						-1	// enemy & player mode
 #define kFlying						0	// enemy & player mode
@@ -1853,7 +1854,7 @@ int GL::Game::assignNewAltitude(void)
 
 void GL::Game::checkEnemyPlatformHit(int h)
 {
-	GL::Rect hRect, vRect, whoCares;
+	GL::Rect hRect, vRect;
 	int i, offset;
 	
 	for (i = 0; i < numLedges; i++)
@@ -2456,7 +2457,7 @@ void GL::Game::resolveEnemyPlayerHit(int i)
 
 void GL::Game::checkPlayerEnemyCollision()
 {
-	GL::Rect whoCares, playTest, wrapTest;
+	GL::Rect playTest, wrapTest;
 	int i;
 	
 	playTest = thePlayer.dest;
