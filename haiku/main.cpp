@@ -36,7 +36,7 @@ public:
 	virtual void Render() {
 		printf("Render\n");
 		LockGL();
-		//game_->run();
+		game_->run();
 		SwapBuffers(true);
 		UnlockGL();
 	}

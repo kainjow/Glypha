@@ -37,7 +37,7 @@ private:
 #else
 public:
     Lock() {
-        pthread_mutex_init(&mutex_, nullptr);
+        pthread_mutex_init(&mutex_, NULL);
     }
     ~Lock() {
         pthread_mutex_destroy(&mutex_);

@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 #include <cstring>
 
 GL::Font::Font(const unsigned char* buf, size_t bufLen)
@@ -20,9 +21,9 @@ void GL::Font::parse(const unsigned char* buf, size_t bufLen)
     std::string line;
     int i = 0;
     while (std::getline(stream, line)) {
-        std::stringstream ss{line};
+        std::stringstream ss(line);
         std::string identifier;
-        ss >> std::skipws >> identifier;
+        ss >> std::setiosflags(std::ios::skipws) >> identifier;
         if (identifier == "char") {
             std::string key_value;
             while (!ss.eof()) {
@@ -35,26 +36,26 @@ void GL::Font::parse(const unsigned char* buf, size_t bufLen)
                     Char& curr = chars_.back();
                     if (key == "id") {
                         if (first_char_ == 0) {
-                            first_char_ = std::stoi(value);
+                            first_char_ = std::atoi(value.c_str());
                         } else {
-                            if (std::stoi(value) != (first_char_ + i)) {
+                            if (std::atoi(value.c_str()) != (first_char_ + i)) {
                                 std::cout << "Unexpected id: " << value << std::endl;
                             }
                         }
                     } else if (key == "x") {
-                        curr.x = std::stoi(value);
+                        curr.x = std::atoi(value.c_str());
                     } else if (key == "y") {
-                        curr.y = std::stoi(value);
+                        curr.y = std::atoi(value.c_str());
                     } else if (key == "width") {
-                        curr.width = std::stoi(value);
+                        curr.width = std::atoi(value.c_str());
                     } else if (key == "height") {
-                        curr.height = std::stoi(value);
+                        curr.height = std::atoi(value.c_str());
                     } else if (key == "xoffset") {
-                        curr.xoffset = std::stoi(value);
+                        curr.xoffset = std::atoi(value.c_str());
                     } else if (key == "yoffset") {
-                        curr.yoffset = std::stoi(value);
+                        curr.yoffset = std::atoi(value.c_str());
                     } else if (key == "xadvance") {
-                        curr.xadvance = std::stoi(value);
+                        curr.xadvance = std::atoi(value.c_str());
                     } else if (key == "page" || key == "chnl") {
                         // ignore
                     } else {
@@ -74,9 +75,9 @@ void GL::Font::parse(const unsigned char* buf, size_t bufLen)
                     std::string key = key_value.substr(0, equals);
                     std::string value = key_value.substr(equals + 1);
                     if (key == "base") {
-                        base_ = std::stoi(value);
+                        base_ = std::atoi(value.c_str());
                     } else if (key == "lineHeight") {
-                        lineHeight_ = std::stoi(value);
+                        lineHeight_ = std::atoi(value.c_str());
                     }
                 }
             }

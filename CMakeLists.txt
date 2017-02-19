@@ -82,6 +82,7 @@ if(HAVE_QT)
   find_package(Qt5 COMPONENTS Core Widgets OpenGL Multimedia REQUIRED)
   target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::OpenGL Qt5::Multimedia)
   target_compile_definitions(${PROJECT_NAME} PRIVATE GLYPHA_QT=)
+elseif(BEOS OR HAIKU)
 elseif(UNIX)
   target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall
@@ -90,10 +91,13 @@ elseif(UNIX)
     -Wconversion
     -std=c++11
   )
-endif()
-
-if(APPLE)
+elseif(APPLE)
   target_compile_options(${PROJECT_NAME} PRIVATE
+    -Wall
+    -Wextra
+    -Werror
+    -Wconversion
+    -std=c++11
     -stdlib=libc++
   )
 elseif(WIN32)
