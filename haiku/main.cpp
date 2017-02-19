@@ -7,22 +7,21 @@
 #include <GLView.h>
 #include "GLGame.h"
 
-class App : public BApplication {
-public:
-	App();
-};
+namespace {
+	const int kMsgAnimate = 'glya';
+	const int kMsgNewGame = 'glyn';
+}
 
 class GameGLView : public BGLView {
 public:
 	GameGLView(BRect frame)
 		: BGLView(frame, "", B_FOLLOW_ALL_SIDES, 0, BGL_RGB | BGL_DOUBLE)
-		, game_(NULL)
+		, game_(new GL::Game(NULL, NULL, NULL))
 	{
 	}
 	
 	virtual void AttachedToWindow(void) {
 		BGLView::AttachedToWindow();
-		game_ = new GL::Game(NULL, NULL, NULL);
 		gReshape((unsigned int)Frame().Width(), (unsigned int)Frame().Height());
 		Render();
 	}
@@ -34,7 +33,6 @@ public:
 	}
 	
 	virtual void Render() {
-		printf("Render\n");
 		LockGL();
 		game_->run();
 		SwapBuffers(true);
@@ -43,39 +41,90 @@ public:
 	
 	virtual void FrameResized(float width, float height) {
 		BGLView::FrameResized(width, height);
-		printf("Resized\n");
 		Render();
 	}
-		
+	
+	virtual void MessageReceived(BMessage *msg) {
+		switch (msg->what) {
+		    case kMsgAnimate:
+		        Render();
+		        break;
+			default:
+				BGLView::MessageReceived(msg);
+		}
+	}
+	
+	virtual void MouseDown(BPoint point) {
+		game_->handleMouseDownEvent(GL::Point((unsigned)point.x, (unsigned)point.y));
+	}
+	
+	void NewGame() {
+		game_->newGame();
+	}
+	
 private:
 	GL::Game *game_;
 };
 
-App::App() :
-	BApplication("application/glyphaiii")
-{
-	BRect frame(0, 0, 640, 460);
-	BWindow *win = new BWindow(frame, GL_GAME_NAME,
-		B_TITLED_WINDOW, B_NOT_ZOOMABLE | B_NOT_RESIZABLE);
+class MainWindow : public BWindow {
+public:
+	MainWindow()
+		: BWindow(BRect(0, 0, 640, 460), GL_GAME_NAME, B_TITLED_WINDOW,
+			B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_QUIT_ON_WINDOW_CLOSE)
+	{
+		BMenuBar *menuBar = new BMenuBar(BRect(0,0,0,0), NULL);
+		BMenu *menu = new BMenu("File");
+		BMenuItem *item;
+		item = new BMenuItem("New Game", new BMessage(kMsgNewGame), 'N');
+		menu->AddItem(item);
+		menu->AddSeparatorItem();
+		item = new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED), 'Q');
+		menu->AddItem(item);
+		menuBar->AddItem(menu);
+		AddChild(menuBar);
 	
-	BMenuBar *menuBar = new BMenuBar(BRect(0,0,0,0), NULL);
-	BMenu *menu = new BMenu("File");
-	BMenuItem *item = new BMenuItem("Quit", NULL, 'Q');
-	menu->AddItem(item);
-	menuBar->AddItem(menu);
-	win->AddChild(menuBar);
+		ResizeBy(0, menuBar->Frame().Height());
+		
+		glview_ = new GameGLView(BRect(0, menuBar->Frame().Height() + 1, 640, 480));
+		AddChild(glview_);
+		
+		BMessageRunner *runner = new BMessageRunner(glview_, new BMessage(kMsgAnimate), 1000/30);
+		if (runner->InitCheck() != B_OK) {
+			printf("InitCheck failed\n");
+		}
+	}
+	
+protected:
+	virtual void MessageReceived(BMessage *msg) {
+		switch (msg->what) {
+		    case kMsgNewGame:
+			    glview_->NewGame();
+		    	break;
+			default:
+				BWindow::MessageReceived(msg);
+				break;
+		}
+	}
 
-	win->ResizeBy(0, menuBar->Frame().Height());
-	
-	GameGLView *glview = new GameGLView(BRect(0, menuBar->Frame().Height() + 1, 640, 480));
-	win->AddChild(glview);
-	
-	win->CenterOnScreen();
-	win->Show();
-}
+private:
+	GameGLView *glview_;	
+};
+
+class App : public BApplication {
+public:
+	App()
+		: BApplication("application/x-vnd.kainjow-glyphaiii")
+	{
+		MainWindow *win = new MainWindow;
+		win->CenterOnScreen();
+		win->Show();
+	}
+};
 
 int main()
 {
-	App app;
-	app.Run();
+	App *app = new App();
+	app->Run();
+	delete app;
+	return 0;
 }
