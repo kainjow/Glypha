@@ -58,6 +58,50 @@ public:
 		game_->handleMouseDownEvent(GL::Point((unsigned)point.x, (unsigned)point.y));
 	}
 	
+	virtual void KeyDown(const char *bytes, int32 numBytes) {
+		HandleKey(bytes, numBytes, true);
+		BGLView::KeyDown(bytes, numBytes);
+	}
+
+	virtual void KeyUp(const char *bytes, int32 numBytes) {
+		HandleKey(bytes, numBytes, false);
+		BGLView::KeyUp(bytes, numBytes);
+	}
+	
+	void HandleKey(const char *bytes, int32 numBytes, bool isDown) {
+		for (int32 i = 0; i < numBytes; ++i) {
+			GL::Game::Key key = GL::Game::KeyNone;
+			switch (bytes[i]) {
+				case B_SPACE:
+					key = GL::Game::KeySpacebar;
+					break;
+				case B_LEFT_ARROW:
+					key = GL::Game::KeyLeftArrow;
+					break;
+				case B_RIGHT_ARROW:
+					key = GL::Game::KeyRightArrow;
+					break;
+				case B_DOWN_ARROW:
+					key = GL::Game::KeyDownArrow;
+					break;
+				case B_UP_ARROW:
+					key = GL::Game::KeyUpArrow;
+					break;
+				case B_PAGE_UP:
+					key = GL::Game::KeyPageUp;
+					break;
+				case B_PAGE_DOWN:
+					key = GL::Game::KeyPageDown;
+					break;
+			}
+			if (isDown) {	
+				game_->handleKeyDownEvent(key);
+			} else {
+				game_->handleKeyUpEvent(key);
+			}
+		}
+	}
+	
 	void NewGame() {
 		game_->newGame();
 	}
@@ -87,6 +131,7 @@ public:
 		
 		glview_ = new GameGLView(BRect(0, menuBar->Frame().Height() + 1, 640, 480));
 		AddChild(glview_);
+		glview_->MakeFocus(); // make focus so it receives key events	
 		
 		BMessageRunner *runner = new BMessageRunner(glview_, new BMessage(kMsgAnimate), 1000/30);
 		if (runner->InitCheck() != B_OK) {
