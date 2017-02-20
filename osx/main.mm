@@ -173,7 +173,12 @@ static void highScoreNameCallback(const char *highName, int place, void *context
 #else
     [alert setAlertStyle:NSCriticalAlertStyle];
 #endif
-    if ([alert runModal] == NSAlertSecondButtonReturn) {
+    [alert beginSheetModalForWindow:window_ modalDelegate:self didEndSelector:@selector(resetHighScoresAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
+}
+
+- (void)resetHighScoresAlertDidEnd:(NSAlert * __unused)alert returnCode:(NSInteger)returnCode contextInfo:(void *  __unused)contextInfo
+{
+    if (returnCode == NSAlertSecondButtonReturn) {
         game_->resetHighScores();
     }
 }
@@ -190,8 +195,17 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     NSTextField *textField = [[[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)] autorelease];
     [textField setStringValue:[NSString stringWithUTF8String:name]];
     [alert setAccessoryView:textField];
-    (void)[alert runModal];
-    game_->processHighScoreName([[textField stringValue] UTF8String], place);
+    int *placeCopy = new int;
+    *placeCopy = place;
+    [alert beginSheetModalForWindow:window_ modalDelegate:self didEndSelector:@selector(highScoreNameAlertDidEnd:returnCode:contextInfo:) contextInfo:placeCopy];
+}
+
+- (void)highScoreNameAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger __unused)returnCode contextInfo:(void *)contextInfo
+{
+    int *place = (int*)contextInfo;
+    NSTextField *textField = (NSTextField*)[alert accessoryView];
+    game_->processHighScoreName([[textField stringValue] UTF8String], *place);
+    delete place;
 }
 
 - (void)handleGameEvent:(GL::Game::Event)event
