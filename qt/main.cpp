@@ -10,13 +10,20 @@
 
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
-    , game_(nullptr, nullptr, nullptr)
+    , game_(callback, nullptr, this)
 {
     timer_.setInterval(1000.0 / 30.0);
     connect(&timer_, SIGNAL(timeout()), this, SLOT(update()));
     timer_.start();
     
     setFocusPolicy(Qt::StrongFocus);
+}
+
+void GLWidget::callback(GL::Game::Event event, void *context)
+{
+    GLWidget *widget = (GLWidget*)context;
+    MainWindow *win = (MainWindow*)widget->window();
+    win->callback(event);
 }
 
 void GLWidget::paintGL()
@@ -172,6 +179,30 @@ MainWindow::MainWindow()
     aboutAction_ = optionsMenu->addAction("&About " GL_GAME_NAME);
     QObject::connect(aboutAction_, SIGNAL(triggered()), glwid_, SLOT(showAbout()));
     menuBar()->addMenu(optionsMenu);
+}
+
+void MainWindow::callback(GL::Game::Event event)
+{
+    switch (event) {
+        case GL::Game::EventStarted:
+            newAction_->setEnabled(false);
+            pauseAction_->setEnabled(true);
+            endAction_->setEnabled(true);
+            helpAction_->setEnabled(false);
+            scoresAction_->setEnabled(false);
+            resetAction_->setEnabled(false);
+            aboutAction_->setEnabled(false);
+            break;
+        case GL::Game::EventEnded:
+            newAction_->setEnabled(true);
+            pauseAction_->setEnabled(false);
+            endAction_->setEnabled(false);
+            helpAction_->setEnabled(true);
+            scoresAction_->setEnabled(true);
+            resetAction_->setEnabled(true);
+            aboutAction_->setEnabled(true);
+            break;
+    }
 }
 
 int main(int argc, char *argv[])

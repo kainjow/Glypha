@@ -30,6 +30,7 @@ private:
     QTimer timer_;
     
     bool handleKeyEvent(int key, bool down);
+    static void callback(GL::Game::Event event, void *context);
 };
 
 class MainWindow : public QMainWindow
@@ -38,6 +39,8 @@ class MainWindow : public QMainWindow
     
 public:
     MainWindow();
+    
+    void callback(GL::Game::Event event);
     
 private:
     GLWidget *glwid_;
