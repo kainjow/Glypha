@@ -10,7 +10,7 @@ This is an in-progress port of Glypha III from its Mac OS/QuickDraw version (199
 
 macOS:
 
-1. `make`
+1. `make mac_release `
 
 Windows:
 
@@ -23,12 +23,14 @@ Linux:
 
 1. `make qt`
 
+Haiku:
+
+1. `make`
+
 ### TODO
 
-- Pause/Resume Game
-- High Scores
 - Implement sounds for Qt/Linux version
-- About box
+- About box text
 
 ### Links
 
