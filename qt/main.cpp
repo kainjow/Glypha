@@ -87,7 +87,7 @@ void GLWidget::showHighScores()
 
 void GLWidget::resetHighScores()
 {
-    QMessageBox msgbox(QMessageBox::Icon::Warning, tr("Reset Scores"),
+    QMessageBox msgbox(QMessageBox::Warning, tr("Reset Scores"),
         tr("Are you sure you want to reset " GL_GAME_NAME "'s scores?"),
         QMessageBox::Yes | QMessageBox::No, this, Qt::Dialog);
     if (msgbox.exec() == QMessageBox::Yes) {
