@@ -8,6 +8,8 @@ class GLWidget : public QGLWidget
 
 public:
     GLWidget(QWidget *parent = 0);
+    
+    bool pauseGame();
 
 protected:
     void paintGL();
@@ -18,7 +20,6 @@ protected:
     
 private slots:
     void newGame();
-    void pauseGame();
     void endGame();
     void showHelp();
     void showAbout();
@@ -41,7 +42,10 @@ public:
     MainWindow();
     
     void callback(GL::Game::Event event);
-    
+
+private slots:
+    void pauseGame();
+
 private:
     GLWidget *glwid_;
     QAction *newAction_;

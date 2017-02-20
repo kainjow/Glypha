@@ -41,9 +41,10 @@ void GLWidget::newGame()
     game_.newGame();
 }
 
-void GLWidget::pauseGame()
+bool GLWidget::pauseGame()
 {
     game_.pauseResumeGame();
+    return game_.paused();
 }
 
 void GLWidget::endGame()
@@ -152,7 +153,7 @@ MainWindow::MainWindow()
     QObject::connect(newAction_, SIGNAL(triggered()), glwid_, SLOT(newGame()));
     newAction_->setShortcut(QKeySequence("Ctrl+N"));
     pauseAction_ = fileMenu->addAction("&Pause Game\tCtrl+P");
-    QObject::connect(pauseAction_, SIGNAL(triggered()), glwid_, SLOT(pauseGame()));
+    QObject::connect(pauseAction_, SIGNAL(triggered()), this, SLOT(pauseGame()));
     pauseAction_->setShortcut(QKeySequence("Ctrl+P"));
     pauseAction_->setEnabled(false);
     endAction_ = fileMenu->addAction("&End Game\tCtrl+E");
@@ -181,6 +182,17 @@ MainWindow::MainWindow()
     menuBar()->addMenu(optionsMenu);
 }
 
+void MainWindow::pauseGame()
+{
+    if (glwid_->pauseGame()) {
+        pauseAction_->setText("&Resume Game\tCtrl+R");
+        pauseAction_->setShortcut(QKeySequence("Ctrl+R"));
+    } else {
+        pauseAction_->setText("&Pause Game\tCtrl+P");
+        pauseAction_->setShortcut(QKeySequence("Ctrl+P"));
+    }
+}
+
 void MainWindow::callback(GL::Game::Event event)
 {
     switch (event) {
@@ -196,6 +208,8 @@ void MainWindow::callback(GL::Game::Event event)
         case GL::Game::EventEnded:
             newAction_->setEnabled(true);
             pauseAction_->setEnabled(false);
+            pauseAction_->setText("&Pause Game\tCtrl+P");
+            pauseAction_->setShortcut(QKeySequence("Ctrl+P"));
             endAction_->setEnabled(false);
             helpAction_->setEnabled(true);
             scoresAction_->setEnabled(true);
