@@ -14,7 +14,7 @@ GLWidget::GLWidget(QWidget *parent)
     , game_(callback, highScoreNameCallback, this)
 {
     timer_.setInterval(1000.0 / 30.0);
-    connect(&timer_, SIGNAL(timeout()), this, SLOT(update()));
+    connect(&timer_, SIGNAL(timeout()), this, SLOT(updateGL()));
     timer_.start();
     
     setFocusPolicy(Qt::StrongFocus);
