@@ -9,38 +9,38 @@
 
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
-    , game(nullptr, nullptr, nullptr)
+    , game_(nullptr, nullptr, nullptr)
 {
-    timer.setInterval(1000.0 / 30.0);
-    connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer.start();
+    timer_.setInterval(1000.0 / 30.0);
+    connect(&timer_, SIGNAL(timeout()), this, SLOT(update()));
+    timer_.start();
     
     setFocusPolicy(Qt::StrongFocus);
 }
 
 void GLWidget::paintGL()
 {
-    game.run();
+    game_.run();
 }
 
 void GLWidget::resizeGL(int width, int height)
 {
-    game.renderer()->resize(width, height);
+    game_.renderer()->resize(width, height);
 }
 
 void GLWidget::newGame()
 {
-    game.newGame();
+    game_.newGame();
 }
 
 void GLWidget::endGame()
 {
-    game.endGame();
+    game_.endGame();
 }
 
 void GLWidget::showHelp()
 {
-    game.showHelp();
+    game_.showHelp();
 }
 
 bool GLWidget::handleKeyEvent(int key, bool down)
@@ -71,9 +71,9 @@ bool GLWidget::handleKeyEvent(int key, bool down)
     }
     if (gameKey) {
         if (down) {
-            game.handleKeyDownEvent(gameKey);
+            game_.handleKeyDownEvent(gameKey);
         } else {
-            game.handleKeyUpEvent(gameKey);
+            game_.handleKeyUpEvent(gameKey);
         }
         return true;
     }
@@ -96,7 +96,7 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    game.handleMouseDownEvent(GL::Point(event->pos().x(), event->pos().y()));
+    game_.handleMouseDownEvent(GL::Point(event->pos().x(), event->pos().y()));
 }
 
 int main(int argc, char *argv[])

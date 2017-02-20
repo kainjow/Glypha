@@ -22,8 +22,8 @@ private slots:
     void showHelp();
     
 private:
-    GL::Game game;
-    QTimer timer;
+    GL::Game game_;
+    QTimer timer_;
     
     bool handleKeyEvent(int key, bool down);
 };
