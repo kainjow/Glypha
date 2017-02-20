@@ -97,12 +97,18 @@ elseif(APPLE)
     -Wextra
     -Werror
     -Wconversion
-    -std=c++11
-    -stdlib=libc++
   )
 elseif(WIN32)
   target_include_directories(${PROJECT_NAME} PRIVATE win)
   target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE)
+endif()
+
+# Separate so macOS version can build Qt version for testing
+if(APPLE)
+  target_compile_options(${PROJECT_NAME} PRIVATE
+    -std=c++11
+    -stdlib=libc++
+  )
 endif()
 
 if(MSVC)
@@ -150,6 +156,7 @@ elseif(APPLE)
   )
 endif()
 
+# Separate so macOS version can build Qt version for testing
 if(APPLE)
   target_link_libraries(${PROJECT_NAME}
     -stdlib=libc++
