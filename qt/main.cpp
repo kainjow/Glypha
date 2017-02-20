@@ -222,6 +222,9 @@ void MainWindow::callback(GL::Game::Event event)
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    app.setOrganizationName("kainjow");
+    app.setOrganizationDomain("kainjow.com");
+    app.setApplicationName(GL_GAME_NAME);
     MainWindow win;
     win.show();
     return app.exec();
