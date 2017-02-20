@@ -32,6 +32,8 @@ private:
     
     bool handleKeyEvent(int key, bool down);
     static void callback(GL::Game::Event event, void *context);
+    static void highScoreNameCallback(const char *name, int place, void *context);
+    void highScoreNameCallback(const char *name, int place);
 };
 
 class MainWindow : public QMainWindow

@@ -6,11 +6,12 @@
 #include <QHBoxLayout>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QInputDialog>
 #include "main.hpp"
 
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
-    , game_(callback, nullptr, this)
+    , game_(callback, highScoreNameCallback, this)
 {
     timer_.setInterval(1000.0 / 30.0);
     connect(&timer_, SIGNAL(timeout()), this, SLOT(update()));
@@ -24,6 +25,23 @@ void GLWidget::callback(GL::Game::Event event, void *context)
     GLWidget *widget = (GLWidget*)context;
     MainWindow *win = (MainWindow*)widget->window();
     win->callback(event);
+}
+
+void GLWidget::highScoreNameCallback(const char *name, int place, void *context)
+{
+    GLWidget *widget = (GLWidget*)context;
+    widget->highScoreNameCallback(name, place);
+}
+
+void GLWidget::highScoreNameCallback(const char *name, int place)
+{
+    QString label = tr("Your score #%1 of the ten best! Enter your name (15 chars.).").arg(place);
+    QString input;
+    bool ok;
+    do {
+        input = QInputDialog::getText(this, tr("High Score"), label, QLineEdit::Normal, QString::fromStdString(name), &ok);
+    } while (!ok);
+    game_.processHighScoreName(input.toStdString().c_str(), place);
 }
 
 void GLWidget::paintGL()
