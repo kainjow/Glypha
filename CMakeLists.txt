@@ -65,7 +65,7 @@ elseif(WIN32)
   )
 elseif(APPLE)
   list(APPEND SOURCES
-    osx/main.mm
+    mac/main.mm
     game/GLCursorCocoa.mm
     game/GLImage_CoreImage.cpp
     game/GLSoundsCocoa.mm
@@ -133,14 +133,14 @@ elseif(WIN32)
   target_link_libraries(${PROJECT_NAME} shlwapi windowscodecs winmm)
 elseif(APPLE)
   set_target_properties(${PROJECT_NAME} PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/Info.plist
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/mac/Info.plist
     MACOSX_BUNDLE_BUNDLE_NAME ${EXE_NAME}
     MACOSX_BUNDLE_GUI_IDENTIFIER ${EXE_IDENTIFIER}
   )
   if("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
     set_target_properties(${PROJECT_NAME} PROPERTIES
       XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Developer ID Application: Kevin Wojniak"
-      XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "osx/Glypha.entitlements"
+      XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "mac/Glypha.entitlements"
     )
   endif()
   target_link_libraries(${PROJECT_NAME}
