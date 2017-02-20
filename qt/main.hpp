@@ -31,3 +31,11 @@ private:
     
     bool handleKeyEvent(int key, bool down);
 };
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+    
+public:
+    MainWindow();
+};

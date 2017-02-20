@@ -125,22 +125,21 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     game_.handleMouseDownEvent(GL::Point(event->pos().x(), event->pos().y()));
 }
 
-int main(int argc, char *argv[])
+MainWindow::MainWindow()
+    : QMainWindow()
 {
-    QApplication app(argc, argv);
-    QMainWindow win;
-    win.setWindowTitle(GL_GAME_NAME);
-    
+    setWindowTitle(GL_GAME_NAME);
+
     QWidget *mainWidget = new QWidget;
     GLWidget *glwid = new GLWidget;
     glwid->setFixedSize(640, 460);
-
+    
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(glwid);
     mainWidget->setLayout(layout);
-    win.setCentralWidget(mainWidget);
-
+    setCentralWidget(mainWidget);
+    
     QMenu *fileMenu = new QMenu("&File");
     QAction *newGameMenu = fileMenu->addAction("&New Game");
     QObject::connect(newGameMenu, SIGNAL(triggered()), glwid, SLOT(newGame()));
@@ -157,7 +156,7 @@ int main(int argc, char *argv[])
     QAction *quitMenu = fileMenu->addAction("&Quit");
     QObject::connect(quitMenu, SIGNAL(triggered()), qApp, SLOT(quit()));
     quitMenu->setShortcut(QKeySequence("Ctrl+Q"));
-    win.menuBar()->addMenu(fileMenu);
+    menuBar()->addMenu(fileMenu);
     
     QMenu *optionsMenu = new QMenu("&Options");
     QAction *helpAction = optionsMenu->addAction("&Help");
@@ -172,8 +171,13 @@ int main(int argc, char *argv[])
     optionsMenu->addSeparator();
     QAction *aboutAction = optionsMenu->addAction("&About " GL_GAME_NAME);
     QObject::connect(aboutAction, SIGNAL(triggered()), glwid, SLOT(showAbout()));
-    win.menuBar()->addMenu(optionsMenu);
+    menuBar()->addMenu(optionsMenu);
+}
 
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+    MainWindow win;
     win.show();
     return app.exec();
 }
