@@ -177,7 +177,7 @@ MainWindow::MainWindow()
 	{
 		BMenuBar *menuBar = new BMenuBar(BRect(0,0,0,0), NULL);
 		BMenu *gameMenu = new BMenu("Game");
-		BMenu *helpMenu = new BMenu("Help");
+		BMenu *optionsMenu = new BMenu("Options");
 		BMenuItem *item;
 		newGameItem_ = new BMenuItem("New Game", new BMessage(kMsgNewGame), 'N');
 		gameMenu->AddItem(newGameItem_);
@@ -191,17 +191,17 @@ MainWindow::MainWindow()
 		item = new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED), 'Q');
 		gameMenu->AddItem(item);
 		helpItem_ = new BMenuItem("Help", new BMessage(kMsgHelp), 'H');
-		helpMenu->AddItem(helpItem_);
-		helpMenu->AddSeparatorItem();
+		optionsMenu->AddItem(helpItem_);
+		optionsMenu->AddSeparatorItem();
 		scoresItem_ = new BMenuItem("High Scores", new BMessage(kMsgScores), 'S');
-		helpMenu->AddItem(scoresItem_);
+		optionsMenu->AddItem(scoresItem_);
 		resetItem_ = new BMenuItem("Reset Scores" B_UTF8_ELLIPSIS, new BMessage(kMsgReset));
-		helpMenu->AddItem(resetItem_);
-		helpMenu->AddSeparatorItem();
+		optionsMenu->AddItem(resetItem_);
+		optionsMenu->AddSeparatorItem();
 		aboutItem_ = new BMenuItem("About " GL_GAME_NAME B_UTF8_ELLIPSIS, new BMessage(kMsgAbout), 'H');
-		helpMenu->AddItem(aboutItem_);
+		optionsMenu->AddItem(aboutItem_);
 		menuBar->AddItem(gameMenu);
-		menuBar->AddItem(helpMenu);
+		menuBar->AddItem(optionsMenu);
 		AddChild(menuBar);
 	
 		ResizeBy(0, menuBar->Frame().Height());
