@@ -21,6 +21,8 @@ private slots:
     void endGame();
     void showHelp();
     void showAbout();
+    void showHighScores();
+    void resetHighScores();
     
 private:
     GL::Game game_;

@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QHBoxLayout>
 #include <QMenuBar>
+#include <QMessageBox>
 #include "main.hpp"
 
 GLWidget::GLWidget(QWidget *parent)
@@ -46,6 +47,21 @@ void GLWidget::showHelp()
 void GLWidget::showAbout()
 {
     game_.showAbout();
+}
+
+void GLWidget::showHighScores()
+{
+    game_.showHighScores();
+}
+
+void GLWidget::resetHighScores()
+{
+    QMessageBox msgbox(QMessageBox::Icon::Warning, tr("Reset Scores"),
+        tr("Are you sure you want to reset " GL_GAME_NAME "'s scores?"),
+        QMessageBox::Yes | QMessageBox::No, this, Qt::Dialog);
+    if (msgbox.exec() == QMessageBox::Yes) {
+        game_.resetHighScores();
+    }
 }
 
 bool GLWidget::handleKeyEvent(int key, bool down)
@@ -137,6 +153,12 @@ int main(int argc, char *argv[])
     QAction *helpAction = optionsMenu->addAction("&Help");
     QObject::connect(helpAction, SIGNAL(triggered()), glwid, SLOT(showHelp()));
     helpAction->setShortcut(QKeySequence("Ctrl+H"));
+    optionsMenu->addSeparator();
+    QAction *scoresAction = optionsMenu->addAction("High &Scores");
+    QObject::connect(scoresAction, SIGNAL(triggered()), glwid, SLOT(showHighScores()));
+    scoresAction->setShortcut(QKeySequence("Ctrl+S"));
+    QAction *resetAction = optionsMenu->addAction("&Reset Scores...");
+    QObject::connect(resetAction, SIGNAL(triggered()), glwid, SLOT(resetHighScores()));
     optionsMenu->addSeparator();
     QAction *aboutAction = optionsMenu->addAction("&About " GL_GAME_NAME);
     QObject::connect(aboutAction, SIGNAL(triggered()), glwid, SLOT(showAbout()));
