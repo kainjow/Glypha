@@ -19,6 +19,7 @@
 {
     GL::Game *game_;
     NSWindow *window_;
+    NSMenuItem *about_;
     NSMenuItem *newGame_;
     NSMenuItem *pauseGame_;
     NSMenuItem *endGame_;
@@ -57,6 +58,7 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     NSMenuItem *item;
     
     NSMenu *appMenu = [[[NSMenu alloc] initWithTitle:appName] autorelease];
+    [appMenu setAutoenablesItems:NO];
     NSMenuItem *appMenuItem = [[[NSMenuItem alloc] init] autorelease];
     NSMenu *gameMenu = [[[NSMenu alloc] initWithTitle:@"Game"] autorelease];
     [gameMenu setAutoenablesItems:NO];
@@ -71,8 +73,8 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     [menubar addItem:gameMenuItem];
     [menubar addItem:helpMenuItem];
     
-    item = [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(showAbout:) keyEquivalent:@""];
-    [item setTarget:self];
+    about_ = [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(showAbout:) keyEquivalent:@""];
+    [about_ setTarget:self];
     [appMenu addItem:[NSMenuItem separatorItem]];
     NSString *quitText = [NSString stringWithFormat:@"Quit %@", appName];
     item = [appMenu addItemWithTitle:quitText action:@selector(terminate:) keyEquivalent:@"q"];
@@ -224,6 +226,7 @@ static void highScoreNameCallback(const char *highName, int place, void *context
 {
     switch (event) {
         case GL::Game::EventStarted:
+            [about_ setEnabled:NO];
             [newGame_ setEnabled:NO];
             [pauseGame_ setEnabled:YES];
             [endGame_ setEnabled:YES];
@@ -232,6 +235,7 @@ static void highScoreNameCallback(const char *highName, int place, void *context
             [resetHighScores_ setEnabled:NO];
             break;
         case GL::Game::EventEnded:
+            [about_ setEnabled:YES];
             [newGame_ setEnabled:YES];
             [pauseGame_ setEnabled:NO];
             [pauseGame_ setTitle:@"Pause Game"];
