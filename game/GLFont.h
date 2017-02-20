@@ -21,6 +21,7 @@ public:
     
 private:
     void parse(const unsigned char* buf, size_t bufLen);
+    int safe_char_id(int char_id) const;
 
     struct Char {
         int x;
