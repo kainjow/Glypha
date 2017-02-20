@@ -29,7 +29,6 @@ Haiku:
 
 ### TODO
 
-- Implement sounds for Qt/Linux version
 - About box text
 - Fix Haiku framerate (use rendering thread?)
 - Implement Haiku high score prompt
