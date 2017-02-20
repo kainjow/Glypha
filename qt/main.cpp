@@ -128,11 +128,11 @@ int main(int argc, char *argv[])
     quitMenu->setShortcut(QKeySequence("Ctrl+Q"));
     win.menuBar()->addMenu(fileMenu);
     
-    QMenu *helpMenu = new QMenu("&Help");
-    QAction *helpAction = helpMenu->addAction("&Help");
+    QMenu *optionsMenu = new QMenu("&Options");
+    QAction *helpAction = optionsMenu->addAction("&Help");
     QObject::connect(helpAction, SIGNAL(triggered()), glwid, SLOT(showHelp()));
     helpAction->setShortcut(QKeySequence("Ctrl+H"));
-    win.menuBar()->addMenu(helpMenu);
+    win.menuBar()->addMenu(optionsMenu);
 
     win.show();
     return app.exec();
