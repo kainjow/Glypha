@@ -43,6 +43,11 @@ void GLWidget::showHelp()
     game_.showHelp();
 }
 
+void GLWidget::showAbout()
+{
+    game_.showAbout();
+}
+
 bool GLWidget::handleKeyEvent(int key, bool down)
 {
     GL::Game::Key gameKey = GL::Game::KeyNone;
@@ -132,6 +137,9 @@ int main(int argc, char *argv[])
     QAction *helpAction = optionsMenu->addAction("&Help");
     QObject::connect(helpAction, SIGNAL(triggered()), glwid, SLOT(showHelp()));
     helpAction->setShortcut(QKeySequence("Ctrl+H"));
+    optionsMenu->addSeparator();
+    QAction *aboutAction = optionsMenu->addAction("&About " GL_GAME_NAME);
+    QObject::connect(aboutAction, SIGNAL(triggered()), glwid, SLOT(showAbout()));
     win.menuBar()->addMenu(optionsMenu);
 
     win.show();

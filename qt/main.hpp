@@ -20,6 +20,7 @@ private slots:
     void newGame();
     void endGame();
     void showHelp();
+    void showAbout();
     
 private:
     GL::Game game_;
