@@ -168,12 +168,12 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     [[alert addButtonWithTitle:@"No"] setKeyEquivalent:@"\033"];
     [[alert addButtonWithTitle:@"Yes"] setKeyEquivalent:@"\r"];
     [alert setMessageText:@"Are you sure you want to reset " GL_GAME_NAME "'s scores?"];
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12
+#if defined(MAC_OS_X_VERSION_10_12) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12
     [alert setAlertStyle:NSAlertStyleCritical];
 #else
     [alert setAlertStyle:NSCriticalAlertStyle];
 #endif
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_10
+#if defined(MAC_OS_X_VERSION_10_10) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_10
     [alert beginSheetModalForWindow:window_ completionHandler:^(NSModalResponse returnCode) {
         [self resetHighScoresAlertDidEnd:alert returnCode:returnCode contextInfo:NULL];
     }];
@@ -203,7 +203,7 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     [alert setAccessoryView:textField];
     int *placeCopy = new int;
     *placeCopy = place;
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_10
+#if defined(MAC_OS_X_VERSION_10_10) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_10
     [alert beginSheetModalForWindow:window_ completionHandler:^(NSModalResponse returnCode) {
         [self highScoreNameAlertDidEnd:alert returnCode:returnCode contextInfo:placeCopy];
     }];
