@@ -41,6 +41,7 @@ if(HAVE_QT)
   set(CMAKE_AUTOMOC ON)
   list(APPEND SOURCES
     qt/main.cpp
+    qt/main.hpp
     game/GLCursorQt.cpp
     game/GLImage_Qt.cpp
     game/GLSoundsQt.cpp
