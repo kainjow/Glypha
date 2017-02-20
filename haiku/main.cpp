@@ -8,16 +8,46 @@
 #include "GLGame.h"
 
 namespace {
-	const int kMsgAnimate = 'glya';
-	const int kMsgNewGame = 'glyn';
+	const int kMsgAnimate =   'glya';
+	const int kMsgNewGame =   'glyn';
+	const int kMsgPauseGame = 'glyp';
+	const int kMsgEndGame =   'glye';
+	const int kMsgHelp =      'glyh';
+	const int kMsgAbout =     'glyb';
 }
+
+class GameGLView;
+
+class MainWindow : public BWindow {
+public:
+	MainWindow();
+	
+	void gameCallback(GL::Game::Event event);
+	
+protected:
+	virtual void MessageReceived(BMessage *msg);
+
+private:
+	GameGLView *glview_;
+	BMenuItem *newGameItem_;
+	BMenuItem *pauseGameItem_;
+	BMenuItem *endGameItem_;
+	BMenuItem *helpItem_;
+	BMenuItem *aboutItem_;
+};
 
 class GameGLView : public BGLView {
 public:
 	GameGLView(BRect frame)
 		: BGLView(frame, "", B_FOLLOW_ALL_SIDES, 0, BGL_RGB | BGL_DOUBLE)
-		, game_(new GL::Game(NULL, NULL, NULL))
+		, game_(new GL::Game(callback, NULL, this))
 	{
+	}
+	
+	static void callback(GL::Game::Event event, void *context) {
+		GameGLView *view = (GameGLView*)context;
+		MainWindow *win = (MainWindow*)view->Window();
+		win->gameCallback(event);
 	}
 	
 	virtual void AttachedToWindow(void) {
@@ -106,25 +136,53 @@ public:
 		game_->newGame();
 	}
 	
+	bool PauseGame() {
+		game_->pauseResumeGame();
+		return game_->paused();
+	}
+	
+	void EndGame() {
+		game_->endGame();
+	}
+	
+	void ShowHelp() {
+		game_->showHelp();
+	}
+	
+	void ShowAbout() {
+		game_->showAbout();
+	}
+	
 private:
 	GL::Game *game_;
 };
 
-class MainWindow : public BWindow {
-public:
-	MainWindow()
+MainWindow::MainWindow()
 		: BWindow(BRect(0, 0, 640, 460), GL_GAME_NAME, B_TITLED_WINDOW,
 			B_NOT_ZOOMABLE | B_NOT_RESIZABLE | B_ASYNCHRONOUS_CONTROLS | B_QUIT_ON_WINDOW_CLOSE)
 	{
 		BMenuBar *menuBar = new BMenuBar(BRect(0,0,0,0), NULL);
-		BMenu *menu = new BMenu("File");
+		BMenu *gameMenu = new BMenu("Game");
+		BMenu *helpMenu = new BMenu("Help");
 		BMenuItem *item;
-		item = new BMenuItem("New Game", new BMessage(kMsgNewGame), 'N');
-		menu->AddItem(item);
-		menu->AddSeparatorItem();
+		newGameItem_ = new BMenuItem("New Game", new BMessage(kMsgNewGame), 'N');
+		gameMenu->AddItem(newGameItem_);
+		pauseGameItem_ = new BMenuItem("Pause Game", new BMessage(kMsgPauseGame), 'P');
+		pauseGameItem_->SetEnabled(false);
+		gameMenu->AddItem(pauseGameItem_);
+		endGameItem_ = new BMenuItem("End Game", new BMessage(kMsgEndGame), 'E');
+		endGameItem_->SetEnabled(false);
+		gameMenu->AddItem(endGameItem_);
+		gameMenu->AddSeparatorItem();
 		item = new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED), 'Q');
-		menu->AddItem(item);
-		menuBar->AddItem(menu);
+		gameMenu->AddItem(item);
+		helpItem_ = new BMenuItem("Help", new BMessage(kMsgHelp), 'H');
+		helpMenu->AddItem(helpItem_);
+		helpMenu->AddSeparatorItem();
+		aboutItem_ = new BMenuItem("About " GL_GAME_NAME B_UTF8_ELLIPSIS, new BMessage(kMsgAbout), 'H');
+		helpMenu->AddItem(aboutItem_);
+		menuBar->AddItem(gameMenu);
+		menuBar->AddItem(helpMenu);
 		AddChild(menuBar);
 	
 		ResizeBy(0, menuBar->Frame().Height());
@@ -139,21 +197,54 @@ public:
 		}
 	}
 	
-protected:
-	virtual void MessageReceived(BMessage *msg) {
+	void MainWindow::gameCallback(GL::Game::Event event) {
+		switch (event) {
+			case GL::Game::EventStarted:
+				newGameItem_->SetEnabled(false);
+				pauseGameItem_->SetEnabled(true);
+				endGameItem_->SetEnabled(true);
+				helpItem_->SetEnabled(false);
+				break;
+			case GL::Game::EventEnded:
+				newGameItem_->SetEnabled(true);
+				pauseGameItem_->SetEnabled(false);
+				endGameItem_->SetEnabled(false);
+				helpItem_->SetEnabled(true);
+				break;
+		}
+	}
+	
+	void MainWindow::MessageReceived(BMessage *msg) {
 		switch (msg->what) {
 		    case kMsgNewGame:
 			    glview_->NewGame();
+		    	break;
+		    case kMsgPauseGame: {
+		    	uint32 modifiers;
+		    	pauseGameItem_->Shortcut(&modifiers);
+			    if (glview_->PauseGame()) {
+			    	pauseGameItem_->SetShortcut('R', modifiers);
+			    	pauseGameItem_->SetLabel("Resume Game");
+			    } else {
+			    	pauseGameItem_->SetShortcut('P', modifiers);
+			    	pauseGameItem_->SetLabel("Pause Game");
+			    }
+		    	break;
+		    }
+		    case kMsgEndGame:
+			    glview_->EndGame();
+		    	break;
+		    case kMsgHelp:
+		    	glview_->ShowHelp();
+		    	break;
+		    case kMsgAbout:
+		    	glview_->ShowAbout();
 		    	break;
 			default:
 				BWindow::MessageReceived(msg);
 				break;
 		}
 	}
-
-private:
-	GameGLView *glview_;	
-};
 
 class App : public BApplication {
 public:
