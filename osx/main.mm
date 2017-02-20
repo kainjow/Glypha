@@ -173,7 +173,13 @@ static void highScoreNameCallback(const char *highName, int place, void *context
 #else
     [alert setAlertStyle:NSCriticalAlertStyle];
 #endif
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_10
+    [alert beginSheetModalForWindow:window_ completionHandler:^(NSModalResponse returnCode) {
+        [self resetHighScoresAlertDidEnd:alert returnCode:returnCode contextInfo:NULL];
+    }];
+#else
     [alert beginSheetModalForWindow:window_ modalDelegate:self didEndSelector:@selector(resetHighScoresAlertDidEnd:returnCode:contextInfo:) contextInfo:NULL];
+#endif
 }
 
 - (void)resetHighScoresAlertDidEnd:(NSAlert * __unused)alert returnCode:(NSInteger)returnCode contextInfo:(void *  __unused)contextInfo
@@ -197,7 +203,13 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     [alert setAccessoryView:textField];
     int *placeCopy = new int;
     *placeCopy = place;
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_10
+    [alert beginSheetModalForWindow:window_ completionHandler:^(NSModalResponse returnCode) {
+        [self highScoreNameAlertDidEnd:alert returnCode:returnCode contextInfo:placeCopy];
+    }];
+#else
     [alert beginSheetModalForWindow:window_ modalDelegate:self didEndSelector:@selector(highScoreNameAlertDidEnd:returnCode:contextInfo:) contextInfo:placeCopy];
+#endif
 }
 
 - (void)highScoreNameAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger __unused)returnCode contextInfo:(void *)contextInfo
