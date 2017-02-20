@@ -38,4 +38,14 @@ class MainWindow : public QMainWindow
     
 public:
     MainWindow();
+    
+private:
+    GLWidget *glwid_;
+    QAction *newAction_;
+    QAction *pauseAction_;
+    QAction *endAction_;
+    QAction *helpAction_;
+    QAction *scoresAction_;
+    QAction *resetAction_;
+    QAction *aboutAction_;
 };

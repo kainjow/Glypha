@@ -131,27 +131,27 @@ MainWindow::MainWindow()
     setWindowTitle(GL_GAME_NAME);
 
     QWidget *mainWidget = new QWidget;
-    GLWidget *glwid = new GLWidget;
-    glwid->setFixedSize(640, 460);
+    glwid_ = new GLWidget;
+    glwid_->setFixedSize(640, 460);
     
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(glwid);
+    layout->addWidget(glwid_);
     mainWidget->setLayout(layout);
     setCentralWidget(mainWidget);
     
     QMenu *fileMenu = new QMenu("&File");
-    QAction *newGameMenu = fileMenu->addAction("&New Game");
-    QObject::connect(newGameMenu, SIGNAL(triggered()), glwid, SLOT(newGame()));
-    newGameMenu->setShortcut(QKeySequence("Ctrl+N"));
-    QAction *pauseGameMenu = fileMenu->addAction("&Pause Game\tCtrl+P");
-    QObject::connect(pauseGameMenu, SIGNAL(triggered()), glwid, SLOT(pauseGame()));
-    pauseGameMenu->setShortcut(QKeySequence("Ctrl+P"));
-    pauseGameMenu->setEnabled(false);
-    QAction *endGameMenu = fileMenu->addAction("&End Game\tCtrl+E");
-    QObject::connect(endGameMenu, SIGNAL(triggered()), glwid, SLOT(endGame()));
-    endGameMenu->setShortcut(QKeySequence("Ctrl+E"));
-    endGameMenu->setEnabled(false);
+    newAction_ = fileMenu->addAction("&New Game");
+    QObject::connect(newAction_, SIGNAL(triggered()), glwid_, SLOT(newGame()));
+    newAction_->setShortcut(QKeySequence("Ctrl+N"));
+    pauseAction_ = fileMenu->addAction("&Pause Game\tCtrl+P");
+    QObject::connect(pauseAction_, SIGNAL(triggered()), glwid_, SLOT(pauseGame()));
+    pauseAction_->setShortcut(QKeySequence("Ctrl+P"));
+    pauseAction_->setEnabled(false);
+    endAction_ = fileMenu->addAction("&End Game\tCtrl+E");
+    QObject::connect(endAction_, SIGNAL(triggered()), glwid_, SLOT(endGame()));
+    endAction_->setShortcut(QKeySequence("Ctrl+E"));
+    endAction_->setEnabled(false);
     fileMenu->addSeparator();
     QAction *quitMenu = fileMenu->addAction("&Quit");
     QObject::connect(quitMenu, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -159,18 +159,18 @@ MainWindow::MainWindow()
     menuBar()->addMenu(fileMenu);
     
     QMenu *optionsMenu = new QMenu("&Options");
-    QAction *helpAction = optionsMenu->addAction("&Help");
-    QObject::connect(helpAction, SIGNAL(triggered()), glwid, SLOT(showHelp()));
-    helpAction->setShortcut(QKeySequence("Ctrl+H"));
+    helpAction_ = optionsMenu->addAction("&Help");
+    QObject::connect(helpAction_, SIGNAL(triggered()), glwid_, SLOT(showHelp()));
+    helpAction_->setShortcut(QKeySequence("Ctrl+H"));
     optionsMenu->addSeparator();
-    QAction *scoresAction = optionsMenu->addAction("High &Scores");
-    QObject::connect(scoresAction, SIGNAL(triggered()), glwid, SLOT(showHighScores()));
-    scoresAction->setShortcut(QKeySequence("Ctrl+S"));
-    QAction *resetAction = optionsMenu->addAction("&Reset Scores...");
-    QObject::connect(resetAction, SIGNAL(triggered()), glwid, SLOT(resetHighScores()));
+    scoresAction_ = optionsMenu->addAction("High &Scores");
+    QObject::connect(scoresAction_, SIGNAL(triggered()), glwid_, SLOT(showHighScores()));
+    scoresAction_->setShortcut(QKeySequence("Ctrl+S"));
+    resetAction_ = optionsMenu->addAction("&Reset Scores...");
+    QObject::connect(resetAction_, SIGNAL(triggered()), glwid_, SLOT(resetHighScores()));
     optionsMenu->addSeparator();
-    QAction *aboutAction = optionsMenu->addAction("&About " GL_GAME_NAME);
-    QObject::connect(aboutAction, SIGNAL(triggered()), glwid, SLOT(showAbout()));
+    aboutAction_ = optionsMenu->addAction("&About " GL_GAME_NAME);
+    QObject::connect(aboutAction_, SIGNAL(triggered()), glwid_, SLOT(showAbout()));
     menuBar()->addMenu(optionsMenu);
 }
 
