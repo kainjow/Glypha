@@ -1,5 +1,10 @@
 .PHONY: xcode mac_release qt clean
 
+game:
+	mkdir -p build
+	cd build && cmake -DCMAKE_BUILD_TYPE=Release ..
+	cd build && cmake --build . --config Release
+
 xcode:
 	mkdir -p build
 	cd build && cmake -GXcode ..
