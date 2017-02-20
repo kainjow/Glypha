@@ -61,12 +61,12 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     NSMenu *gameMenu = [[[NSMenu alloc] initWithTitle:@"Game"] autorelease];
     [gameMenu setAutoenablesItems:NO];
     NSMenuItem *gameMenuItem = [[[NSMenuItem alloc] init] autorelease];
-    NSMenu *helpMenu = [[[NSMenu alloc] initWithTitle:@"Help"] autorelease];
-    [helpMenu setAutoenablesItems:NO];
+    NSMenu *optionsMenu = [[[NSMenu alloc] initWithTitle:@"Options"] autorelease];
+    [optionsMenu setAutoenablesItems:NO];
     NSMenuItem *helpMenuItem = [[[NSMenuItem alloc] init] autorelease];
     [appMenuItem setSubmenu:appMenu];
     [gameMenuItem setSubmenu:gameMenu];
-    [helpMenuItem setSubmenu:helpMenu];
+    [helpMenuItem setSubmenu:optionsMenu];
     [menubar addItem:appMenuItem];
     [menubar addItem:gameMenuItem];
     [menubar addItem:helpMenuItem];
@@ -85,12 +85,12 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     endGame_ = [gameMenu addItemWithTitle:@"End Game" action:@selector(endGame:) keyEquivalent:@"e"];
     [endGame_ setTarget:self];
     [endGame_ setEnabled:NO];
-    helpMenuItem_ = [helpMenu addItemWithTitle:@"Help" action:@selector(showHelp:) keyEquivalent:@"h"];
+    helpMenuItem_ = [optionsMenu addItemWithTitle:@"Help" action:@selector(showHelp:) keyEquivalent:@"h"];
     [helpMenuItem_ setTarget:self];
-    [helpMenu addItem:[NSMenuItem separatorItem]];
-    highScores_ = [helpMenu addItemWithTitle:@"High Scores" action:@selector(showHighScores:) keyEquivalent:@"s"];
+    [optionsMenu addItem:[NSMenuItem separatorItem]];
+    highScores_ = [optionsMenu addItemWithTitle:@"High Scores" action:@selector(showHighScores:) keyEquivalent:@"s"];
     [highScores_ setTarget:self];
-    resetHighScores_ = [helpMenu addItemWithTitle:@"Reset Scores..." action:@selector(resetHighScores:) keyEquivalent:@""];
+    resetHighScores_ = [optionsMenu addItemWithTitle:@"Reset Scores..." action:@selector(resetHighScores:) keyEquivalent:@""];
     [resetHighScores_ setTarget:self];
 }
 
