@@ -1,10 +1,10 @@
-#include <stdio.h>
+#include <Alert.h>
 #include <Application.h>
-#include <Window.h>
-#include <Menu.h>
-#include <MenuItem.h>
-#include <MenuBar.h>
 #include <GLView.h>
+#include <Menu.h>
+#include <MenuBar.h>
+#include <MenuItem.h>
+#include <Window.h>
 #include "GLGame.h"
 
 namespace {
@@ -14,6 +14,8 @@ namespace {
 	const int kMsgEndGame =   'glye';
 	const int kMsgHelp =      'glyh';
 	const int kMsgAbout =     'glyb';
+	const int kMsgScores =    'glys';
+	const int kMsgReset =     'glyt';
 }
 
 class GameGLView;
@@ -34,6 +36,10 @@ private:
 	BMenuItem *endGameItem_;
 	BMenuItem *helpItem_;
 	BMenuItem *aboutItem_;
+	BMenuItem *scoresItem_;
+	BMenuItem *resetItem_;
+	
+	void ResetHighScores();
 };
 
 class GameGLView : public BGLView {
@@ -153,6 +159,14 @@ public:
 		game_->showAbout();
 	}
 	
+	void ShowHighScores() {
+		game_->showHighScores();
+	}
+	
+	void ResetHighScores() {
+		game_->resetHighScores();
+	}
+	
 private:
 	GL::Game *game_;
 };
@@ -179,6 +193,11 @@ MainWindow::MainWindow()
 		helpItem_ = new BMenuItem("Help", new BMessage(kMsgHelp), 'H');
 		helpMenu->AddItem(helpItem_);
 		helpMenu->AddSeparatorItem();
+		scoresItem_ = new BMenuItem("High Scores", new BMessage(kMsgScores), 'S');
+		helpMenu->AddItem(scoresItem_);
+		resetItem_ = new BMenuItem("Reset Scores" B_UTF8_ELLIPSIS, new BMessage(kMsgReset));
+		helpMenu->AddItem(resetItem_);
+		helpMenu->AddSeparatorItem();
 		aboutItem_ = new BMenuItem("About " GL_GAME_NAME B_UTF8_ELLIPSIS, new BMessage(kMsgAbout), 'H');
 		helpMenu->AddItem(aboutItem_);
 		menuBar->AddItem(gameMenu);
@@ -204,12 +223,18 @@ MainWindow::MainWindow()
 				pauseGameItem_->SetEnabled(true);
 				endGameItem_->SetEnabled(true);
 				helpItem_->SetEnabled(false);
+				scoresItem_->SetEnabled(false);
+				resetItem_->SetEnabled(false);
+				aboutItem_->SetEnabled(false);
 				break;
 			case GL::Game::EventEnded:
 				newGameItem_->SetEnabled(true);
 				pauseGameItem_->SetEnabled(false);
 				endGameItem_->SetEnabled(false);
 				helpItem_->SetEnabled(true);
+				scoresItem_->SetEnabled(true);
+				resetItem_->SetEnabled(true);
+				aboutItem_->SetEnabled(true);
 				break;
 		}
 	}
@@ -237,12 +262,29 @@ MainWindow::MainWindow()
 		    case kMsgHelp:
 		    	glview_->ShowHelp();
 		    	break;
+		    case kMsgScores:
+		    	glview_->ShowHighScores();
+		    	break;
+		    case kMsgReset:
+		    	ResetHighScores();
+			    break;
 		    case kMsgAbout:
 		    	glview_->ShowAbout();
 		    	break;
 			default:
 				BWindow::MessageReceived(msg);
 				break;
+		}
+	}
+	
+	void MainWindow::ResetHighScores() {
+		BAlert *alert = new BAlert(NULL,
+			"Are you sure you want to reset " GL_GAME_NAME "'s scores?",
+			"Yes", "No", NULL, B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		int32 but = alert->Go();
+		delete alert;
+		if (but == 0) {
+			glview_->ResetHighScores();
 		}
 	}
 
