@@ -18,6 +18,7 @@ protected:
     
 private slots:
     void newGame();
+    void pauseGame();
     void endGame();
     void showHelp();
     void showAbout();

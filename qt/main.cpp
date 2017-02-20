@@ -34,6 +34,11 @@ void GLWidget::newGame()
     game_.newGame();
 }
 
+void GLWidget::pauseGame()
+{
+    game_.pauseResumeGame();
+}
+
 void GLWidget::endGame()
 {
     game_.endGame();
@@ -140,9 +145,14 @@ int main(int argc, char *argv[])
     QAction *newGameMenu = fileMenu->addAction("&New Game");
     QObject::connect(newGameMenu, SIGNAL(triggered()), glwid, SLOT(newGame()));
     newGameMenu->setShortcut(QKeySequence("Ctrl+N"));
+    QAction *pauseGameMenu = fileMenu->addAction("&Pause Game\tCtrl+P");
+    QObject::connect(pauseGameMenu, SIGNAL(triggered()), glwid, SLOT(pauseGame()));
+    pauseGameMenu->setShortcut(QKeySequence("Ctrl+P"));
+    pauseGameMenu->setEnabled(false);
     QAction *endGameMenu = fileMenu->addAction("&End Game\tCtrl+E");
     QObject::connect(endGameMenu, SIGNAL(triggered()), glwid, SLOT(endGame()));
     endGameMenu->setShortcut(QKeySequence("Ctrl+E"));
+    endGameMenu->setEnabled(false);
     fileMenu->addSeparator();
     QAction *quitMenu = fileMenu->addAction("&Quit");
     QObject::connect(quitMenu, SIGNAL(triggered()), qApp, SLOT(quit()));
