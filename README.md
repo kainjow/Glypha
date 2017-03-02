@@ -29,10 +29,12 @@ Haiku:
 
 ### TODO
 
-- About box text
-- Fix Haiku framerate (use rendering thread?)
-- Implement Haiku high score prompt
-- Application high resolution icon
+* About box text
+* Haiku:
+  * Fix framerate (use rendering thread?)
+  * Implement high score prompt
+* Application high resolution icon
+* GTK+ 3 version (via [GtkGLArea](https://developer.gnome.org/gtk3/unstable/GtkGLArea.html))
 
 ### Links
 
