@@ -9,41 +9,25 @@
 #include <QDebug>
 #include <QAudioDeviceInfo>
 
-uint32_t read32BigEndian(const uint8_t *data)
+uint32_t read32LittleEndian(const uint8_t *data)
 {
     uint32_t val = 0;
-    val |= (uint32_t)data[3];
-    val |= (uint32_t)data[2] << 8;
-    val |= (uint32_t)data[1] << 16;
-    val |= (uint32_t)data[0] << 24;
+    val |= (uint32_t)data[0];
+    val |= (uint32_t)data[1] << 8;
+    val |= (uint32_t)data[2] << 16;
+    val |= (uint32_t)data[3] << 24;
     return val;
 }
 
-uint16_t read16BigEndian(const uint8_t *data)
+uint16_t read16LittleEndian(const uint8_t *data)
 {
     uint16_t val = 0;
-    val |= (uint16_t)data[1];
-    val |= (uint16_t)data[0] << 8;
+    val |= (uint16_t)data[0];
+    val |= (uint16_t)data[1] << 8;
     return val;
 }
 
-// Converts an 80 bit IEEE Standard 754 floating point number to an unsigned long.
-uint32_t read80Float(const uint8_t *data)
-{
-    uint32_t mantissa = read32BigEndian(data + 2);
-    uint8_t exp = 30 - *(data + 1);
-    uint32_t last = 0;
-    while (exp--) {
-        last = mantissa;
-        mantissa >>= 1;
-    }
-    if (last & 1) {
-        mantissa++;
-    }
-    return mantissa;
-}
-
-bool aiffDataToWave(const uint8_t *data, unsigned dataLen, GL::WaveData &output)
+bool dataToWave(const uint8_t *data, unsigned dataLen, GL::WaveData &output)
 {
     GLBufferReader reader(data, dataLen);
     uint16_t numChannels = 0;
@@ -51,48 +35,43 @@ bool aiffDataToWave(const uint8_t *data, unsigned dataLen, GL::WaveData &output)
     uint16_t sampleSize = 0;
     uint32_t sampleRate = 0;
     size_t sampleDataLen = 0;
-    size_t ssndChunkLen = 0;
-    std::unique_ptr<uint8_t[]> sampleData;
+    char *sampleData = nullptr;
 
     // Check header
-    const uint8_t fourccForm[4] = { 'F', 'O', 'R', 'M' };
-    const uint8_t fourccAiff[4] = { 'A', 'I', 'F', 'F' };
+    const uint8_t fourccRiff[4] = { 'R', 'I', 'F', 'F' };
+    const uint8_t fourccWave[4] = { 'W', 'A', 'V', 'E' };
     uint8_t header[12];
     if (reader.read(header, sizeof(header)) != sizeof(header) ||
-        std::memcmp(header, fourccForm, sizeof(fourccForm)) != 0 ||
-        std::memcmp(header + 8, fourccAiff, sizeof(fourccAiff)) != 0) {
+        std::memcmp(header, fourccRiff, sizeof(fourccRiff)) != 0 ||
+        std::memcmp(header + 8, fourccWave, sizeof(fourccWave)) != 0) {
         return false;
     }
 
     // Read chunks
-    const uint8_t fourccChunkComm[4] = { 'C', 'O', 'M', 'M' };
-    const uint8_t fourccChunkSsnd[4] = { 'S', 'S', 'N', 'D' };
+    const uint8_t chunkFmt[4] = { 'f', 'm', 't', ' ' };
+    const uint8_t chunkData[4] = { 'd', 'a', 't', 'a' };
     uint8_t chunkHeader[8];
     while (reader.read(chunkHeader, sizeof(chunkHeader)) == sizeof(chunkHeader)) {
-        uint32_t chunkLen = read32BigEndian(chunkHeader + 4);
+        uint32_t chunkLen = read32LittleEndian(chunkHeader + 4);
         size_t chunkOffset = reader.offset();
-        if (std::memcmp(chunkHeader, fourccChunkComm, 4) == 0) {
-            uint8_t commData[18];
+        if (std::memcmp(chunkHeader, chunkFmt, 4) == 0) {
+            uint8_t commData[16];
             if (chunkLen != sizeof(commData) || reader.read(commData, sizeof(commData)) != sizeof(commData)) {
                 return false;
             }
-            numChannels = read16BigEndian(commData);
-            numSampleFrames = read32BigEndian(commData + 2);
-            sampleSize = read16BigEndian(commData + 6);
-            sampleRate = read80Float(commData + 8);
-            if (sampleSize != 8 || numChannels != 1) {
+            int format = read16LittleEndian(commData);
+            numChannels = read16LittleEndian(commData + 2);
+            sampleRate = read32LittleEndian(commData + 4);
+            sampleSize = read16LittleEndian(commData + 14);
+            if (format != 1 || numChannels != 1 || sampleSize != 8) {
                 // This code only supports 8-bit mono.
                 return false;
             }
-        } else if (std::memcmp(chunkHeader, fourccChunkSsnd, 4) == 0) {
-            // We make the assumption that the SSND chunk comes after the COMM chunk. This isn't required for AIFF files though.
+        } else if (std::memcmp(chunkHeader, chunkData, 4) == 0) {
+            numSampleFrames = chunkLen;
             sampleDataLen = (sampleSize / 8) * numSampleFrames * numChannels;
-            ssndChunkLen = sampleDataLen + 8;
-            if (chunkLen != ssndChunkLen) {
-                return false;
-            }
-            sampleData.reset(new uint8_t[ssndChunkLen]);
-            if (reader.read(sampleData.get(), ssndChunkLen) != ssndChunkLen) {
+            sampleData = new char[chunkLen];
+            if (reader.read((uint8_t*)sampleData, chunkLen) != chunkLen) {
                 return false;
             }
         }
@@ -105,22 +84,11 @@ bool aiffDataToWave(const uint8_t *data, unsigned dataLen, GL::WaveData &output)
         return false;
     }
 
-    // convert PCM samples from AIFF (0 - 255) to WAVE (-127 to +127)
-    char *waveSampleData = new char[sampleDataLen];
-    for (size_t i = 0; i < sampleDataLen; ++i) {
-        unsigned char c = sampleData[i];
-        waveSampleData[i] = c - 128;
-    }
-
     output.format.setCodec("audio/pcm");
     output.format.setChannelCount(numChannels);
     output.format.setSampleSize(sampleSize);
     output.format.setSampleRate(sampleRate);
-#ifdef __APPLE__
     output.format.setSampleType(QAudioFormat::UnSignedInt);
-#else
-    output.format.setSampleType(QAudioFormat::SignedInt);
-#endif
 
     if (!output.format.isValid()) {
         qWarning() << "Audio format is invalid.";
@@ -133,7 +101,7 @@ bool aiffDataToWave(const uint8_t *data, unsigned dataLen, GL::WaveData &output)
         return false;
     }
 
-    output.data = waveSampleData;
+    output.data = sampleData;
     output.dataLen = sampleDataLen;
 
     return true;
@@ -168,7 +136,7 @@ void GL::Sounds::play(int which) {
 
 void GL::Sounds::load(int which, const unsigned char *buf, unsigned bufLen) {
     Context *ctx = static_cast<Context*>(context);
-    if (!aiffDataToWave(buf, bufLen, ctx->wavs[which])) {
+    if (!dataToWave(buf, bufLen, ctx->wavs[which])) {
         qWarning("Can't load sound %d", which);
     }
 }
