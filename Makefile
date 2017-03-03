@@ -29,5 +29,10 @@ qt:
 	cd build && cmake -DHAVE_QT=true -DCMAKE_BUILD_TYPE=Release ..
 	cmake --build build --config Release
 
+qt_xcode:
+	mkdir -p build
+	cd build && cmake -GXcode -DHAVE_QT=true ..
+	open build/*.xcodeproj
+
 clean:
 	rm -rf build*
