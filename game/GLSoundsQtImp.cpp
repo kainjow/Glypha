@@ -17,6 +17,7 @@ bool GL::SoundsQtImp::play(const WaveData &wave)
     }
     bytes_ = QByteArray(wave.data, wave.dataLen);
     audioOutput_ = new QAudioOutput(wave.format);
+    audioOutput_->setBufferSize(static_cast<int>(wave.dataLen));
     connect(audioOutput_, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
     buffer_ = new QBuffer(&bytes_);
     if (!buffer_->open(QIODevice::ReadOnly)) {
