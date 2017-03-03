@@ -2,25 +2,25 @@
 #include <string.h>
 
 int main(int argc, const char *argv[]) {
-    const char *in_path;
-    FILE *in_file = NULL;
-    FILE *out_file = NULL;
-    const char *nmspace = "GL";
-    const char *filename;
-    char variable[1024];
-    size_t i;
-    int num_bytes = 0;
-    int column = 0;
-    const int bytes_per_column = 12;
-    
+	const char *in_path;
+	FILE *in_file = NULL;
+	FILE *out_file = NULL;
+	const char *nmspace = "GL";
+	const char *filename;
+	char variable[1024];
+	size_t i;
+	int num_bytes = 0;
+	int column = 0;
+	const int bytes_per_column = 12;
+
 	if (argc != 3) {
 		fprintf(stderr, "Invalid args\n");
 		return 1;
 	}
 	
-    in_path = argv[1];
+	in_path = argv[1];
 #ifdef _WIN32
-    (void)fopen_s(&in_file, in_path, "rb");
+	(void)fopen_s(&in_file, in_path, "rb");
 #else
 	in_file = fopen(in_path, "rb");
 #endif
@@ -30,9 +30,9 @@ int main(int argc, const char *argv[]) {
 	}
 	
 #ifdef _WIN32
-    (void)fopen_s(&out_file, argv[2], "wb");
+	(void)fopen_s(&out_file, argv[2], "wb");
 #else
-    out_file = fopen(argv[2], "wb");
+	out_file = fopen(argv[2], "wb");
 #endif
 	if (!out_file) {
 		fprintf(stderr, "Can't open output file %s\n", argv[2]);
@@ -42,9 +42,9 @@ int main(int argc, const char *argv[]) {
 	
 	filename = strrchr(in_path, '/');
 	if (filename) {
-        memcpy(variable, filename + 1, strlen(filename + 1) + 1);
+		memcpy(variable, filename + 1, strlen(filename + 1) + 1);
 	} else {
-        memcpy(variable, in_path, strlen(in_path) + 1);
+		memcpy(variable, in_path, strlen(in_path) + 1);
 	}
 	for (i = 0; i < strlen(variable); ++i) {
 		if (variable[i] == '.') {
