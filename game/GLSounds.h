@@ -28,20 +28,20 @@ class Sounds {
 public:
     Sounds() {
         initContext();
-        load(kBirdSound, bird_aif, bird_aif_len);
-        load(kBonusSound, bonus_aif, bonus_aif_len);
-        load(kBoom1Sound, boom1_aif, boom1_aif_len);
-        load(kBoom2Sound, boom2_aif, boom2_aif_len);
-        load(kFlap2Sound, flap2_aif, flap2_aif_len);
-        load(kFlapSound, flap_aif, flap_aif_len);
-        load(kGrateSound, grate_aif, grate_aif_len);
-        load(kLightningSound, lightning_aif, lightning_aif_len);
-        load(kMusicSound, music_aif, music_aif_len);
-        load(kScrape2Sound, scrape2_aif, scrape2_aif_len);
-        load(kScreechSound, screech_aif, screech_aif_len);
-        load(kSpawnSound, spawn_aif, spawn_aif_len);
-        load(kSplashSound, splash_aif, splash_aif_len);
-        load(kWalkSound, walk_aif, walk_aif_len);
+        load(kBirdSound, bird_wav, bird_wav_len);
+        load(kBonusSound, bonus_wav, bonus_wav_len);
+        load(kBoom1Sound, boom1_wav, boom1_wav_len);
+        load(kBoom2Sound, boom2_wav, boom2_wav_len);
+        load(kFlap2Sound, flap2_wav, flap2_wav_len);
+        load(kFlapSound, flap_wav, flap_wav_len);
+        load(kGrateSound, grate_wav, grate_wav_len);
+        load(kLightningSound, lightning_wav, lightning_wav_len);
+        load(kMusicSound, music_wav, music_wav_len);
+        load(kScrape2Sound, scrape2_wav, scrape2_wav_len);
+        load(kScreechSound, screech_wav, screech_wav_len);
+        load(kSpawnSound, spawn_wav, spawn_wav_len);
+        load(kSplashSound, splash_wav, splash_wav_len);
+        load(kWalkSound, walk_wav, walk_wav_len);
     }
     
     int preloadCount(int which) {

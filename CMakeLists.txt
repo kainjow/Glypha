@@ -201,20 +201,20 @@ set(RESOURCES
   resources/images/torches.png
   resources/images/about.png
 
-  resources/sounds/boom1.aif
-  resources/sounds/music.aif
-  resources/sounds/bonus.aif
-  resources/sounds/boom2.aif
-  resources/sounds/spawn.aif
-  resources/sounds/splash.aif
-  resources/sounds/bird.aif
-  resources/sounds/flap.aif
-  resources/sounds/flap2.aif
-  resources/sounds/grate.aif
-  resources/sounds/lightning.aif
-  resources/sounds/scrape2.aif
-  resources/sounds/screech.aif
-  resources/sounds/walk.aif
+  resources/sounds/boom1.wav
+  resources/sounds/music.wav
+  resources/sounds/bonus.wav
+  resources/sounds/boom2.wav
+  resources/sounds/spawn.wav
+  resources/sounds/splash.wav
+  resources/sounds/bird.wav
+  resources/sounds/flap.wav
+  resources/sounds/flap2.wav
+  resources/sounds/grate.wav
+  resources/sounds/lightning.wav
+  resources/sounds/scrape2.wav
+  resources/sounds/screech.wav
+  resources/sounds/walk.wav
   
   resources/fonts/font11.png
   resources/fonts/font11.fnt
