@@ -338,6 +338,7 @@ private:
 
     Image aboutImg;
     bool aboutVisible;
+    void drawAbout(Renderer *r) const;
     
     Prefs prefs_;
 };

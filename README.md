@@ -29,7 +29,6 @@ Haiku:
 
 ### TODO
 
-* About box text
 * Haiku:
   * Fix framerate (use rendering thread?)
   * Implement high score prompt

@@ -175,7 +175,8 @@ if(APPLE)
 endif()
 include(CPack)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE "GL_GAME_NAME=\"${EXE_NAME}\"")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "GL_GAME_NAME=\"${EXE_NAME}\""
+  "GL_GAME_VERSION=\"${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}\"")
 if(WIN32)
   target_compile_definitions(${PROJECT_NAME} PRIVATE "GL_GAME_NAME_W=L\"${EXE_NAME}\"")
 endif()

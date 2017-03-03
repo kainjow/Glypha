@@ -311,7 +311,7 @@ void GL::Game::drawFrame() const
     drawObelisks();
     drawLightning();
     if (aboutVisible) {
-        aboutImg.draw((r->bounds().width() - aboutImg.width()) / 2, (r->bounds().height() - aboutImg.height()) / 2);
+        drawAbout(r);
     }
     
     if (showFPS_) {
@@ -2825,4 +2825,46 @@ void GL::Game::showAbout()
         closeWall();
         aboutVisible = true;
     }
+}
+
+void GL::Game::drawAbout(Renderer *r) const
+{
+    int x = (r->bounds().width() - aboutImg.width()) / 2;
+    int y = (r->bounds().height() - aboutImg.height()) / 2;
+    
+    aboutImg.draw(x, y);
+
+    r->setFillColor(102/255.0f, 51/255.0f, 102/255.0f);
+    
+    const int lineHeight = font11.lineHeight();
+    x += 8;
+    y += 140;
+    
+    font11.drawText(GL_GAME_NAME " " GL_GAME_VERSION, x, y, font11Img);
+
+    y += lineHeight * 2;
+    
+    font11.drawText("Original developer:", x, y, font11Img);
+    y += lineHeight;
+    font11.drawText("John Calhoun of", x, y, font11Img);
+    y += lineHeight;
+    font11.drawText("Soft Dorothy Software", x, y, font11Img);
+    y += lineHeight;
+    font11.drawText("1995", x, y, font11Img);
+
+    y += lineHeight * 2;
+    
+    font11.drawText("Mac OS X port:", x, y, font11Img);
+    y += lineHeight;
+    font11.drawText("Mark Pazolli", x, y, font11Img);
+    y += lineHeight;
+    font11.drawText("2001", x, y, font11Img);
+
+    y += lineHeight * 2;
+    
+    font11.drawText("Modern OpenGL port:", x, y, font11Img);
+    y += lineHeight;
+    font11.drawText("Kevin Wojniak", x, y, font11Img);
+    y += lineHeight;
+    font11.drawText("2017", x, y, font11Img);
 }
