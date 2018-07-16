@@ -104,6 +104,9 @@ elseif(APPLE)
     -Werror
     -Wconversion
   )
+  target_compile_definitions(${PROJECT_NAME} PRIVATE
+    GL_SILENCE_DEPRECATION
+  )
 elseif(WIN32)
   target_include_directories(${PROJECT_NAME} PRIVATE win)
   target_compile_definitions(${PROJECT_NAME} PRIVATE UNICODE)
