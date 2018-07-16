@@ -23,6 +23,10 @@ Linux:
 
 1. `make qt`
 
+Ubuntu dependencies:
+1. Qt
+2. `sudo apt install libgl1-mesa-dev`
+
 ### TODO
 
 * Application high resolution icon
