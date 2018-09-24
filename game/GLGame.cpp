@@ -2862,9 +2862,9 @@ void GL::Game::drawAbout(Renderer *r) const
 
     y += lineHeight * 2;
     
-    font11.drawText("Modern OpenGL port:", x, y, font11Img);
+    font11.drawText("Modern port:", x, y, font11Img);
     y += lineHeight;
     font11.drawText("Kevin Wojniak", x, y, font11Img);
     y += lineHeight;
-    font11.drawText("2017", x, y, font11Img);
+    font11.drawText("2018", x, y, font11Img);
 }
