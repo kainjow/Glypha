@@ -65,11 +65,14 @@ elseif(WIN32)
     game/GLSoundsWin32.cpp
   )
 elseif(APPLE)
+  set(APPICON ${CMAKE_CURRENT_SOURCE_DIR}/mac/icon.icns)
+  set_source_files_properties(${APPICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
   list(APPEND SOURCES
     mac/main.mm
     game/GLCursorCocoa.mm
     game/GLImage_CoreImage.cpp
     game/GLSoundsCocoa.mm
+    ${APPICON}
   )
 endif()
 
@@ -218,7 +221,7 @@ set(RESOURCES
   resources/sounds/scrape2.wav
   resources/sounds/screech.wav
   resources/sounds/walk.wav
-  
+
   resources/fonts/font11.png
   resources/fonts/font11.fnt
 )
