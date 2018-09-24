@@ -5,7 +5,7 @@ string(REPLACE " " "" EXE_NAME_NOSPACES "${EXE_NAME}")
 set(EXE_IDENTIFIER "com.kainjow.${EXE_NAME_NOSPACES}")
 
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12")
 endif()
 
 project(Glypha)
