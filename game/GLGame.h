@@ -15,6 +15,9 @@
 #include <pthread.h>
 #endif
 
+#define GL_GAME_WIDTH 640
+#define GL_GAME_HEIGHT 460
+
 namespace GL {
 
 class Lock {

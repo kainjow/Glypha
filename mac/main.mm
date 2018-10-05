@@ -15,7 +15,7 @@
 
 @end
 
-@interface AppController : NSObject <NSApplicationDelegate>
+@interface AppController : NSObject <NSApplicationDelegate, NSWindowDelegate>
 {
     GL::Game *game_;
     NSWindow *window_;
@@ -23,6 +23,7 @@
     NSMenuItem *newGame_;
     NSMenuItem *pauseGame_;
     NSMenuItem *endGame_;
+    NSMenuItem *fullScreen_;
     NSMenuItem *helpMenuItem_;
     NSMenuItem *highScores_;
     NSMenuItem *resetHighScores_;
@@ -87,6 +88,9 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     endGame_ = [gameMenu addItemWithTitle:@"End Game" action:@selector(endGame:) keyEquivalent:@"e"];
     [endGame_ setTarget:self];
     [endGame_ setEnabled:NO];
+    [gameMenu addItem:[NSMenuItem separatorItem]];
+    fullScreen_ = [gameMenu addItemWithTitle:@"Enter Full Screen" action:@selector(toggleFullScreen:) keyEquivalent:@"f"];
+    [fullScreen_ setKeyEquivalentModifierMask:NSEventModifierFlagControl | NSEventModifierFlagCommand];
     helpMenuItem_ = [optionsMenu addItemWithTitle:@"Help" action:@selector(showHelp:) keyEquivalent:@"h"];
     [helpMenuItem_ setTarget:self];
     [optionsMenu addItem:[NSMenuItem separatorItem]];
@@ -102,12 +106,17 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     if (self != nil) {
         NSString *appName = [NSString stringWithUTF8String:GL_GAME_NAME];
 #if defined(MAC_OS_X_VERSION_10_12) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_12
-        NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable;
+        NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
 #else
         NSUInteger style = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
 #endif
-        window_ = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 640, 460) styleMask:style backing:NSBackingStoreBuffered defer:NO];
+        NSSize size = NSMakeSize(GL_GAME_WIDTH, GL_GAME_HEIGHT);
+        window_ = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, size.width, size.height) styleMask:style backing:NSBackingStoreBuffered defer:NO];
+        [window_ setCollectionBehavior:[window_ collectionBehavior] |NSWindowCollectionBehaviorFullScreenPrimary];
         [window_ setTitle:appName];
+        [window_ setDelegate:self];
+        [window_ setContentMinSize:size];
+        [window_ setContentMaxSize:size];
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
         [[window_ contentView] addSubview:gameView_];
         [self setupMenuBar:appName];
@@ -115,6 +124,21 @@ static void highScoreNameCallback(const char *highName, int place, void *context
         [gameView_ setGame:game_];
     }
     return self;
+}
+
+- (NSSize)window:(NSWindow * __unused)window willUseFullScreenContentSize:(NSSize __unused)proposedSize
+{
+    return NSMakeSize(GL_GAME_WIDTH, GL_GAME_HEIGHT);
+}
+
+- (void)windowDidExitFullScreen:(NSNotification * __unused)notification
+{
+    [fullScreen_ setTitle:@"Enter Full Screen"];
+}
+
+- (void)windowDidEnterFullScreen:(NSNotification * __unused)notification
+{
+    [fullScreen_ setTitle:@"Exit Full Screen"];
 }
 
 - (void)applicationDidFinishLaunching:(__unused NSNotification*)note
