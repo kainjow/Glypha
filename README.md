@@ -10,7 +10,7 @@ This is a port of Glypha III from its Mac OS/QuickDraw version (1995) to modern 
 
 macOS:
 
-1. `make mac_release `
+1. `make game`
 
 Windows:
 
@@ -29,7 +29,6 @@ Ubuntu dependencies:
 
 ### TODO
 
-* App icon
 * Use Metal on macOS? SpriteKit?
 
 ### Links
@@ -43,3 +42,6 @@ Ubuntu dependencies:
 
 - Glypha - Then and Now  
 <http://boredzo.org/glypha>
+
+- Icon by etherbrian
+<http://etherbrian.org>
