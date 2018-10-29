@@ -10,12 +10,10 @@ xcode:
 	cd build && cmake -GXcode ..
 	open build/*.xcodeproj
 
-.PHONY: xcode_release
-xcode_release:
-	mkdir -p build_release
-	cd build_release && \
-		cmake -GXcode -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
-	open build_release/*.xcodeproj
+.PHONY: mac_dist
+mac_dist: clean game
+	codesign --entitlements mac/Glypha.entitlements -fs "Developer ID Application" "build/Glypha III.app"
+	cd build && zip -r "Glypha III.zip" "Glypha III.app"
 
 .PHONY: qt
 qt:
