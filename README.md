@@ -43,5 +43,5 @@ Ubuntu dependencies:
 - Glypha - Then and Now  
 <http://boredzo.org/glypha>
 
-- Icon by etherbrian
+- Icon by etherbrian  
 <http://etherbrian.org>
