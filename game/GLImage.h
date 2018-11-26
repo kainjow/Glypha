@@ -5,6 +5,7 @@
 #include "GLRect.h"
 #include "GLPoint.h"
 #include <stddef.h>
+#include <functional>
 
 namespace GL {
 
@@ -14,11 +15,15 @@ public:
     
     void load(const unsigned char *buf, size_t bufSize);
     bool isLoaded() const;
-    
+    void setLoaded(bool loaded);
+
     void draw(const Point *dest, size_t numDest, const Point *src, size_t numSrc) const;
     void draw(const Rect& destRect, const Rect& srcRect) const;
     void draw(const Rect& destRect) const;
     void draw(int x, int y) const;
+    
+    using DrawCallback = std::function<void(const Rect& destRect, const Rect& srcRect)>;
+    void setDrawCallback(const DrawCallback& callback);
     
     int width() const;
     int height() const;
@@ -35,6 +40,7 @@ private:
     int width_, height_;
     bool alpha_;
     bool colorBlending_;
+    DrawCallback drawCallback_;
 };
     
 }

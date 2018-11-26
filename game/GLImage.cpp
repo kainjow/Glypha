@@ -9,11 +9,6 @@ GL::Image::Image()
 {
 }
 
-bool GL::Image::isLoaded() const
-{
-    return texture_ != 0;
-}
-
 #if GLYPHA_USE_OPENGL
 void GL::Image::loadTextureData_(const void *texData, bool hasAlpha)
 {
@@ -82,6 +77,10 @@ void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src
 
 void GL::Image::draw(const GL::Rect& destRect, const GL::Rect& srcRect) const
 {
+    if (drawCallback_) {
+        drawCallback_(destRect, srcRect);
+        return;
+    }
     GL::Point dest[4];
     GL::Point src[4];
     dest[0] = GL::Point(destRect.left, destRect.top);
@@ -103,6 +102,11 @@ void GL::Image::draw(const GL::Rect& destRect) const
 void GL::Image::draw(int x, int y) const
 {
     draw(GL::Rect(x, y, width_, height_), GL::Rect(0, 0, width_, height_));
+}
+
+void GL::Image::setDrawCallback(const DrawCallback& callback)
+{
+    drawCallback_ = callback;
 }
 
 int GL::Image::width() const

@@ -200,7 +200,6 @@ GL::Game::Game(Renderer *renderer, Callback callback, HighScoreNameCallback high
     
     helpSrcRect.set(0, 0, 231, 398);
     
-    font11Img.setAllowColorBlending(true);
     memset(fps_buf, 0, sizeof(fps_buf));
     
     readInPrefs();
@@ -232,13 +231,14 @@ void GL::Game::loadImages()
     eyeImg = renderer_->makeImage(eye_png, eye_png_len);
     helpImg = renderer_->makeImage(help_png, help_png_len);
     font11Img = renderer_->makeImage(font11_png, font11_png_len);
+    font11Img->setAllowColorBlending(true);
     aboutImg = renderer_->makeImage(about_png, about_png_len);
 }
 
 void GL::Game::run()
 {
     // Create images the first time
-    if (!bgImg.isLoaded()) {
+    if (!bgImg) {
         loadImages();
     }
     
@@ -316,7 +316,7 @@ void GL::Game::drawFrame() const
     
     if (showFPS_) {
         r->setFillColor(1.0, 0, 1.0);
-        font11.drawText(fps_buf, 0, 0, font11Img);
+        font11.drawText(fps_buf, 0, 0, *font11Img);
     }
 }
 
@@ -637,25 +637,25 @@ void GL::Game::offAMortal()
 
 void GL::Game::drawBackground() const
 {
-    bgImg.draw(0, 0);
+    bgImg->draw(0, 0);
 }
 
 void GL::Game::drawTorches() const
 {
     int who = utils.randomInt(4);
     if (evenFrame) {
-        torchesImg.draw(flameDestRects[0], flameRects[who]);
+        torchesImg->draw(flameDestRects[0], flameRects[who]);
     } else {
-        torchesImg.draw(flameDestRects[1], flameRects[who]);
+        torchesImg->draw(flameDestRects[1], flameRects[who]);
     }
 }
 
 void GL::Game::drawHand() const
 {
     if (theHand.mode == kOutGrabeth) {
-        handImg.draw(theHand.dest, handRects[0]);
+        handImg->draw(theHand.dest, handRects[0]);
     } else if (theHand.mode == kClutching) {
-        handImg.draw(theHand.dest, handRects[1]);
+        handImg->draw(theHand.dest, handRects[1]);
     }
 }
 
@@ -664,23 +664,23 @@ void GL::Game::drawPlayer() const
     GL::Rect src;
 
     if ((evenFrame) && (thePlayer.mode == kIdle)) {
-        playerIdleImg.draw(thePlayer.dest);
+        playerIdleImg->draw(thePlayer.dest);
     } else if (thePlayer.mode == kBones) {
         src = playerRects[thePlayer.srcNum];
         src.bottom = (src.top + thePlayer.frame);
-        playerImg.draw(thePlayer.dest, src);
+        playerImg->draw(thePlayer.dest, src);
     } else {
         src = playerRects[thePlayer.srcNum];
-        playerImg.draw(thePlayer.dest, src);
+        playerImg->draw(thePlayer.dest, src);
     }
 
     if (thePlayer.wrapping) {
         if (thePlayer.mode == kBones) {
             src = playerRects[thePlayer.srcNum];
             src.bottom = src.top + thePlayer.frame;
-            playerImg.draw(thePlayer.wrap, src);
+            playerImg->draw(thePlayer.wrap, src);
         } else {
-            playerImg.draw(thePlayer.wrap, playerRects[thePlayer.srcNum]);
+            playerImg->draw(thePlayer.wrap, playerRects[thePlayer.srcNum]);
         }
     }
 }
@@ -688,17 +688,17 @@ void GL::Game::drawPlayer() const
 void GL::Game::drawPlatforms() const
 {
 	if (numLedges > 3) {
-        platformImg.draw(platformCopyRects[7], platformCopyRects[2]);
-        platformImg.draw(platformCopyRects[8], platformCopyRects[4]);
+        platformImg->draw(platformCopyRects[7], platformCopyRects[2]);
+        platformImg->draw(platformCopyRects[8], platformCopyRects[4]);
 	} else {
-        platformImg.draw(platformCopyRects[7], platformCopyRects[3]);
-        platformImg.draw(platformCopyRects[8], platformCopyRects[5]);
+        platformImg->draw(platformCopyRects[7], platformCopyRects[3]);
+        platformImg->draw(platformCopyRects[8], platformCopyRects[5]);
 	}
 	
 	if (numLedges > 5) {
-        platformImg.draw(platformCopyRects[6], platformCopyRects[0]);
+        platformImg->draw(platformCopyRects[6], platformCopyRects[0]);
 	} else {
-        platformImg.draw(platformCopyRects[6], platformCopyRects[1]);
+        platformImg->draw(platformCopyRects[6], platformCopyRects[1]);
 	}
 }
 
@@ -1302,10 +1302,10 @@ void GL::Game::drawLivesNumbers() const
 	if ((digit == 0) && ((livesLeft - 1) < 100)) {
 		digit = 10;
     }
-    numbersImg.draw(numbersDest[0], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[0], numbersSrc[digit]);
 	
 	digit = (livesLeft - 1) % 10;
-    numbersImg.draw(numbersDest[1], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[1], numbersSrc[digit]);
 }
 
 void GL::Game::addToScore(int value)
@@ -1326,38 +1326,38 @@ void GL::Game::drawScoreNumbers() const
 	if ((digit == 0) && (score_ < 1000000L)) {
 		digit = 10;
     }
-    numbersImg.draw(numbersDest[2], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[2], numbersSrc[digit]);
 	
 	digit = score_ / 10000L;
 	digit = digit % 10L;
 	if ((digit == 0) && (score_ < 100000L)) {
 		digit = 10;
     }
-    numbersImg.draw(numbersDest[3], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[3], numbersSrc[digit]);
 	
 	digit = score_ / 1000L;
 	digit = digit % 10L;
 	if ((digit == 0) && (score_ < 10000L)) {
 		digit = 10;
     }
-    numbersImg.draw(numbersDest[4], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[4], numbersSrc[digit]);
 	
 	digit = score_ / 100L;
 	digit = digit % 10L;
 	if ((digit == 0) && (score_ < 1000L)) {
 		digit = 10;
     }
-    numbersImg.draw(numbersDest[5], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[5], numbersSrc[digit]);
 	
 	digit = score_ / 10L;
 	digit = digit % 10L;
 	if ((digit == 0) && (score_ < 100L)) {
 		digit = 10;
     }
-    numbersImg.draw(numbersDest[6], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[6], numbersSrc[digit]);
 	
 	digit = score_ % 10L;
-    numbersImg.draw(numbersDest[7], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[7], numbersSrc[digit]);
 }
 
 void GL::Game::drawLevelNumbers() const
@@ -1369,17 +1369,17 @@ void GL::Game::drawLevelNumbers() const
 	if ((digit == 0) && ((levelOn + 1) < 1000)) {
 		digit = 10;
     }
-    numbersImg.draw(numbersDest[8], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[8], numbersSrc[digit]);
 	
 	digit = (levelOn + 1) / 10;
 	digit = digit % 10L;
 	if ((digit == 0) && ((levelOn + 1) < 100)) {
 		digit = 10;
     }
-    numbersImg.draw(numbersDest[9], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[9], numbersSrc[digit]);
 	
 	digit = (levelOn + 1) % 10;
-    numbersImg.draw(numbersDest[10], numbersSrc[digit]);
+    numbersImg->draw(numbersDest[10], numbersSrc[digit]);
 }
 
 void GL::Game::initHandLocation()
@@ -1493,8 +1493,8 @@ void GL::Game::checkPlayerWrapAround()
 void GL::Game::drawObelisks() const
 {
     if (flashObelisks) {
-        obelisksImg.draw(obeliskRects[2], obeliskRects[0]);
-        obelisksImg.draw(obeliskRects[3], obeliskRects[1]);
+        obelisksImg->draw(obeliskRects[2], obeliskRects[0]);
+        obelisksImg->draw(obeliskRects[3], obeliskRects[1]);
     } else {
         // Redraw obelisks and lava in "foreground"
         GL::Point pts[12];
@@ -1511,13 +1511,13 @@ void GL::Game::drawObelisks() const
         pts[o++] = GL::Point(478, 269);
         pts[o++] = GL::Point(478, 450);
         pts[o++] = GL::Point(457, 450);
-        bgImg.draw(pts, 6, pts, 6);
-        bgImg.draw(pts + 6, 6, pts + 6, 6);
+        bgImg->draw(pts, 6, pts, 6);
+        bgImg->draw(pts + 6, 6, pts + 6, 6);
         
         GL::Rect lava1(0, 450, 214, 10);
         GL::Rect lava2(425, 450, 215, 10);
-        bgImg.draw(lava1, lava1);
-        bgImg.draw(lava2, lava2);
+        bgImg->draw(lava1, lava1);
+        bgImg->draw(lava2, lava2);
     }
 }
 
@@ -1603,11 +1603,11 @@ void GL::Game::checkEnemyWrapAround(int who) const
 			}
 			else
 				src = eggSrcRect;
-            egg.draw(wrapRect, src);
+            egg->draw(wrapRect, src);
 		}
 		else
 		{
-            enemyFly.draw(wrapRect, enemyRects[theEnemies[who].srcNum]);
+            enemyFly->draw(wrapRect, enemyRects[theEnemies[who].srcNum]);
 		}
 	}
 	else if (theEnemies[who].dest.left < 0)
@@ -1625,11 +1625,11 @@ void GL::Game::checkEnemyWrapAround(int who) const
 			}
 			else
 				src = eggSrcRect;
-            egg.draw(wrapRect, src);
+            egg->draw(wrapRect, src);
 		}
 		else
 		{
-            enemyFly.draw(wrapRect, enemyRects[theEnemies[who].srcNum]);
+            enemyFly->draw(wrapRect, enemyRects[theEnemies[who].srcNum]);
 		}
 	}
 }
@@ -1642,20 +1642,20 @@ void GL::Game::drawEnemies() const
             case kSpawning:
                 src = enemyRects[theEnemies[i].srcNum];
                 src.bottom = src.top + theEnemies[i].frame;
-                enemyWalk.draw(theEnemies[i].dest, src);
+                enemyWalk->draw(theEnemies[i].dest, src);
                 break;
                 
             case kFlying:
-                enemyFly.draw(theEnemies[i].dest, enemyRects[theEnemies[i].srcNum]);
+                enemyFly->draw(theEnemies[i].dest, enemyRects[theEnemies[i].srcNum]);
                 checkEnemyWrapAround(i);
                 break;
                 
             case kWalking:
-                enemyWalk.draw(theEnemies[i].dest, enemyRects[theEnemies[i].srcNum]);
+                enemyWalk->draw(theEnemies[i].dest, enemyRects[theEnemies[i].srcNum]);
                 break;
                 
             case kFalling:
-                egg.draw(theEnemies[i].dest, eggSrcRect);
+                egg->draw(theEnemies[i].dest, eggSrcRect);
                 checkEnemyWrapAround(i);
                 break;
                 
@@ -1666,7 +1666,7 @@ void GL::Game::drawEnemies() const
                 } else {
                     src = eggSrcRect;
                 }
-                egg.draw(theEnemies[i].dest, src);
+                egg->draw(theEnemies[i].dest, src);
                 checkEnemyWrapAround(i);
                 break;
         }
@@ -2632,7 +2632,7 @@ void GL::Game::handleEye()
 void GL::Game::drawEye() const
 {
     if (theEye.mode == kStalking) {
-        eyeImg.draw(theEye.dest, eyeRects[theEye.srcNum]);
+        eyeImg->draw(theEye.dest, eyeRects[theEye.srcNum]);
     }
 }
 
@@ -2651,7 +2651,7 @@ void GL::Game::closeWall()
 
 void GL::Game::drawWall() const
 {
-    bgImg.draw(wallDest, wallSrc);
+    bgImg->draw(wallDest, wallSrc);
 }
 
 void GL::Game::openHelp()
@@ -2699,7 +2699,7 @@ void GL::Game::handleHelp()
 void GL::Game::drawHelp() const
 {
     if (wallState != kWallClosed && wallMode == kWallModeHelp) {
-        helpImg.draw(helpDest, helpSrc);
+        helpImg->draw(helpDest, helpSrc);
         drawWall();
     }
 }
@@ -2762,23 +2762,23 @@ void GL::Game::drawHighScores() const
         r->fillRect(scoreDest);
         
         r->setFillColor(2/255.0f, 29/255.0f, 143/255.0f);
-        font11.drawText(highScoresTitle, scoreSrc.left + ((scoreSrc.width() - highScoresTitleWidth) / 2), scoreSrc.top + 10, font11Img);
+        font11.drawText(highScoresTitle, scoreSrc.left + ((scoreSrc.width() - highScoresTitleWidth) / 2), scoreSrc.top + 10, *font11Img);
         
         char scoreStr[100];
         for (int i = 0; i < 10; ++i) {
             const int y = scoreSrc.top + 31 + (i * 16);
             
             snprintf(scoreStr, sizeof(scoreStr), "%d", i + 1);
-            font11.drawText(scoreStr, scoreSrc.left + 8, scoreSrc.top + 31 + (i * 16), font11Img);
-            font11.drawText(thePrefs.highScores[i].name, scoreSrc.left + 32, y, font11Img);
+            font11.drawText(scoreStr, scoreSrc.left + 8, scoreSrc.top + 31 + (i * 16), *font11Img);
+            font11.drawText(thePrefs.highScores[i].name, scoreSrc.left + 32, y, *font11Img);
             
             snprintf(scoreStr, sizeof(scoreStr), "%d", thePrefs.highScores[i].score);
             int scoreWide = font11.measureText(scoreStr);
-            font11.drawText(scoreStr, scoreSrc.left + 191 - scoreWide, y, font11Img);
+            font11.drawText(scoreStr, scoreSrc.left + 191 - scoreWide, y, *font11Img);
             
             snprintf(scoreStr, sizeof(scoreStr), "%d", thePrefs.highScores[i].level);
             scoreWide = font11.measureText(scoreStr);
-            font11.drawText(scoreStr, scoreSrc.left + 223 - scoreWide, y, font11Img);
+            font11.drawText(scoreStr, scoreSrc.left + 223 - scoreWide, y, *font11Img);
         }
         
         drawWall();
@@ -2829,10 +2829,10 @@ void GL::Game::showAbout()
 
 void GL::Game::drawAbout(Renderer *r) const
 {
-    int x = (r->bounds().width() - aboutImg.width()) / 2;
-    int y = (r->bounds().height() - aboutImg.height()) / 2;
+    int x = (r->bounds().width() - aboutImg->width()) / 2;
+    int y = (r->bounds().height() - aboutImg->height()) / 2;
     
-    aboutImg.draw(x, y);
+    aboutImg->draw(x, y);
 
     r->setFillColor(102/255.0f, 51/255.0f, 102/255.0f);
     
@@ -2840,31 +2840,31 @@ void GL::Game::drawAbout(Renderer *r) const
     x += 8;
     y += 140;
     
-    font11.drawText(GL_GAME_NAME " " GL_GAME_VERSION, x, y, font11Img);
+    font11.drawText(GL_GAME_NAME " " GL_GAME_VERSION, x, y, *font11Img);
 
     y += lineHeight * 2;
     
-    font11.drawText("Original developer:", x, y, font11Img);
+    font11.drawText("Original developer:", x, y, *font11Img);
     y += lineHeight;
-    font11.drawText("John Calhoun of", x, y, font11Img);
+    font11.drawText("John Calhoun of", x, y, *font11Img);
     y += lineHeight;
-    font11.drawText("Soft Dorothy Software", x, y, font11Img);
+    font11.drawText("Soft Dorothy Software", x, y, *font11Img);
     y += lineHeight;
-    font11.drawText("1995", x, y, font11Img);
+    font11.drawText("1995", x, y, *font11Img);
 
     y += lineHeight * 2;
     
-    font11.drawText("Mac OS X port:", x, y, font11Img);
+    font11.drawText("Mac OS X port:", x, y, *font11Img);
     y += lineHeight;
-    font11.drawText("Mark Pazolli", x, y, font11Img);
+    font11.drawText("Mark Pazolli", x, y, *font11Img);
     y += lineHeight;
-    font11.drawText("2001", x, y, font11Img);
+    font11.drawText("2001", x, y, *font11Img);
 
     y += lineHeight * 2;
     
-    font11.drawText("Modern port:", x, y, font11Img);
+    font11.drawText("Modern port:", x, y, *font11Img);
     y += lineHeight;
-    font11.drawText("Kevin Wojniak", x, y, font11Img);
+    font11.drawText("Kevin Wojniak", x, y, *font11Img);
     y += lineHeight;
-    font11.drawText("2018", x, y, font11Img);
+    font11.drawText("2018", x, y, *font11Img);
 }

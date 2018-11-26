@@ -149,10 +149,10 @@ private:
     void update();
     void drawFrame() const;
     
-    Image bgImg;
+    std::shared_ptr<Image> bgImg;
     void drawBackground() const;
 
-    Image torchesImg;
+    std::shared_ptr<Image> torchesImg;
     Rect flameDestRects[2], flameRects[4];
     void drawTorches() const;
 
@@ -168,7 +168,7 @@ private:
     int newGameLightning;
     double lastNewGameLightning;
     Rect obeliskRects[4];
-    Image obelisksImg;
+    std::shared_ptr<Image> obelisksImg;
     bool flashObelisks;
     void drawObelisks() const;
     
@@ -188,8 +188,8 @@ private:
     Rect playerRects[11];
     void resetPlayer(bool initialPlace);
     void offAMortal();
-    Image playerImg;
-    Image playerIdleImg;
+    std::shared_ptr<Image> playerImg;
+    std::shared_ptr<Image> playerIdleImg;
     void drawPlayer() const;
     void movePlayer();
     void handlePlayerIdle();
@@ -212,10 +212,10 @@ private:
     
     Rect platformCopyRects[9];
     void drawPlatforms() const;
-    Image platformImg;
+    std::shared_ptr<Image> platformImg;
     
     int score_;
-    Image numbersImg;
+    std::shared_ptr<Image> numbersImg;
     Rect numbersSrc[11], numbersDest[11];
     void drawLivesNumbers() const;
     void drawScoreNumbers() const;
@@ -226,7 +226,7 @@ private:
         Rect dest;
         int mode;
     } theHand;
-    Image handImg;
+    std::shared_ptr<Image> handImg;
     Rect grabZone;
     Rect handRects[2];
     void initHandLocation();
@@ -256,9 +256,9 @@ private:
     Rect eggSrcRect;
     bool doEnemyFlapSound;
 	bool doEnemyScrapeSound;
-    Image enemyFly;
-    Image enemyWalk;
-    Image egg;
+    std::shared_ptr<Image> enemyFly;
+    std::shared_ptr<Image> enemyWalk;
+    std::shared_ptr<Image> egg;
     void moveEnemies();
     void checkEnemyWrapAround(int who) const;
     void drawHand() const;
@@ -285,7 +285,7 @@ private:
         int srcNum, frame;
         bool killed, entering;
     } theEye;
-    Image eyeImg;
+    std::shared_ptr<Image> eyeImg;
     Rect eyeRects[4];
     void initEye();
     void killOffEye();
@@ -297,7 +297,7 @@ private:
     Rect helpDest;
     Rect wallSrc;
     Rect wallDest;
-    Image helpImg;
+    std::shared_ptr<Image> helpImg;
     enum WallState {
         kWallClosed = 0,
         kWallOpening = 1,
@@ -328,7 +328,7 @@ private:
     void checkHighScore();
     
     GL::Font font11;
-    Image font11Img;
+    std::shared_ptr<Image> font11Img;
 
     Rect scoreSrc;
     Rect scoreDest;
@@ -339,7 +339,7 @@ private:
     
     void readInPrefs();
 
-    Image aboutImg;
+    std::shared_ptr<Image> aboutImg;
     bool aboutVisible;
     void drawAbout(Renderer *r) const;
     

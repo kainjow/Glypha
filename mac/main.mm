@@ -13,7 +13,8 @@
 #if !GLYPHA_USE_OPENGL
 @protocol GameView <NSObject>
 - (SKScene *)scene;
-- (GL::Image)makeImage:(const unsigned char *)buf size:(size_t)bufSize;
+- (std::shared_ptr<GL::Image>)makeImage:(const unsigned char *)buf size:(size_t)bufSize;
+- (void)clear;
 @end
 
 class SpriteKitRenderer : public GL::Renderer {
@@ -25,6 +26,7 @@ public:
     virtual void resize(int width __unused, int height __unused) override {
     }
     virtual void clear() override {
+        [gameView_ clear];
     }
     
     virtual void fillRect(const GL::Rect& rect __unused) override {
@@ -46,7 +48,7 @@ public:
         return GL::Rect(0, 0, static_cast<int>([scene size].width), static_cast<int>([scene size].height));
     }
     
-    virtual GL::Image makeImage(const unsigned char *buf, size_t bufSize) override {
+    virtual std::shared_ptr<GL::Image> makeImage(const unsigned char *buf, size_t bufSize) override {
         return [gameView_ makeImage:buf size:bufSize];
     }
 private:
@@ -65,6 +67,7 @@ SKView <SKSceneDelegate, GameView>
     CVDisplayLinkRef displayLink_;
 #else
     SpriteKitRenderer *renderer_;
+    NSMutableArray<SKSpriteNode *> *_nodes;
 #endif
     GL::Game *game_;
 }
@@ -355,10 +358,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
     return [super initWithFrame:frameRect pixelFormat:format];
 #else
     self = [super initWithFrame:frameRect];
+    [self setPreferredFramesPerSecond:30];
     renderer_ = new SpriteKitRenderer(self);
-    SKScene *scene = [[[SKScene alloc] initWithSize:frameRect.size] autorelease];
+    SKScene *scene = [SKScene sceneWithSize:frameRect.size];
+    [scene setAnchorPoint:CGPointMake(0.5, 0.5)];
     [scene setDelegate:self];
     [self presentScene:scene];
+    _nodes = [[NSMutableArray alloc] init];
     return self;
 #endif
 }
@@ -522,15 +528,30 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
     }
 }
 
-- (GL::Image)makeImage:(const unsigned char *)buf size:(size_t)bufSize
+- (std::shared_ptr<GL::Image>)makeImage:(const unsigned char *)buf size:(size_t)bufSize
 {
     NSData *data = [NSData dataWithBytesNoCopy:(void *)buf length:bufSize freeWhenDone:NO];
     NSImage *image = [[[NSImage alloc] initWithData:data] autorelease];
     SKTexture *texture = [SKTexture textureWithImage:image];
-    SKSpriteNode *node = [[[SKSpriteNode alloc] initWithTexture:texture] autorelease];
+    SKSpriteNode *node = [SKSpriteNode spriteNodeWithTexture:texture];
+    [node setHidden:YES];
     [[self scene] addChild:node];
-    GL::Image img;
+    [_nodes addObject:node];
+    std::shared_ptr<GL::Image> img = std::make_shared<GL::Image>();
+    GL::Image::DrawCallback callback = [node](const GL::Rect& destRect, const GL::Rect& srcRect) {
+        (void)destRect; (void)srcRect;
+        [node setHidden:NO];
+        //[node setPosition:CGPointMake(srcRect.left, srcRect.top)];
+    };
+    img->setDrawCallback(callback);
     return img;
+}
+
+- (void)clear
+{
+    for (SKSpriteNode *node in _nodes) {
+        [node setHidden:YES];
+    }
 }
 
 #endif

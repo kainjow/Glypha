@@ -4,6 +4,7 @@
 #include "GLRect.h"
 #include "GLPoint.h"
 #include "GLImage.h"
+#include <memory>
 
 namespace GL {
 
@@ -24,7 +25,7 @@ public:
     
     virtual Rect bounds() = 0;
     
-    virtual Image makeImage(const unsigned char *buf, size_t bufSize) = 0;
+    virtual std::shared_ptr<Image> makeImage(const unsigned char *buf, size_t bufSize) = 0;
     
 /*private:
     Rect bounds_;
