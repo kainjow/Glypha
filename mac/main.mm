@@ -1,17 +1,33 @@
+#define GLYPHA_USE_OPENGL 0
+
 #import <Cocoa/Cocoa.h>
+#if GLYPHA_USE_OPENGL
 #import <CoreVideo/CoreVideo.h>
+#else
+#import <SpriteKit/SpriteKit.h>
+#endif
 #include "GLGame.h"
 #include "GLRenderer.h"
 #include "GLResources.h"
 
-@interface GameView : NSOpenGLView
+
+@interface GameView :
+#if GLYPHA_USE_OPENGL
+NSOpenGLView
+#else
+SKView
+#endif
 {
+#if GLYPHA_USE_OPENGL
     CVDisplayLinkRef displayLink_;
+#endif
     GL::Game *game_;
 }
 
 - (void)setGame:(GL::Game *)game;
+#if GLYPHA_USE_OPENGL
 - (void)render;
+#endif
 
 @end
 
@@ -274,32 +290,39 @@ static void highScoreNameCallback(const char *highName, int place, void *context
 
 @end
 
+#if GLYPHA_USE_OPENGL
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const CVTimeStamp* now __unused, const CVTimeStamp* outputTime __unused, CVOptionFlags flagsIn __unused, CVOptionFlags* flagsOut __unused, void* displayLinkContext)
 {
     [(GameView*)displayLinkContext render];
     return kCVReturnSuccess;
 }
+#endif
 
 @implementation GameView
 
+#if GLYPHA_USE_OPENGL
 - (id)initWithFrame:(NSRect)frameRect
 {
     NSOpenGLPixelFormatAttribute attr[] = {NSOpenGLPFAAccelerated, NSOpenGLPFADoubleBuffer, NSOpenGLPFADepthSize, 24, 0};
     NSOpenGLPixelFormat *format = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attr] autorelease];
     return [super initWithFrame:frameRect pixelFormat:format];
 }
+#endif
 
+#if GLYPHA_USE_OPENGL
 - (void)dealloc
 {
     CVDisplayLinkRelease(displayLink_);
     [super dealloc];
 }
+#endif
 
 - (void)setGame:(GL::Game *)game
 {
     game_ = game;
 }
 
+#if GLYPHA_USE_OPENGL
 - (void)prepareOpenGL
 {
     // Synchronize buffer swaps with vertical refresh rate
@@ -344,6 +367,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 {
     [self render];
 }
+#endif
 
 - (GL::Point)pointForEvent:(NSEvent *)event
 {
