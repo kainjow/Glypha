@@ -5,7 +5,8 @@ string(REPLACE " " "" EXE_NAME_NOSPACES "${EXE_NAME}")
 set(EXE_IDENTIFIER "com.kainjow.${EXE_NAME_NOSPACES}")
 
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12")
+  # must be set before project()
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum macOS deployment version")
 endif()
 
 project(Glypha)
