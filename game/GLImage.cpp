@@ -14,6 +14,7 @@ bool GL::Image::isLoaded() const
     return texture_ != 0;
 }
 
+#if GLYPHA_USE_OPENGL
 void GL::Image::loadTextureData_(const void *texData, bool hasAlpha)
 {
     loadTextureData_(texData, hasAlpha ? GL_BGRA_EXT : GL_BGR_EXT, hasAlpha);
@@ -34,6 +35,7 @@ void GL::Image::loadTextureData_(const void *texData, GLenum format, bool hasAlp
 	// set texture data
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, format, GL_UNSIGNED_BYTE, texData);
 }
+#endif
 
 void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src, size_t numSrc) const
 {
@@ -42,6 +44,7 @@ void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src
         return;
     }
     
+#if GLYPHA_USE_OPENGL
 	// set this texture as current
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture_);
@@ -72,6 +75,9 @@ void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src
         glDisable(GL_BLEND);
     }
 	glDisable(GL_TEXTURE_2D);
+#else
+    (void)src; (void)dest;
+#endif
 }
 
 void GL::Image::draw(const GL::Rect& destRect, const GL::Rect& srcRect) const

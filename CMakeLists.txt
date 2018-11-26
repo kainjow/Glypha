@@ -19,9 +19,10 @@ set(SOURCES
   game/GLGame.h
   game/GLImage.cpp
   game/GLImage.h
+  game/GLOpenGL.h
   game/GLRect.cpp
   game/GLRect.h
-  game/GLRenderer.cpp
+  #game/GLRenderer.cpp
   game/GLRenderer.h
   game/GLResources.h
   game/GLUtils.cpp
@@ -70,7 +71,7 @@ elseif(APPLE)
   list(APPEND SOURCES
     mac/main.mm
     game/GLCursorCocoa.mm
-    game/GLImage_CoreImage.cpp
+    #game/GLImage_CoreImage.cpp
     game/GLSoundsCocoa.mm
     ${APPICON}
   )
@@ -164,10 +165,14 @@ elseif(APPLE)
       XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_LIST_DIR}/mac/Glypha.entitlements"
     )
   endif()
+  target_compile_definitions(${PROJECT_NAME} PRIVATE
+    GLYPHA_USE_OPENGL=0
+  )
   target_link_libraries(${PROJECT_NAME}
     "-framework Cocoa"
     "-framework CoreVideo"
     "-framework AVFoundation"
+    "-framework SpriteKit"
   )
 endif()
 

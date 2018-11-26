@@ -99,7 +99,7 @@ public:
     typedef void (*Callback)(Event event, void *context);
     typedef void (*HighScoreNameCallback)(const char *name, int place, void *context);
 
-    Game(Callback callback, HighScoreNameCallback highScoreCallback, void *context);
+    Game(Renderer *renderer, Callback callback, HighScoreNameCallback highScoreCallback, void *context);
     ~Game();
     
     Renderer* renderer();

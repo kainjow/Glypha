@@ -1,8 +1,9 @@
 #ifndef GLIMAGE_H
 #define GLIMAGE_H
 
-#include "GLRenderer.h"
+#include "GLOpenGL.h"
 #include "GLRect.h"
+#include "GLPoint.h"
 #include <stddef.h>
 
 namespace GL {
@@ -25,8 +26,10 @@ public:
     void setAllowColorBlending(bool colorBlending);
 
 private:
+#if GLYPHA_USE_OPENGL
 	void loadTextureData_(const void *texData, bool hasAlpha = true);
 	void loadTextureData_(const void *texData, GLenum format, bool hasAlpha = true);
+#endif
     
     GLuint texture_;
     int width_, height_;

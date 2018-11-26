@@ -59,11 +59,11 @@
 
 #define kUpdateFreq (1.0/30.0)
 
-GL::Game::Game(Callback callback, HighScoreNameCallback highScoreCallback, void *context)
+GL::Game::Game(Renderer *renderer, Callback callback, HighScoreNameCallback highScoreCallback, void *context)
     : callback_(callback)
     , highScoreCallback_(highScoreCallback)
     , callbackContext_(context)
-    , renderer_(new Renderer())
+    , renderer_(renderer)
     , now(utils.now())
     , lastTime(now)
     , accumulator(0)
@@ -218,21 +218,21 @@ GL::Renderer* GL::Game::renderer()
 
 void GL::Game::loadImages()
 {
-    bgImg.load(background_png, background_png_len);
-    torchesImg.load(torches_png, torches_png_len);
-    platformImg.load(platforms_png, platforms_png_len);
-    playerImg.load(player_png, player_png_len);
-    playerIdleImg.load(playerIdle_png, playerIdle_png_len);
-    numbersImg.load(numbers_png, numbers_png_len);
-    handImg.load(hand_png, hand_png_len);
-    obelisksImg.load(obelisks_png, obelisks_png_len);
-    enemyFly.load(enemyFly_png, enemyFly_png_len);
-    enemyWalk.load(enemyWalk_png, enemyWalk_png_len);
-    egg.load(egg_png, egg_png_len);
-    eyeImg.load(eye_png, eye_png_len);
-    helpImg.load(help_png, help_png_len);
-    font11Img.load(font11_png, font11_png_len);
-    aboutImg.load(about_png, about_png_len);
+    bgImg = renderer_->makeImage(background_png, background_png_len);
+    torchesImg = renderer_->makeImage(torches_png, torches_png_len);
+    platformImg = renderer_->makeImage(platforms_png, platforms_png_len);
+    playerImg = renderer_->makeImage(player_png, player_png_len);
+    playerIdleImg = renderer_->makeImage(playerIdle_png, playerIdle_png_len);
+    numbersImg = renderer_->makeImage(numbers_png, numbers_png_len);
+    handImg = renderer_->makeImage(hand_png, hand_png_len);
+    obelisksImg = renderer_->makeImage(obelisks_png, obelisks_png_len);
+    enemyFly = renderer_->makeImage(enemyFly_png, enemyFly_png_len);
+    enemyWalk = renderer_->makeImage(enemyWalk_png, enemyWalk_png_len);
+    egg = renderer_->makeImage(egg_png, egg_png_len);
+    eyeImg = renderer_->makeImage(eye_png, eye_png_len);
+    helpImg = renderer_->makeImage(help_png, help_png_len);
+    font11Img = renderer_->makeImage(font11_png, font11_png_len);
+    aboutImg = renderer_->makeImage(about_png, about_png_len);
 }
 
 void GL::Game::run()

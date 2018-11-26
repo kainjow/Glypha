@@ -1,5 +1,3 @@
-#define GLYPHA_USE_OPENGL 0
-
 #import <Cocoa/Cocoa.h>
 #if GLYPHA_USE_OPENGL
 #import <CoreVideo/CoreVideo.h>
@@ -10,16 +8,63 @@
 #include "GLRenderer.h"
 #include "GLResources.h"
 
+@class GameView;
+
+#if !GLYPHA_USE_OPENGL
+@protocol GameView <NSObject>
+- (SKScene *)scene;
+- (GL::Image)makeImage:(const unsigned char *)buf size:(size_t)bufSize;
+@end
+
+class SpriteKitRenderer : public GL::Renderer {
+public:
+    SpriteKitRenderer(id<GameView> gameView) {
+        gameView_ = gameView;
+    }
+    
+    virtual void resize(int width __unused, int height __unused) override {
+    }
+    virtual void clear() override {
+    }
+    
+    virtual void fillRect(const GL::Rect& rect __unused) override {
+    }
+    virtual void setFillColor(float red __unused, float green __unused, float blue __unused) override {
+    }
+
+    virtual void beginLines(float lineWidth __unused, bool smooth __unused) override {
+    }
+    virtual void endLines() override {
+    }
+    virtual void moveTo(int h __unused, int v __unused) override {
+    }
+    virtual void lineTo(int h __unused, int v __unused) override {
+    }
+    
+    virtual GL::Rect bounds() override {
+        SKScene *scene = [gameView_ scene];
+        return GL::Rect(0, 0, static_cast<int>([scene size].width), static_cast<int>([scene size].height));
+    }
+    
+    virtual GL::Image makeImage(const unsigned char *buf, size_t bufSize) override {
+        return [gameView_ makeImage:buf size:bufSize];
+    }
+private:
+    id<GameView> gameView_;
+};
+#endif
 
 @interface GameView :
 #if GLYPHA_USE_OPENGL
 NSOpenGLView
 #else
-SKView
+SKView <SKSceneDelegate, GameView>
 #endif
 {
 #if GLYPHA_USE_OPENGL
     CVDisplayLinkRef displayLink_;
+#else
+    SpriteKitRenderer *renderer_;
 #endif
     GL::Game *game_;
 }
@@ -27,6 +72,8 @@ SKView
 - (void)setGame:(GL::Game *)game;
 #if GLYPHA_USE_OPENGL
 - (void)render;
+#else
+- (SpriteKitRenderer *)renderer;
 #endif
 
 @end
@@ -136,7 +183,7 @@ static void highScoreNameCallback(const char *highName, int place, void *context
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
         [[window_ contentView] addSubview:gameView_];
         [self setupMenuBar:appName];
-        game_ = new GL::Game(callback, highScoreNameCallback, self);
+        game_ = new GL::Game([gameView_ renderer], callback, highScoreNameCallback, self);
         [gameView_ setGame:game_];
     }
     return self;
@@ -300,14 +347,21 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 
 @implementation GameView
 
-#if GLYPHA_USE_OPENGL
 - (id)initWithFrame:(NSRect)frameRect
 {
+#if GLYPHA_USE_OPENGL
     NSOpenGLPixelFormatAttribute attr[] = {NSOpenGLPFAAccelerated, NSOpenGLPFADoubleBuffer, NSOpenGLPFADepthSize, 24, 0};
     NSOpenGLPixelFormat *format = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attr] autorelease];
     return [super initWithFrame:frameRect pixelFormat:format];
-}
+#else
+    self = [super initWithFrame:frameRect];
+    renderer_ = new SpriteKitRenderer(self);
+    SKScene *scene = [[[SKScene alloc] initWithSize:frameRect.size] autorelease];
+    [scene setDelegate:self];
+    [self presentScene:scene];
+    return self;
 #endif
+}
 
 #if GLYPHA_USE_OPENGL
 - (void)dealloc
@@ -454,6 +508,32 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 {
     return YES;
 }
+
+#if !GLYPHA_USE_OPENGL
+- (SpriteKitRenderer *)renderer
+{
+    return renderer_;
+}
+
+- (void)update:(NSTimeInterval __unused)currentTime forScene:(SKScene * __unused)scene
+{
+    if (game_) {
+        game_->run();
+    }
+}
+
+- (GL::Image)makeImage:(const unsigned char *)buf size:(size_t)bufSize
+{
+    NSData *data = [NSData dataWithBytesNoCopy:(void *)buf length:bufSize freeWhenDone:NO];
+    NSImage *image = [[[NSImage alloc] initWithData:data] autorelease];
+    SKTexture *texture = [SKTexture textureWithImage:image];
+    SKSpriteNode *node = [[[SKSpriteNode alloc] initWithTexture:texture] autorelease];
+    [[self scene] addChild:node];
+    GL::Image img;
+    return img;
+}
+
+#endif
 
 @end
 

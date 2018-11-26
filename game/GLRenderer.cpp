@@ -77,3 +77,10 @@ void GL::Renderer::lineTo(int h, int v)
 	glVertex2i(lineStart_.h, lineStart_.v);
 	glVertex2i(h, v);
 }
+
+GL::Image GL::Renderer::makeImage(const unsigned char *buf, size_t bufSize)
+{
+    Image img;
+    img.load(buf, bufSize);
+    return img;
+}

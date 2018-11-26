@@ -3,39 +3,33 @@
 
 #include "GLRect.h"
 #include "GLPoint.h"
-
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#elif defined(_WIN32)
-#include <windows.h>
-#include <gl/gl.h>
-#elif defined(__HAIKU__)
-#include <GL/gl.h>
-#elif defined(GLYPHA_QT)
-#include <QtOpenGL>
-#endif
+#include "GLImage.h"
 
 namespace GL {
 
 class Renderer {
 public:
-    void resize(int width, int height);
-    void clear();
+    virtual ~Renderer() {}
     
-    void fillRect(const Rect& rect);
-    void setFillColor(float red, float green, float blue);
+    virtual void resize(int width, int height) = 0;
+    virtual void clear() = 0;
+    
+    virtual void fillRect(const Rect& rect) = 0;
+    virtual void setFillColor(float red, float green, float blue) = 0;
 
-    void beginLines(float lineWidth, bool smooth = true);
-    void endLines();
-    void moveTo(int h, int v);
-    void lineTo(int h, int v);
+    virtual void beginLines(float lineWidth, bool smooth = true) = 0;
+    virtual void endLines() = 0;
+    virtual void moveTo(int h, int v) = 0;
+    virtual void lineTo(int h, int v) = 0;
     
-    Rect bounds();
+    virtual Rect bounds() = 0;
     
-private:
+    virtual Image makeImage(const unsigned char *buf, size_t bufSize) = 0;
+    
+/*private:
     Rect bounds_;
     bool didPrepare_;
-    Point lineStart_;
+    Point lineStart_;*/
 };
 
 }
