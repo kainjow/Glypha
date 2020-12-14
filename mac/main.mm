@@ -302,6 +302,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 
 - (void)prepareOpenGL
 {
+    [super prepareOpenGL];
+
     // Synchronize buffer swaps with vertical refresh rate
     GLint swapInt = 1;
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLContextParameterSwapInterval]; 
@@ -323,6 +325,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 
 - (void)reshape
 {
+    [super reshape];
+
 	NSRect bounds = [self bounds];
     game_->renderer()->resize(static_cast<int>(bounds.size.width), static_cast<int>(bounds.size.height));
 	[[self openGLContext] update];
