@@ -118,6 +118,7 @@ static void highScoreNameCallback(const char *highName, int place, void *context
         [window_ setContentMinSize:size];
         [window_ setContentMaxSize:size];
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
+        [gameView_ setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
         [[window_ contentView] addSubview:gameView_];
         [self setupMenuBar:appName];
         game_ = new GL::Game(callback, highScoreNameCallback, self);
@@ -126,9 +127,12 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     return self;
 }
 
-- (NSSize)window:(NSWindow * __unused)window willUseFullScreenContentSize:(NSSize __unused)proposedSize
+- (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize
 {
-    return NSMakeSize(GL_GAME_WIDTH, GL_GAME_HEIGHT);
+    CGFloat baseRatio = MIN(proposedSize.width / GL_GAME_WIDTH, proposedSize.height / GL_GAME_HEIGHT);
+    CGFloat backingScaleFactor = [window backingScaleFactor];
+    CGFloat adjustedRatio = floor(baseRatio * backingScaleFactor) / backingScaleFactor;
+    return NSMakeSize(GL_GAME_WIDTH * adjustedRatio, GL_GAME_HEIGHT * adjustedRatio);
 }
 
 - (void)windowDidExitFullScreen:(NSNotification * __unused)notification
@@ -352,7 +356,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 - (GL::Point)pointForEvent:(NSEvent *)event
 {
     const NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
-    return GL::Point(static_cast<int>(mouseLoc.x), static_cast<int>(game_->renderer()->bounds().height() - mouseLoc.y));
+    CGFloat ratio = self.bounds.size.width / GL_GAME_WIDTH;
+    return GL::Point(static_cast<int>(mouseLoc.x / ratio), static_cast<int>((game_->renderer()->bounds().height() - mouseLoc.y) / ratio));
 }
 
 - (void)mouseDown:(NSEvent *)event
