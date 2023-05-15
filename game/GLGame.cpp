@@ -69,6 +69,7 @@ GL::Game::Game(Callback callback, HighScoreNameCallback highScoreCallback, void 
     , accumulator(0)
     , playing(false)
     , pausing(false)
+    , gameOver(false)
     , evenFrame(true)
     , flapKeyDown(false)
     , showFPS_(false)
@@ -302,6 +303,8 @@ void GL::Game::drawFrame() const
         drawPlayer();
         drawEnemies();
         drawObelisks();
+    }
+    if (playing || gameOver) {
         drawLivesNumbers();
         drawScoreNumbers();
         drawLevelNumbers();
@@ -440,6 +443,7 @@ void GL::Game::newGame()
     livesLeft = kInitNumLives;
     score_ = 0L;
     playing = true;
+    gameOver = false;
     pausing = false;
     numOwls = 4;
     closeWall();
@@ -471,6 +475,7 @@ bool GL::Game::paused() const
 void GL::Game::endGame()
 {
     playing = false;
+    gameOver = true;
     sounds.play(kMusicSound);
     checkHighScore();
     cursor.show();
@@ -1297,6 +1302,9 @@ void GL::Game::drawLivesNumbers() const
 {
 	int digit;
 	
+    if (livesLeft == 0) {
+        return;
+    }
 	digit = (livesLeft - 1) / 10;
 	digit = digit % 10L;
 	if ((digit == 0) && ((livesLeft - 1) < 100)) {
