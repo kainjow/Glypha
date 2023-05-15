@@ -153,11 +153,13 @@ static void highScoreNameCallback(const char *highName, int place, void *context
 
 - (void)windowDidExitFullScreen:(NSNotification * __unused)notification
 {
+    [NSMenu setMenuBarVisible: YES];
     [fullScreen_ setTitle:@"Enter Full Screen"];
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification * __unused)notification
 {
+    [NSMenu setMenuBarVisible: NO];
     [fullScreen_ setTitle:@"Exit Full Screen"];
 }
 
