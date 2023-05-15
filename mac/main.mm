@@ -4,6 +4,8 @@
 #include "GLRenderer.h"
 #include "GLResources.h"
 
+#define GAME_MAX_SCALE 4.0
+
 @interface GameView : NSOpenGLView
 {
     CVDisplayLinkRef displayLink_;
@@ -115,8 +117,9 @@ static void highScoreNameCallback(const char *highName, int place, void *context
         [window_ setCollectionBehavior:[window_ collectionBehavior] |NSWindowCollectionBehaviorFullScreenPrimary];
         [window_ setTitle:appName];
         [window_ setDelegate:self];
-        [window_ setContentMinSize:size];
-        [window_ setContentMaxSize:size];
+        [window_ setContentAspectRatio:size];
+        [window_ setContentMinSize:NSMakeSize(size.width / window_.backingScaleFactor, size.height / window_.backingScaleFactor)];
+        [window_ setContentMaxSize:NSMakeSize(GAME_MAX_SCALE * GL_GAME_WIDTH, GAME_MAX_SCALE * GL_GAME_HEIGHT)];
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
         [gameView_ setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
         [[window_ contentView] addSubview:gameView_];
@@ -127,12 +130,25 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     return self;
 }
 
-- (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize
+- (NSSize)contentSizeForWindow:(NSWindow *)window proposedSize:(NSSize)proposedSize
 {
     CGFloat baseRatio = MIN(proposedSize.width / GL_GAME_WIDTH, proposedSize.height / GL_GAME_HEIGHT);
     CGFloat backingScaleFactor = [window backingScaleFactor];
-    CGFloat adjustedRatio = floor(baseRatio * backingScaleFactor) / backingScaleFactor;
+    CGFloat adjustedRatio = MIN(GAME_MAX_SCALE, floor(baseRatio * backingScaleFactor) / backingScaleFactor);
     return NSMakeSize(GL_GAME_WIDTH * adjustedRatio, GL_GAME_HEIGHT * adjustedRatio);
+}
+
+- (NSSize)windowWillResize:(NSWindow *)window toSize:(NSSize)frameSize
+{
+    NSRect contentRect = [NSWindow contentRectForFrameRect:NSMakeRect(0, 0, frameSize.width, frameSize.height) styleMask:window.styleMask];
+    NSSize size = [self contentSizeForWindow:window proposedSize:contentRect.size];
+    NSRect frameRect = [NSWindow frameRectForContentRect:NSMakeRect(0, 0, size.width, size.height) styleMask:window.styleMask];
+    return frameRect.size;
+}
+
+- (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize
+{
+    return [self contentSizeForWindow:window proposedSize:proposedSize];
 }
 
 - (void)windowDidExitFullScreen:(NSNotification * __unused)notification
