@@ -385,6 +385,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 
 - (void)doKey:(NSEvent *)event up:(BOOL)up
 {
+    if (!game_->paused()) {
+        [NSCursor setHiddenUntilMouseMoves:YES];
+    }
     NSString *chars = [event characters];
     for (NSUInteger i = 0; i < [chars length]; ++i) {
         unichar ch = [chars characterAtIndex:i];
