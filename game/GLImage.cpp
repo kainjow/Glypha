@@ -57,6 +57,7 @@ void GL::Image::draw(const GL::Point *dest, size_t numDest, const GL::Point *src
 
     // GL_NEAREST affects drawing the texture at different sizes
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	
 	// draw the texture
 	glBegin(numDest == 4 ? GL_QUADS : GL_POLYGON);
