@@ -134,7 +134,7 @@ static void highScoreNameCallback(const char *highName, int place, void *context
 {
     CGFloat baseRatio = MIN(proposedSize.width / GL_GAME_WIDTH, proposedSize.height / GL_GAME_HEIGHT);
     CGFloat backingScaleFactor = [window backingScaleFactor];
-    CGFloat adjustedRatio = MIN(GAME_MAX_SCALE, floor(baseRatio * backingScaleFactor) / backingScaleFactor);
+    CGFloat adjustedRatio = MIN(GAME_MAX_SCALE, MAX(1.0, floor(baseRatio * backingScaleFactor)) / backingScaleFactor);
     return NSMakeSize(GL_GAME_WIDTH * adjustedRatio, GL_GAME_HEIGHT * adjustedRatio);
 }
 
@@ -149,6 +149,22 @@ static void highScoreNameCallback(const char *highName, int place, void *context
 - (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize
 {
     return [self contentSizeForWindow:window proposedSize:proposedSize];
+}
+
+- (void)windowDidChangeBackingProperties:(NSNotification *)notification
+{
+    // set new minimum size
+    NSSize minSize = NSMakeSize(GL_GAME_WIDTH / window_.backingScaleFactor, GL_GAME_HEIGHT / window_.backingScaleFactor);
+    [window_ setContentMinSize:minSize];
+    NSRect frame = window_.frame;
+    
+    // resize if current size does not fit new backing factor crisply
+    NSRect contentRect = [NSWindow contentRectForFrameRect:frame styleMask:window_.styleMask];
+    NSSize expectedSize = [self contentSizeForWindow:window_ proposedSize:contentRect.size];
+    if (!NSEqualSizes(contentRect.size, expectedSize)) {
+        NSRect newFrame = [NSWindow frameRectForContentRect:NSMakeRect(frame.origin.x, frame.origin.y, expectedSize.width, expectedSize.height) styleMask:window_.styleMask];
+        [window_ setFrame:newFrame display:YES animate:YES];
+    }
 }
 
 - (void)windowDidExitFullScreen:(NSNotification * __unused)notification
