@@ -4,6 +4,8 @@
 #include "GLRenderer.h"
 #include "GLResources.h"
 
+#define GAME_MAX_SCALE 4.0
+
 @interface GameView : NSOpenGLView
 {
     CVDisplayLinkRef displayLink_;
@@ -115,9 +117,11 @@ static void highScoreNameCallback(const char *highName, int place, void *context
         [window_ setCollectionBehavior:[window_ collectionBehavior] |NSWindowCollectionBehaviorFullScreenPrimary];
         [window_ setTitle:appName];
         [window_ setDelegate:self];
-        [window_ setContentMinSize:size];
-        [window_ setContentMaxSize:size];
+        [window_ setContentAspectRatio:size];
+        [window_ setContentMinSize:NSMakeSize(size.width / window_.backingScaleFactor, size.height / window_.backingScaleFactor)];
+        [window_ setContentMaxSize:NSMakeSize(GAME_MAX_SCALE * GL_GAME_WIDTH, GAME_MAX_SCALE * GL_GAME_HEIGHT)];
         gameView_ = [[GameView alloc] initWithFrame:[[window_ contentView] frame]];
+        [gameView_ setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
         [[window_ contentView] addSubview:gameView_];
         [self setupMenuBar:appName];
         game_ = new GL::Game(callback, highScoreNameCallback, self);
@@ -126,18 +130,52 @@ static void highScoreNameCallback(const char *highName, int place, void *context
     return self;
 }
 
-- (NSSize)window:(NSWindow * __unused)window willUseFullScreenContentSize:(NSSize __unused)proposedSize
+- (NSSize)contentSizeForWindow:(NSWindow *)window proposedSize:(NSSize)proposedSize
 {
-    return NSMakeSize(GL_GAME_WIDTH, GL_GAME_HEIGHT);
+    CGFloat baseRatio = MIN(proposedSize.width / GL_GAME_WIDTH, proposedSize.height / GL_GAME_HEIGHT);
+    CGFloat backingScaleFactor = [window backingScaleFactor];
+    CGFloat adjustedRatio = MIN(GAME_MAX_SCALE, MAX(1.0, floor(baseRatio * backingScaleFactor)) / backingScaleFactor);
+    return NSMakeSize(GL_GAME_WIDTH * adjustedRatio, GL_GAME_HEIGHT * adjustedRatio);
+}
+
+- (NSSize)windowWillResize:(NSWindow *)window toSize:(NSSize)frameSize
+{
+    NSRect contentRect = [NSWindow contentRectForFrameRect:NSMakeRect(0, 0, frameSize.width, frameSize.height) styleMask:window.styleMask];
+    NSSize size = [self contentSizeForWindow:window proposedSize:contentRect.size];
+    NSRect frameRect = [NSWindow frameRectForContentRect:NSMakeRect(0, 0, size.width, size.height) styleMask:window.styleMask];
+    return frameRect.size;
+}
+
+- (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize
+{
+    return [self contentSizeForWindow:window proposedSize:proposedSize];
+}
+
+- (void)windowDidChangeBackingProperties:(NSNotification *)notification
+{
+    // set new minimum size
+    NSSize minSize = NSMakeSize(GL_GAME_WIDTH / window_.backingScaleFactor, GL_GAME_HEIGHT / window_.backingScaleFactor);
+    [window_ setContentMinSize:minSize];
+    NSRect frame = window_.frame;
+    
+    // resize if current size does not fit new backing factor crisply
+    NSRect contentRect = [NSWindow contentRectForFrameRect:frame styleMask:window_.styleMask];
+    NSSize expectedSize = [self contentSizeForWindow:window_ proposedSize:contentRect.size];
+    if (!NSEqualSizes(contentRect.size, expectedSize)) {
+        NSRect newFrame = [NSWindow frameRectForContentRect:NSMakeRect(frame.origin.x, frame.origin.y, expectedSize.width, expectedSize.height) styleMask:window_.styleMask];
+        [window_ setFrame:newFrame display:YES animate:YES];
+    }
 }
 
 - (void)windowDidExitFullScreen:(NSNotification * __unused)notification
 {
+    [NSMenu setMenuBarVisible: YES];
     [fullScreen_ setTitle:@"Enter Full Screen"];
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification * __unused)notification
 {
+    [NSMenu setMenuBarVisible: NO];
     [fullScreen_ setTitle:@"Exit Full Screen"];
 }
 
@@ -352,7 +390,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 - (GL::Point)pointForEvent:(NSEvent *)event
 {
     const NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
-    return GL::Point(static_cast<int>(mouseLoc.x), static_cast<int>(game_->renderer()->bounds().height() - mouseLoc.y));
+    CGFloat ratio = self.bounds.size.width / GL_GAME_WIDTH;
+    return GL::Point(static_cast<int>(mouseLoc.x / ratio), static_cast<int>((game_->renderer()->bounds().height() - mouseLoc.y) / ratio));
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -362,6 +401,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink __unused, const
 
 - (void)doKey:(NSEvent *)event up:(BOOL)up
 {
+    if (!game_->paused()) {
+        [NSCursor setHiddenUntilMouseMoves:YES];
+    }
     NSString *chars = [event characters];
     for (NSUInteger i = 0; i < [chars length]; ++i) {
         unichar ch = [chars characterAtIndex:i];

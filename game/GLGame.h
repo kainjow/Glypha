@@ -139,7 +139,7 @@ private:
     double lastTime;
     double accumulator;
     void loadImages();
-    bool playing, pausing, evenFrame, flapKeyDown;
+    bool playing, pausing, gameOver, evenFrame, flapKeyDown;
 
     bool showFPS_;
     double fps_time;

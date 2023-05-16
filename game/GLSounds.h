@@ -50,7 +50,6 @@ public:
             case kBoom2Sound:
             case kSplashSound:
             case kFlapSound:
-            case kLightningSound:
             case kWalkSound:
                 return 3;
             case kSpawnSound:
@@ -59,6 +58,8 @@ public:
             case kScrape2Sound:
             case kScreechSound:
                 return 8;
+            case kLightningSound:
+                return 24;
         }
         return 1;
     }
